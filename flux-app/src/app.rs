@@ -1,5 +1,7 @@
 use leptos::task::spawn_local;
 use leptos::prelude::*;
+use leptos::ev;
+use leptos::ev::KeyboardEvent;
 use serde::{Deserialize, Serialize};
 
 use crate::ui::components::grid::Grid;
@@ -35,6 +37,16 @@ pub fn App() -> impl IntoView {
     provide_context(set_pattern_signal);
     provide_context(show_lfo);
     provide_context(set_show_lfo);
+
+    // ESC key handler to deselect step
+    let handle_escape = move |ev: KeyboardEvent| {
+        if ev.key() == "Escape" {
+            selected_step.set(None);
+        }
+    };
+
+    // Attach to window
+    window_event_listener(ev::keydown, handle_escape);
 
     // Setup Tauri Event Listener
     Effect::new(move |_| {
