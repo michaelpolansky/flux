@@ -3,6 +3,7 @@ use leptos::prelude::*;
 use leptos::ev;
 use leptos::ev::KeyboardEvent;
 use serde::{Deserialize, Serialize};
+use wasm_bindgen::JsCast;
 
 use crate::ui::components::grid::Grid;
 use crate::ui::components::inspector::Inspector;
@@ -61,7 +62,32 @@ pub fn App() -> impl IntoView {
     });
 
     view! {
-        <main class="min-h-screen bg-zinc-950 text-zinc-50 p-6 font-sans selection:bg-red-900 selection:text-white">
+        <main
+            class="min-h-screen bg-zinc-950 text-zinc-50 p-6 font-sans selection:bg-red-900 selection:text-white"
+            on:click=move |ev| {
+                // Get the clicked element
+                let target = ev.target();
+                if let Some(element) = target.and_then(|t| t.dyn_into::<web_sys::HtmlElement>().ok()) {
+                    // Check if click is outside the grid
+                    // If the clicked element or its ancestors don't have class "grid"
+                    let mut current: Option<web_sys::Element> = Some(element.into());
+                    let mut found_grid = false;
+
+                    while let Some(el) = current {
+                        let class_list = el.class_list();
+                        if class_list.contains("grid") && class_list.contains("grid-cols-8") {
+                            found_grid = true;
+                            break;
+                        }
+                        current = el.parent_element();
+                    }
+
+                    if !found_grid {
+                        selected_step.set(None);
+                    }
+                }
+            }
+        >
             <div class="max-w-7xl mx-auto space-y-5">
                 <header class="flex items-center justify-between bg-zinc-900 border-b border-zinc-800 px-6 h-16">
                     <div class="flex flex-col">
