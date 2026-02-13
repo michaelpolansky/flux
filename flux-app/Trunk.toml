@@ -1,0 +1,20 @@
+[build]
+target = "./index.html"
+
+[watch]
+ignore = ["./src-tauri"]
+
+[serve]
+port = 1420
+open = false
+
+[[hooks]]
+stage = "build"
+command = "sh"
+command_arguments = ["-c", "npx tailwindcss -i style/input.css -o style/output.css"]
+
+[[hooks]]
+stage = "watch"
+command = "sh"
+command_arguments = ["-c", "npx tailwindcss -i style/input.css -o style/output.css"]
+
