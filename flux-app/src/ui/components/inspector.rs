@@ -256,7 +256,6 @@ pub fn Inspector() -> impl IntoView {
                                          if is_designer {
                                              view! {
                                                  <label class="text-xs text-zinc-500">Waveform Designer</label>
-                                                 <label class="text-xs text-zinc-500">Waveform Designer</label>
                                                  <crate::ui::components::lfo_designer::LfoDesigner
                                                     track_id=Signal::derive(move || track_id)
                                                     lfo_index=Signal::derive(move || 0)
