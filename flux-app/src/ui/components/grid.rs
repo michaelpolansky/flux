@@ -70,7 +70,7 @@ pub fn Grid() -> impl IntoView {
                     view! {
                         <button
                             class=move || {
-                                let base_classes = "w-16 h-16 rounded-lg transition-all duration-100 flex items-center justify-center text-xs font-mono select-none";
+                                let base_classes = "w-16 h-16 rounded-lg transition-all duration-100 flex items-center justify-center text-xs font-mono select-none active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-950";
 
                                 let is_current_step = sequencer_state.current_step.get() == idx;
                                 let is_active_note = is_active();

@@ -122,7 +122,7 @@ pub fn Inspector() -> impl IntoView {
                                     handle_input(idx, val, name_str.clone());
                                 }
                                 class=move || {
-                                    let base = "w-full h-2 bg-zinc-800 rounded-full appearance-none cursor-pointer transition-all";
+                                    let base = "w-full h-2 bg-zinc-800 rounded-full appearance-none cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900";
                                     let track_color = if sequencer_state.selected_step.get().is_some() {
                                         "accent-amber-500"
                                     } else {
@@ -148,7 +148,7 @@ pub fn Inspector() -> impl IntoView {
                      <div class="flex flex-col gap-2">
                         <label class="text-xs text-zinc-500">Shape</label>
                         <select
-                            class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700"
+                            class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                             on:change=move |ev| {
                                 let val = event_target_value(&ev);
                                 set_pattern_signal.update(|p| {
@@ -176,7 +176,7 @@ pub fn Inspector() -> impl IntoView {
                         
                         <label class="text-xs text-zinc-500 mt-2">Destination</label>
                          <select
-                            class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700"
+                            class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                             on:change=move |ev| {
                                 let val = event_target_value(&ev).parse::<u8>().unwrap_or(74);
                                 set_pattern_signal.update(|p| {
@@ -195,8 +195,8 @@ pub fn Inspector() -> impl IntoView {
                         </select>
                          
                         <label class="text-xs text-zinc-500 mt-2">Amount</label>
-                        <input type="range" min="-1" max="1" step="0.01" 
-                            class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-500"
+                        <input type="range" min="-1" max="1" step="0.01"
+                            class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                             prop:value=move || {
                                 pattern_signal.with(|p| p.tracks.get(track_id).and_then(|t| t.lfos.get(0)).map(|l| l.amount).unwrap_or(0.0))
                             }
@@ -213,8 +213,8 @@ pub fn Inspector() -> impl IntoView {
                         />
                         
                         <label class="text-xs text-zinc-500 mt-2">Speed</label>
-                        <input type="range" min="0.1" max="4.0" step="0.1" 
-                             class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-500"
+                        <input type="range" min="0.1" max="4.0" step="0.1"
+                             class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                               prop:value=move || {
                                 pattern_signal.with(|p| p.tracks.get(track_id).and_then(|t| t.lfos.get(0)).map(|l| l.speed).unwrap_or(1.0))
                             }
