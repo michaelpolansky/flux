@@ -4,12 +4,16 @@
   "description": "This template should help get you started developing with Tauri and Leptos.",
   "main": "index.js",
   "scripts": {
+    "tauri": "tauri",
+    "dev": "RUSTUP_TOOLCHAIN=stable tauri dev",
+    "build": "RUSTUP_TOOLCHAIN=stable tauri build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
     "@tauri-apps/cli": "^2.10.0",
     "autoprefixer": "^10.4.24",
     "postcss": "^8.5.6",

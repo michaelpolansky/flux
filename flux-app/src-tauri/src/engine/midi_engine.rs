@@ -1,6 +1,12 @@
 use thread_priority::*;
+use std::time::{Instant, Duration};
+use std::hint::spin_loop;
+use std::thread;
 
-use crate::shared::models::{Pattern, AtomicStep, TrigType, TrigCondition, LogicOp};
+use midir::{MidiOutput, MidiOutputConnection};
+use midir::os::unix::VirtualOutput;
+use rtrb::Consumer;
+use crate::shared::models::{Pattern, TrigType, LFOShape};
 
 pub enum EngineCommand {
     UpdatePattern(Pattern),
@@ -20,15 +26,16 @@ impl MidiEngine {
     pub fn new(command_consumer: Consumer<EngineCommand>) -> Result<Self, Box<dyn std::error::Error>> {
         let midi_out = MidiOutput::new("Flux Sequencer")?;
         
-        // Get output ports
-        let out_ports = midi_out.ports();
-        
         // Try to open a virtual port, fallback to first available port or just open a connection if virtual not supported (standard midir behavior is platform dependent)
         // For macOS/Linux virtual ports are supported.
         let conn = match midi_out.create_virtual("Flux Sequencer Out") {
             Ok(conn) => conn,
             Err(_) => {
                 // Fallback for Windows or if virtual creation fails: pick the first available or create a regular connection
+                // We must re-create MidiOutput as previous one was consumed
+                let midi_out = MidiOutput::new("Flux Sequencer")?;
+                let out_ports = midi_out.ports();
+                
                 if let Some(port) = out_ports.get(0) {
                      midi_out.connect(port, "Flux Sequencer Out")?
                 } else {
@@ -127,7 +134,7 @@ impl MidiEngine {
 
             // 4. Sequencer Logic
             if let Some(pattern) = &self.pattern {
-                self.process_tick(tick_count, pattern);
+                Self::process_tick(&mut self.midi_out, tick_count, pattern);
             }
             
             tick_count += 1;
@@ -147,7 +154,7 @@ impl MidiEngine {
         }
     }
 
-    fn process_tick(&mut self, tick_count: u64, pattern: &Pattern) {
+    fn process_tick(midi_out: &mut MidiOutputConnection, tick_count: u64, pattern: &Pattern) {
         // Simple logic for now: Advance tracks
         // Assuming 16 step pattern for simplicity for now, but should use pattern length
         
@@ -177,7 +184,7 @@ impl MidiEngine {
                     
                     // Optimization: Only send if changed? 
                     // For now send every tick allows smooth 24 updates per beat (smooth-ish)
-                    self.send_cc(track.id as u8, lfo.destination, cc_val);
+                    Self::send_cc(midi_out, track.id as u8, lfo.destination, cc_val);
                     
                     // Debug Log for Verification (Requested in Plan)
                     // if tick_count % 24 == 0 {
@@ -203,13 +210,13 @@ impl MidiEngine {
                 for subtrack in &track.subtracks {
                     if let Some(step) = subtrack.steps.get(step_index as usize) {
                          if step.trig_type == TrigType::Note {
-                             self.send_note_on(track.id as u8, step.note, step.velocity);
+                             Self::send_note_on(midi_out, track.id as u8, step.note, step.velocity);
                              
                              // Note Off scheduled? 
                              // For this MVP, we might skip note off or schedule it.
                              // MIDI usually needs Note Off. 
                              // We'll send a very short Note Off for now or implement a note stack later.
-                             self.send_note_off(track.id as u8, step.note);
+                             Self::send_note_off(midi_out, track.id as u8, step.note);
                          }
                     }
                 }
@@ -265,20 +272,20 @@ impl MidiEngine {
         raw * lfo.amount
     }
 
-    fn send_note_on(&mut self, channel: u8, note: u8, velocity: u8) {
+    fn send_note_on(midi_out: &mut MidiOutputConnection, channel: u8, note: u8, velocity: u8) {
         // Channel 0-15
         let status = 0x90 | (channel & 0x0F);
-        let _ = self.midi_out.send(&[status, note, velocity]);
+        let _ = midi_out.send(&[status, note, velocity]);
     }
     
-    fn send_note_off(&mut self, channel: u8, note: u8) {
+    fn send_note_off(midi_out: &mut MidiOutputConnection, channel: u8, note: u8) {
         let status = 0x80 | (channel & 0x0F);
-        let _ = self.midi_out.send(&[status, note, 0]);
+        let _ = midi_out.send(&[status, note, 0]);
     }
 
-    fn send_cc(&mut self, channel: u8, cc: u8, val: u8) {
+    fn send_cc(midi_out: &mut MidiOutputConnection, channel: u8, cc: u8, val: u8) {
         let status = 0xB0 | (channel & 0x0F);
-        let _ = self.midi_out.send(&[status, cc, val]);
+        let _ = midi_out.send(&[status, cc, val]);
     }
 }
 

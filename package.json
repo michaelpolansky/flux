@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "tauri": "cd flux-app && npm run tauri",
+    "dev": "cd flux-app && npm run dev",
+    "build": "cd flux-app && npm run build"
+  },
   "devDependencies": {
     "@tauri-apps/cli": "^2.10.0"
   }

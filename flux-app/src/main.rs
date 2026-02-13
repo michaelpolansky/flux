@@ -1,5 +1,6 @@
 mod app;
 mod ui;
+pub mod services;
 pub mod shared;
 
 use app::*;

@@ -9,12 +9,7 @@ port = 1420
 open = false
 
 [[hooks]]
-stage = "build"
-command = "sh"
-command_arguments = ["-c", "npx tailwindcss -i style/input.css -o style/output.css"]
-
-[[hooks]]
-stage = "watch"
+stage = "pre_build"
 command = "sh"
 command_arguments = ["-c", "npx tailwindcss -i style/input.css -o style/output.css"]
 

@@ -52,6 +52,7 @@ pub struct AtomicStep {
     pub micro_timing: i8,       // -23 to +23 (1/384th steps)
     pub condition: TrigCondition,
     pub sound_lock: Option<u16>,// Sound Pool ID (Digitakt style)
+    #[serde(with = "serde_big_array::BigArray")]
     pub p_locks: ParameterLocks,// Parameter Modulations
     pub is_slide: bool,         // Analog Four Parameter Slide
     pub retrig_rate: u8,        // 0 = Off
@@ -137,4 +138,14 @@ pub struct Pattern {
     pub tracks: Vec<Track>, // 16 Tracks per pattern (Tonverk standard)
     pub bpm: f32,
     pub master_length: u32,
+}
+
+impl Default for Pattern {
+    fn default() -> Self {
+        Self {
+            tracks: Vec::new(),
+            bpm: 120.0,
+            master_length: 16,
+        }
+    }
 }

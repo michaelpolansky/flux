@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "identifier": "com.flux.app",
   "build": {
-    "beforeDevCommand": "trunk serve",
+    "beforeDevCommand": "RUSTUP_TOOLCHAIN=stable trunk serve",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "trunk build",
+    "beforeBuildCommand": "RUSTUP_TOOLCHAIN=stable trunk build",
     "frontendDist": "../dist"
   },
   "app": {

@@ -54,6 +54,7 @@ pub struct AtomicStep {
     pub micro_timing: i8,       // -23 to +23 (1/384th steps)
     pub condition: TrigCondition,
     pub sound_lock: Option<u16>,// Sound Pool ID (Digitakt style)
+    #[serde(with = "serde_big_array::BigArray")]
     pub p_locks: ParameterLocks,// Parameter Modulations
     pub is_slide: bool,         // Analog Four Parameter Slide
     pub retrig_rate: u8,        // 0 = Off
@@ -110,6 +111,7 @@ pub struct Track {
     pub subtracks: Vec<Subtrack>, // Vector to support Tonverk layering
     pub length: u32,
     pub scale: f32, // 1x, 2x, 1/2x, etc.
+    #[serde(with = "serde_big_array::BigArray")]
     pub default_params: [f32; 128], // Track-level default parameters
     pub lfos: Vec<LFO>,
 }
