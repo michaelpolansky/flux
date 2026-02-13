@@ -259,7 +259,7 @@ pub fn Inspector() -> impl IntoView {
                                 <div class="flex items-center gap-0.5">
                                     <label class="text-xs text-zinc-500 flex-shrink-0 w-20">Shape</label>
                                     <select
-                                        class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+                                        class="bg-zinc-800 text-zinc-50 text-xs rounded px-1.5 py-0.5 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                                         on:change=move |ev| {
                                             let val = event_target_value(&ev);
                                             let track_id = get_track_id();
@@ -291,7 +291,7 @@ pub fn Inspector() -> impl IntoView {
                                 <div class="flex items-center gap-0.5">
                                     <label class="text-xs text-zinc-500 flex-shrink-0 w-20">Destination</label>
                                     <select
-                                        class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+                                        class="bg-zinc-800 text-zinc-50 text-xs rounded px-1.5 py-0.5 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                                         on:change=move |ev| {
                                             let val = event_target_value(&ev).parse::<u8>().unwrap_or(74);
                                             let track_id = get_track_id();
@@ -335,7 +335,7 @@ pub fn Inspector() -> impl IntoView {
                                                 }
                                             });
                                         }
-                                        class="w-full text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors"
+                                        class="w-16 text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     />
                                 </div>
 
@@ -363,7 +363,7 @@ pub fn Inspector() -> impl IntoView {
                                                 }
                                             });
                                         }
-                                        class="w-full text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors"
+                                        class="w-16 text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     />
                                 </div>
                             </div>
