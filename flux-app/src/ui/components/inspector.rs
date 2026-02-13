@@ -357,19 +357,19 @@ pub fn Inspector() -> impl IntoView {
                                 </InlineParam>
                             </div>
 
-                            // Designer section
-                            <div>
-                                {move || {
-                                     let track_id = get_track_id();
-                                     let is_designer = pattern_signal.with(|p| {
-                                         p.tracks.get(track_id)
-                                            .and_then(|t| t.lfos.get(0))
-                                            .map(|l| matches!(l.shape, crate::shared::models::LFOShape::Designer(_)))
-                                            .unwrap_or(false)
-                                     });
+                            // Designer section - only show when Designer shape is selected
+                            {move || {
+                                 let track_id = get_track_id();
+                                 let is_designer = pattern_signal.with(|p| {
+                                     p.tracks.get(track_id)
+                                        .and_then(|t| t.lfos.get(0))
+                                        .map(|l| matches!(l.shape, crate::shared::models::LFOShape::Designer(_)))
+                                        .unwrap_or(false)
+                                 });
 
-                                     if is_designer {
-                                         view! {
+                                 if is_designer {
+                                     view! {
+                                         <div>
                                              <label class="text-xs text-zinc-500">Waveform Designer</label>
                                              <crate::ui::components::lfo_designer::LfoDesigner
                                                 track_id=Signal::derive(move || get_track_id())
@@ -404,16 +404,12 @@ pub fn Inspector() -> impl IntoView {
                                                     }
                                                 })
                                              />
-                                         }.into_any()
-                                     } else {
-                                         view! {
-                                             <div class="w-full h-32 flex items-center justify-center text-zinc-600 text-xs border border-zinc-800 rounded bg-zinc-900/50">
-                                                 "Select 'Designer' shape to draw"
-                                             </div>
-                                         }.into_any()
-                                     }
-                                }}
-                            </div>
+                                         </div>
+                                     }.into_any()
+                                 } else {
+                                     view! { <div></div> }.into_any()
+                                 }
+                            }}
                         </div>
                     </div>
         </>
