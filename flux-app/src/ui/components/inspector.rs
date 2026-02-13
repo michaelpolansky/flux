@@ -95,6 +95,20 @@ pub fn Inspector() -> impl IntoView {
 
     view! {
         <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow-xl mt-4">
+            // Header section
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800 bg-zinc-800/50 -mx-4 -mt-4 px-4 pt-4 rounded-t-xl">
+                <div class="text-sm text-zinc-300">
+                    {move || {
+                        if let Some(step_idx) = sequencer_state.selected_step.get() {
+                            format!("Editing: Step {}", step_idx + 1)
+                        } else {
+                            "Editing: Track Defaults".to_string()
+                        }
+                    }}
+                </div>
+            </div>
+
+            // Parameter grid (existing code continues here)
             <div class="grid grid-cols-4 gap-x-6 gap-y-2">
                 {params.into_iter().enumerate().map(|(idx, name)| {
                     let handle_input = handle_input.clone();
