@@ -95,7 +95,7 @@ pub fn Inspector() -> impl IntoView {
 
     view! {
         <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow-xl mt-4">
-            <div class="grid grid-cols-4 gap-x-6 gap-y-3">
+            <div class="grid grid-cols-4 gap-x-6 gap-y-2">
                 {params.into_iter().enumerate().map(|(idx, name)| {
                     let handle_input = handle_input.clone();
                     let name_str = name.to_string();
