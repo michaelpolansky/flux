@@ -124,8 +124,8 @@ pub fn App() -> impl IntoView {
                                 class:bg-zinc-800=move || selected_step.get().is_none()
                             ></span>
                             <span class="text-xs font-mono text-zinc-500">
-                                {move || if let Some(step) = selected_step.get() {
-                                    format!("STEP {} LOCKED", step + 1)
+                                {move || if let Some((track_id, step_idx)) = selected_step.get() {
+                                    format!("TRACK {}, STEP {} LOCKED", track_id + 1, step_idx + 1)
                                 } else {
                                     "TRACK DEFAULT".to_string()
                                 }}

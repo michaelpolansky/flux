@@ -23,25 +23,25 @@ pub fn Inspector() -> impl IntoView {
         let current_step = sequencer_state.selected_step.get();
 
         set_pattern_signal.update(|p| {
-             if let Some(track) = p.tracks.get_mut(track_id) {
-                if let Some(step_idx) = current_step {
-                     // P-Lock Mode
-                     if let Some(subtrack) = track.subtracks.get_mut(subtrack_id) {
-                         if let Some(step) = subtrack.steps.get_mut(step_idx) {
-                             // Assuming params maps 1:1 to index 0..7 of p_locks
-                             // p_locks is [Option<f32>; 128]
-                             if idx < 128 {
-                                 step.p_locks[idx] = Some(val as f32);
-                             }
+            if let Some(track) = p.tracks.get_mut(track_id) {
+                if let Some((sel_track_id, step_idx)) = current_step {
+                    // P-Lock Mode
+                    if sel_track_id == track_id {
+                        if let Some(subtrack) = track.subtracks.get_mut(subtrack_id) {
+                            if let Some(step) = subtrack.steps.get_mut(step_idx) {
+                                if idx < 128 {
+                                    step.p_locks[idx] = Some(val as f32);
+                                }
+                            }
                         }
-                     }
-                      spawn_local(async move {
-                        use crate::ui::tauri::push_midi_command;
-                        push_midi_command("param_lock", Some(step_idx), Some(param_name), Some(val)).await;
-                    });
+                        spawn_local(async move {
+                            use crate::ui::tauri::push_midi_command;
+                            push_midi_command("param_lock", Some(step_idx), Some(param_name), Some(val)).await;
+                        });
+                    }
                 } else {
                     // Track Default Mode
-                     if idx < 128 {
+                    if idx < 128 {
                         track.default_params[idx] = val as f32;
                     }
                     spawn_local(async move {
@@ -49,7 +49,7 @@ pub fn Inspector() -> impl IntoView {
                         push_midi_command("param_change", None, Some(param_name), Some(val)).await;
                     });
                 }
-             }
+            }
         });
     };
 
@@ -90,15 +90,20 @@ pub fn Inspector() -> impl IntoView {
     let get_value = move |idx: usize| {
         // Use with() to avoid cloning the heavy structure
         let current_step = sequencer_state.selected_step.get();
-        
+
         pattern_signal.with(|p| {
             if let Some(track) = p.tracks.get(track_id) {
-                if let Some(step_idx) = current_step {
-                    // Check P-Lock
-                     track.subtracks.get(subtrack_id)
-                        .and_then(|st| st.steps.get(step_idx))
-                        .and_then(|s| s.p_locks.get(idx).cloned().flatten())
-                        .unwrap_or_else(|| track.default_params.get(idx).cloned().unwrap_or(0.0) as f32) as f64
+                if let Some((sel_track_id, step_idx)) = current_step {
+                    if sel_track_id == track_id {
+                        // Check P-Lock
+                        track.subtracks.get(subtrack_id)
+                            .and_then(|st| st.steps.get(step_idx))
+                            .and_then(|s| s.p_locks.get(idx).cloned().flatten())
+                            .unwrap_or_else(|| track.default_params.get(idx).cloned().unwrap_or(0.0) as f32) as f64
+                    } else {
+                        // Different track selected, show default
+                        track.default_params.get(idx).cloned().unwrap_or(0.0) as f64
+                    }
                 } else {
                     // Track Default
                     track.default_params.get(idx).cloned().unwrap_or(0.0) as f64
@@ -110,20 +115,24 @@ pub fn Inspector() -> impl IntoView {
     };
 
     let is_locked = move |idx: usize| {
-         let current_step = sequencer_state.selected_step.get();
-         
-         if let Some(step_idx) = current_step {
-             pattern_signal.with(|p| {
-                 p.tracks.get(track_id)
-                    .and_then(|t| t.subtracks.get(subtrack_id))
-                    .and_then(|st| st.steps.get(step_idx))
-                    .and_then(|s| s.p_locks.get(idx))
-                    .map(|l| l.is_some())
-                    .unwrap_or(false)
-             })
-         } else {
-             false
-         }
+        let current_step = sequencer_state.selected_step.get();
+
+        if let Some((sel_track_id, step_idx)) = current_step {
+            if sel_track_id == track_id {
+                pattern_signal.with(|p| {
+                    p.tracks.get(track_id)
+                        .and_then(|t| t.subtracks.get(subtrack_id))
+                        .and_then(|st| st.steps.get(step_idx))
+                        .and_then(|s| s.p_locks.get(idx))
+                        .map(|l| l.is_some())
+                        .unwrap_or(false)
+                })
+            } else {
+                false
+            }
+        } else {
+            false
+        }
     };
 
     view! {
@@ -132,8 +141,8 @@ pub fn Inspector() -> impl IntoView {
             <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800 bg-zinc-800/50 -mx-4 -mt-4 px-4 pt-4 rounded-t-xl">
                 <div class="text-sm text-zinc-300">
                     {move || {
-                        if let Some(step_idx) = sequencer_state.selected_step.get() {
-                            format!("Editing: Step {}", step_idx + 1)
+                        if let Some((track_id, step_idx)) = sequencer_state.selected_step.get() {
+                            format!("Editing: Track {}, Step {}", track_id + 1, step_idx + 1)
                         } else {
                             "Editing: Track Defaults".to_string()
                         }
@@ -142,24 +151,28 @@ pub fn Inspector() -> impl IntoView {
 
                 // Active toggle button (only when step selected)
                 {move || {
-                    if let Some(step_idx) = sequencer_state.selected_step.get() {
-                        view! {
-                            <button
-                                class=move || {
-                                    let base = "px-3 py-1 rounded-lg text-xs font-medium transition-all duration-150 flex items-center gap-2";
-                                    let state = if is_step_active(step_idx) {
-                                        "bg-amber-500 text-black hover:bg-amber-400"
-                                    } else {
-                                        "bg-zinc-700 text-zinc-400 hover:bg-zinc-600"
-                                    };
-                                    format!("{} {}", base, state)
-                                }
-                                on:click=move |_| toggle_step(step_idx)
-                            >
-                                <span class="text-base">{move || if is_step_active(step_idx) { "●" } else { "○" }}</span>
-                                "Active"
-                            </button>
-                        }.into_any()
+                    if let Some((sel_track_id, step_idx)) = sequencer_state.selected_step.get() {
+                        if sel_track_id == track_id {
+                            view! {
+                                <button
+                                    class=move || {
+                                        let base = "px-3 py-1 rounded-lg text-xs font-medium transition-all duration-150 flex items-center gap-2";
+                                        let state = if is_step_active(step_idx) {
+                                            "bg-amber-500 text-black hover:bg-amber-400"
+                                        } else {
+                                            "bg-zinc-700 text-zinc-400 hover:bg-zinc-600"
+                                        };
+                                        format!("{} {}", base, state)
+                                    }
+                                    on:click=move |_| toggle_step(step_idx)
+                                >
+                                    <span class="text-base">{move || if is_step_active(step_idx) { "●" } else { "○" }}</span>
+                                    "Active"
+                                </button>
+                            }.into_any()
+                        } else {
+                            view! { <div></div> }.into_any()
+                        }
                     } else {
                         view! { <div></div> }.into_any()
                     }
