@@ -231,11 +231,11 @@ pub fn Inspector() -> impl IntoView {
                                     <ParamLabel text="Shape" locked=Signal::derive(|| false) />
                                     <Dropdown
                                         options=vec![
-                                            ("Sine", "Sine"),
-                                            ("Triangle", "Triangle"),
-                                            ("Square", "Square"),
-                                            ("Random", "Random"),
-                                            ("Designer", "Designer"),
+                                            ("Sine", "∿"),
+                                            ("Triangle", "△"),
+                                            ("Square", "▭"),
+                                            ("Random", "※"),
+                                            ("Designer", "✎"),
                                         ]
                                         selected=Signal::derive(move || {
                                             let track_id = get_track_id();
