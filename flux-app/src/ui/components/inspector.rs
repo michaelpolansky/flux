@@ -190,14 +190,14 @@ pub fn Inspector() -> impl IntoView {
             </div>
 
             // Parameter grid (existing code continues here)
-            <div class="grid grid-cols-4 gap-x-3 gap-y-1">
+            <div class="grid grid-cols-4 gap-x-4 gap-y-1">
                 {params.into_iter().enumerate().map(|(idx, name)| {
                     let handle_input = handle_input.clone();
                     let name_str = name.to_string();
                     let name_str_input = name_str.clone();
                     let name_str_keydown = name_str.clone();
                     view! {
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1">
                             <label class=move || {
                                 let base = "text-xs font-medium uppercase tracking-wide flex-shrink-0 w-20";
                                 let color = if sequencer_state.selected_step.get().is_some() && is_locked(idx) {
