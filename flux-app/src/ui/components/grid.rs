@@ -12,7 +12,7 @@ pub fn Grid() -> impl IntoView {
     let subtrack_id = 0;
 
     view! {
-        <div class="flex">
+        <div class="sequencer-grid flex">
             // Track labels on the left
             <div class="flex flex-col gap-[2px] mr-2">
                 <div class="w-8 h-10 flex items-center justify-center text-xs text-zinc-400">T1</div>

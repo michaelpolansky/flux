@@ -75,7 +75,7 @@ pub fn App() -> impl IntoView {
 
                     while let Some(el) = current {
                         let class_list = el.class_list();
-                        if class_list.contains("grid") && class_list.contains("grid-cols-16") {
+                        if class_list.contains("sequencer-grid") {
                             found_grid = true;
                             break;
                         }

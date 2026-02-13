@@ -9,8 +9,12 @@ pub fn Inspector() -> impl IntoView {
     let set_pattern_signal = use_context::<WriteSignal<crate::shared::models::Pattern>>().expect("Pattern context not found");
     let show_lfo = use_context::<ReadSignal<bool>>().expect("show_lfo context not found");
 
-    // Hardcode to Track 0, Subtrack 0 for this milestone
-    let track_id = 0;
+    // Get track_id from selected step, default to 0 when no selection
+    let get_track_id = move || {
+        sequencer_state.selected_step.get()
+            .map(|(tid, _)| tid)
+            .unwrap_or(0)
+    };
     let subtrack_id = 0;
 
     // Mock parameters
@@ -21,6 +25,7 @@ pub fn Inspector() -> impl IntoView {
 
     let handle_input = move |idx: usize, val: f64, param_name: String| {
         let current_step = sequencer_state.selected_step.get();
+        let track_id = get_track_id();
 
         set_pattern_signal.update(|p| {
             if let Some(track) = p.tracks.get_mut(track_id) {
@@ -56,6 +61,7 @@ pub fn Inspector() -> impl IntoView {
     let toggle_step = move |step_idx: usize| {
         // Currently toggles between Note (active) and None (inactive)
         // Other TrigType variants (Lock, SynthTrigger, OneShot) not yet implemented
+        let track_id = get_track_id();
         set_pattern_signal.update(|p| {
             if let Some(track) = p.tracks.get_mut(track_id) {
                 if let Some(subtrack) = track.subtracks.get_mut(subtrack_id) {
@@ -78,6 +84,7 @@ pub fn Inspector() -> impl IntoView {
     };
 
     let is_step_active = move |step_idx: usize| {
+        let track_id = get_track_id();
         pattern_signal.with(|p| {
             p.tracks.get(track_id)
                 .and_then(|t| t.subtracks.get(subtrack_id))
@@ -90,6 +97,7 @@ pub fn Inspector() -> impl IntoView {
     let get_value = move |idx: usize| {
         // Use with() to avoid cloning the heavy structure
         let current_step = sequencer_state.selected_step.get();
+        let track_id = get_track_id();
 
         pattern_signal.with(|p| {
             if let Some(track) = p.tracks.get(track_id) {
@@ -116,6 +124,7 @@ pub fn Inspector() -> impl IntoView {
 
     let is_locked = move |idx: usize| {
         let current_step = sequencer_state.selected_step.get();
+        let track_id = get_track_id();
 
         if let Some((sel_track_id, step_idx)) = current_step {
             if sel_track_id == track_id {
@@ -151,6 +160,7 @@ pub fn Inspector() -> impl IntoView {
 
                 // Active toggle button (only when step selected)
                 {move || {
+                    let track_id = get_track_id();
                     if let Some((sel_track_id, step_idx)) = sequencer_state.selected_step.get() {
                         if sel_track_id == track_id {
                             view! {
@@ -252,6 +262,7 @@ pub fn Inspector() -> impl IntoView {
                                         class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                                         on:change=move |ev| {
                                             let val = event_target_value(&ev);
+                                            let track_id = get_track_id();
                                             set_pattern_signal.update(|p| {
                                                if let Some(track) = p.tracks.get_mut(track_id) {
                                                    if let Some(lfo) = track.lfos.get_mut(0) {
@@ -283,6 +294,7 @@ pub fn Inspector() -> impl IntoView {
                                         class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                                         on:change=move |ev| {
                                             let val = event_target_value(&ev).parse::<u8>().unwrap_or(74);
+                                            let track_id = get_track_id();
                                             set_pattern_signal.update(|p| {
                                                if let Some(track) = p.tracks.get_mut(track_id) {
                                                    if let Some(lfo) = track.lfos.get_mut(0) {
@@ -308,11 +320,13 @@ pub fn Inspector() -> impl IntoView {
                                         max="1"
                                         step="0.01"
                                         prop:value=move || {
+                                            let track_id = get_track_id();
                                             format!("{:.2}", pattern_signal.with(|p| p.tracks.get(track_id).and_then(|t| t.lfos.get(0)).map(|l| l.amount).unwrap_or(0.0)))
                                         }
                                         on:input=move |ev| {
                                             let val = event_target_value(&ev).parse::<f32>().unwrap_or(0.0);
                                             let clamped = val.clamp(-1.0, 1.0);
+                                            let track_id = get_track_id();
                                             set_pattern_signal.update(|p| {
                                                 if let Some(track) = p.tracks.get_mut(track_id) {
                                                      if let Some(lfo) = track.lfos.get_mut(0) {
@@ -334,11 +348,13 @@ pub fn Inspector() -> impl IntoView {
                                         max="4.0"
                                         step="0.1"
                                         prop:value=move || {
+                                            let track_id = get_track_id();
                                             format!("{:.1}", pattern_signal.with(|p| p.tracks.get(track_id).and_then(|t| t.lfos.get(0)).map(|l| l.speed).unwrap_or(1.0)))
                                         }
                                         on:input=move |ev| {
                                             let val = event_target_value(&ev).parse::<f32>().unwrap_or(1.0);
                                             let clamped = val.clamp(0.1, 4.0);
+                                            let track_id = get_track_id();
                                             set_pattern_signal.update(|p| {
                                                 if let Some(track) = p.tracks.get_mut(track_id) {
                                                      if let Some(lfo) = track.lfos.get_mut(0) {
@@ -355,6 +371,7 @@ pub fn Inspector() -> impl IntoView {
                             // Designer section
                             <div>
                                 {move || {
+                                     let track_id = get_track_id();
                                      let is_designer = pattern_signal.with(|p| {
                                          p.tracks.get(track_id)
                                             .and_then(|t| t.lfos.get(0))
@@ -366,9 +383,10 @@ pub fn Inspector() -> impl IntoView {
                                          view! {
                                              <label class="text-xs text-zinc-500">Waveform Designer</label>
                                              <crate::ui::components::lfo_designer::LfoDesigner
-                                                track_id=Signal::derive(move || track_id)
+                                                track_id=Signal::derive(move || get_track_id())
                                                 lfo_index=Signal::derive(move || 0)
                                                 value=Signal::derive(move || {
+                                                    let track_id = get_track_id();
                                                     pattern_signal.with(|p| {
                                                         p.tracks.get(track_id)
                                                         .and_then(|t| t.lfos.get(0))
@@ -386,6 +404,7 @@ pub fn Inspector() -> impl IntoView {
                                                     if new_val.len() == 16 {
                                                         let mut arr = [0.0; 16];
                                                         arr.copy_from_slice(&new_val);
+                                                        let track_id = get_track_id();
                                                         set_pattern_signal.update(|p| {
                                                             if let Some(track) = p.tracks.get_mut(track_id) {
                                                                 if let Some(lfo) = track.lfos.get_mut(0) {
