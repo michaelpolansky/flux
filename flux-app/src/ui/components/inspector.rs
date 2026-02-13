@@ -199,7 +199,7 @@ pub fn Inspector() -> impl IntoView {
                         <InlineParam>
                             <ParamLabel
                                 text=name
-                                locked=move || is_locked(idx)
+                                locked=Signal::derive(move || is_locked(idx))
                             />
                             <NumberInput
                                 min="0"
@@ -228,7 +228,7 @@ pub fn Inspector() -> impl IntoView {
                             <div class="grid grid-cols-4 gap-4 mb-3">
                                 // Shape dropdown
                                 <InlineParam>
-                                    <ParamLabel text="Shape" locked=false />
+                                    <ParamLabel text="Shape" locked=Signal::derive(|| false) />
                                     <Dropdown
                                         options=vec![
                                             ("Sine", "Sine"),
@@ -270,13 +270,12 @@ pub fn Inspector() -> impl IntoView {
                                                }
                                             });
                                         }
-                                        default_index=Some(1)
                                     />
                                 </InlineParam>
 
                                 // Destination dropdown
                                 <InlineParam>
-                                    <ParamLabel text="Destination" locked=false />
+                                    <ParamLabel text="Destination" locked=Signal::derive(|| false) />
                                     <Dropdown
                                         options=vec![
                                             ("74", "Filter Cutoff"),
@@ -304,13 +303,12 @@ pub fn Inspector() -> impl IntoView {
                                                }
                                             });
                                         }
-                                        default_index=Some(0)
                                     />
                                 </InlineParam>
 
                                 // Amount numeric input
                                 <InlineParam>
-                                    <ParamLabel text="Amount" locked=false />
+                                    <ParamLabel text="Amount" locked=Signal::derive(|| false) />
                                     <NumberInput
                                         min="-1"
                                         max="1"
@@ -335,7 +333,7 @@ pub fn Inspector() -> impl IntoView {
 
                                 // Speed numeric input
                                 <InlineParam>
-                                    <ParamLabel text="Speed" locked=false />
+                                    <ParamLabel text="Speed" locked=Signal::derive(|| false) />
                                     <NumberInput
                                         min="0.1"
                                         max="4.0"

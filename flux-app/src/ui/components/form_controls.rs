@@ -65,21 +65,18 @@ pub fn Dropdown(
     selected: Signal<String>,
     /// Callback when selection changes
     on_change: impl Fn(String) + 'static,
-    /// Optional default selected index
-    #[prop(optional)]
-    default_index: Option<usize>,
 ) -> impl IntoView {
     view! {
         <select
+            prop:value=move || selected.get()
             on:change=move |ev| {
                 on_change(event_target_value(&ev));
             }
             class="bg-zinc-800 text-zinc-50 text-xs rounded px-1.5 py-0.5 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
         >
-            {options.into_iter().enumerate().map(|(i, (value, text))| {
-                let is_selected = default_index.map(|d| d == i).unwrap_or(false);
+            {options.into_iter().map(|(value, text)| {
                 view! {
-                    <option value=value selected=is_selected>{text}</option>
+                    <option value=value>{text}</option>
                 }
             }).collect::<Vec<_>>()}
         </select>
