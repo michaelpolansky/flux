@@ -7,7 +7,7 @@ pub fn ParamLabel(
     text: &'static str,
     /// Whether this parameter is locked (shows amber color)
     #[prop(optional, into)]
-    locked: MaybeSignal<bool>,
+    locked: Signal<bool>,
 ) -> impl IntoView {
     view! {
         <label class=move || {
