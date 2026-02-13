@@ -229,10 +229,31 @@ pub fn Inspector() -> impl IntoView {
                                 // Shape dropdown
                                 <InlineParam>
                                     <ParamLabel text="Shape" locked=false />
-                                    <select
-                                        class="bg-zinc-800 text-zinc-50 text-xs rounded px-1.5 py-0.5 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
-                                        on:change=move |ev| {
-                                            let val = event_target_value(&ev);
+                                    <Dropdown
+                                        options=vec![
+                                            ("Sine", "Sine"),
+                                            ("Triangle", "Triangle"),
+                                            ("Square", "Square"),
+                                            ("Random", "Random"),
+                                            ("Designer", "Designer"),
+                                        ]
+                                        selected=Signal::derive(move || {
+                                            let track_id = get_track_id();
+                                            pattern_signal.with(|p| {
+                                                p.tracks.get(track_id)
+                                                    .and_then(|t| t.lfos.get(0))
+                                                    .map(|l| match l.shape {
+                                                        crate::shared::models::LFOShape::Sine => "Sine",
+                                                        crate::shared::models::LFOShape::Triangle => "Triangle",
+                                                        crate::shared::models::LFOShape::Square => "Square",
+                                                        crate::shared::models::LFOShape::Random => "Random",
+                                                        crate::shared::models::LFOShape::Designer(_) => "Designer",
+                                                    })
+                                                    .unwrap_or("Triangle")
+                                                    .to_string()
+                                            })
+                                        })
+                                        on_change=move |val| {
                                             let track_id = get_track_id();
                                             set_pattern_signal.update(|p| {
                                                if let Some(track) = p.tracks.get_mut(track_id) {
@@ -249,37 +270,42 @@ pub fn Inspector() -> impl IntoView {
                                                }
                                             });
                                         }
-                                    >
-                                        <option value="Sine">Sine</option>
-                                        <option value="Triangle" selected>Triangle</option>
-                                        <option value="Square">Square</option>
-                                        <option value="Random">Random</option>
-                                        <option value="Designer">Designer</option>
-                                    </select>
+                                        default_index=Some(1)
+                                    />
                                 </InlineParam>
 
                                 // Destination dropdown
                                 <InlineParam>
                                     <ParamLabel text="Destination" locked=false />
-                                    <select
-                                        class="bg-zinc-800 text-zinc-50 text-xs rounded px-1.5 py-0.5 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
-                                        on:change=move |ev| {
-                                            let val = event_target_value(&ev).parse::<u8>().unwrap_or(74);
+                                    <Dropdown
+                                        options=vec![
+                                            ("74", "Filter Cutoff"),
+                                            ("71", "Resonance"),
+                                            ("1", "Mod Wheel"),
+                                            ("10", "Pan"),
+                                        ]
+                                        selected=Signal::derive(move || {
+                                            let track_id = get_track_id();
+                                            pattern_signal.with(|p| {
+                                                p.tracks.get(track_id)
+                                                    .and_then(|t| t.lfos.get(0))
+                                                    .map(|l| l.destination.to_string())
+                                                    .unwrap_or_else(|| "74".to_string())
+                                            })
+                                        })
+                                        on_change=move |val| {
+                                            let parsed_val = val.parse::<u8>().unwrap_or(74);
                                             let track_id = get_track_id();
                                             set_pattern_signal.update(|p| {
                                                if let Some(track) = p.tracks.get_mut(track_id) {
                                                    if let Some(lfo) = track.lfos.get_mut(0) {
-                                                       lfo.destination = val;
+                                                       lfo.destination = parsed_val;
                                                    }
                                                }
                                             });
                                         }
-                                    >
-                                        <option value="74" selected>Filter Cutoff</option>
-                                        <option value="71">Resonance</option>
-                                        <option value="1">Mod Wheel</option>
-                                        <option value="10">Pan</option>
-                                    </select>
+                                        default_index=Some(0)
+                                    />
                                 </InlineParam>
 
                                 // Amount numeric input
