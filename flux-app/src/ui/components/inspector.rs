@@ -145,6 +145,7 @@ pub fn Inspector() -> impl IntoView {
     };
 
     view! {
+        <>
         <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow-xl mt-4">
             // Header section
             <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800 bg-zinc-800/50 -mx-4 -mt-4 px-4 pt-4 rounded-t-xl">
@@ -246,11 +247,11 @@ pub fn Inspector() -> impl IntoView {
             </div>
 
 
-            // LFO Section
-            {move || {
-                if show_lfo.get() {
-                    view! {
-                        <div class="mt-4 pt-4 border-t border-zinc-800 transition-all duration-200">
+        </div>
+
+        // LFO Section - Always visible separate container
+        <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow-xl mt-4">
+            <div class="transition-all duration-200">
                             <h3 class="text-sm font-bold text-zinc-400 mb-3">LFO 1</h3>
 
                             // 4-column inline controls
@@ -426,11 +427,7 @@ pub fn Inspector() -> impl IntoView {
                                 }}
                             </div>
                         </div>
-                    }.into_any()
-                } else {
-                    view! { <div></div> }.into_any()
-                }
-            }}
-        </div>
+                    </div>
+        </>
     }
 }
