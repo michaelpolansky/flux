@@ -1,11 +1,10 @@
 use leptos::task::spawn_local;
 use leptos::prelude::*;
-use crate::ui::components::grid::ActiveStep;
 
 #[component]
-#[component]
+
 pub fn Inspector() -> impl IntoView {
-    let active_step_signal = use_context::<ReadSignal<ActiveStep>>().expect("ActiveStep context not found");
+    let sequencer_state = use_context::<crate::app::SequencerState>().expect("SequencerState context not found");
     let pattern_signal = use_context::<ReadSignal<crate::shared::models::Pattern>>().expect("Pattern context not found");
     let set_pattern_signal = use_context::<WriteSignal<crate::shared::models::Pattern>>().expect("Pattern context not found");
 
@@ -19,9 +18,8 @@ pub fn Inspector() -> impl IntoView {
         "Decay", "Sustain", "Reverb", "Delay"
     ];
 
-    let handle_input = move |idx: usize, val: f64| {
-        let current_step = active_step_signal.get().0;
-        let param_name = params[idx].to_string();
+    let handle_input = move |idx: usize, val: f64, param_name: String| {
+        let current_step = sequencer_state.selected_step.get();
 
         set_pattern_signal.update(|p| {
              if let Some(track) = p.tracks.get_mut(track_id) {
@@ -57,7 +55,7 @@ pub fn Inspector() -> impl IntoView {
 
     let get_value = move |idx: usize| {
         // Use with() to avoid cloning the heavy structure
-        let current_step = active_step_signal.with(|s| s.0);
+        let current_step = sequencer_state.selected_step.get();
         
         pattern_signal.with(|p| {
             if let Some(track) = p.tracks.get(track_id) {
@@ -78,7 +76,7 @@ pub fn Inspector() -> impl IntoView {
     };
 
     let is_locked = move |idx: usize| {
-         let current_step = active_step_signal.with(|s| s.0);
+         let current_step = sequencer_state.selected_step.get();
          
          if let Some(step_idx) = current_step {
              pattern_signal.with(|p| {
@@ -96,11 +94,23 @@ pub fn Inspector() -> impl IntoView {
 
     view! {
         <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow-xl mt-4">
-            <div class="grid grid-cols-4 gap-4">
+            <div class="grid grid-cols-4 gap-x-6 gap-y-4">
                 {params.into_iter().enumerate().map(|(idx, name)| {
+                    let handle_input = handle_input.clone();
+                    let name_str = name.to_string();
                     view! {
                         <div class="flex flex-col gap-2">
-                            <label class="text-xs font-bold text-zinc-500 uppercase tracking-widest">{name}</label>
+                            <label class=move || {
+                                let base = "text-xs font-medium uppercase tracking-wide";
+                                let color = if sequencer_state.selected_step.get().is_some() && is_locked(idx) {
+                                    "text-amber-400"
+                                } else {
+                                    "text-zinc-400"
+                                };
+                                format!("{} {}", base, color)
+                            }>
+                                {name}
+                            </label>
                             <input
                                 type="range"
                                 min="0"
@@ -109,22 +119,16 @@ pub fn Inspector() -> impl IntoView {
                                 prop:value=move || get_value(idx)
                                 on:input=move |ev| {
                                     let val = event_target_value(&ev).parse::<f64>().unwrap_or(0.0);
-                                    handle_input(idx, val);
+                                    handle_input(idx, val, name_str.clone());
                                 }
                                 class=move || {
-                                    let base = "w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer";
-                                    // Dynamic accent color based on lock state
-                                    let active = active_step_signal.get().0.is_some();
-                                    
-                                    if active {
-                                        if is_locked(idx) {
-                                            "accent-yellow-500" // Locked value
-                                        } else {
-                                            "accent-yellow-500 opacity-50" // Unlocked, showing default
-                                        }
+                                    let base = "w-full h-2 bg-zinc-800 rounded-full appearance-none cursor-pointer transition-all";
+                                    let track_color = if sequencer_state.selected_step.get().is_some() {
+                                        "accent-amber-500"
                                     } else {
-                                        "accent-red-600"
-                                    }
+                                        "accent-amber-500"
+                                    };
+                                    format!("{} {}", base, track_color)
                                 }
                             />
                              <div class="text-right text-xs font-mono text-zinc-400">
@@ -134,8 +138,7 @@ pub fn Inspector() -> impl IntoView {
                     }
                 }).collect::<Vec<_>>()}
             </div>
-                }).collect::<Vec<_>>()}
-            </div>
+
 
             // LFO Section
             <div class="mt-4 pt-4 border-t border-zinc-800">
@@ -156,7 +159,7 @@ pub fn Inspector() -> impl IntoView {
                                                 "Triangle" => lfo.shape = crate::shared::models::LFOShape::Triangle,
                                                 "Square" => lfo.shape = crate::shared::models::LFOShape::Square,
                                                 "Random" => lfo.shape = crate::shared::models::LFOShape::Random,
-                                                "Designer" => lfo.shape = crate::shared::models::LFOShape::Designer([0.0; 16]),
+                                                "Designer" => lfo.shape = crate::shared::models::LFOShape::Designer([0.0; 16].to_vec()),
                                                 _ => {}
                                             }
                                         }
@@ -266,7 +269,7 @@ pub fn Inspector() -> impl IntoView {
                                                 set_pattern_signal.update(|p| {
                                                     if let Some(track) = p.tracks.get_mut(track_id) {
                                                         if let Some(lfo) = track.lfos.get_mut(0) {
-                                                            lfo.shape = crate::shared::models::LFOShape::Designer(arr);
+                                                            lfo.shape = crate::shared::models::LFOShape::Designer(arr.to_vec());
                                                         }
                                                     }
                                                 });
