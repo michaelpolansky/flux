@@ -213,28 +213,40 @@ impl FluxKernel {
 ## 6. Implementation Stages
 
 ### Phase 1: The Pulse
-*   Initialize `cpal` audio stream.
-*   Implement `rtrb` command queue.
-*   Create a basic metronome in Rust.
-*   Leptos UI visualizes the beat (LED flash) via TripleBuffer.
+### Phase 1: The Pulse
+- [ ] Initialize `cpal` audio stream.
+- [x] Implement `rtrb` command queue (Kernel Consumer).
+- [x] Create a basic metronome in Rust (Kernel Sine Wave Test).
+- [x] Leptos UI visualizes the beat (LED flash) via TripleBuffer.
 
-### Phase 2: The Grid
-*   Implement `AtomicStep` and `Pattern` structs.
-*   Build `SequencerGrid` UI in Leptos.
-*   Implement `AddTrig` / `RemoveTrig` commands.
-*   Engine logic to trigger a simple Sine wave on Step events.
+### Phase 2: The Grid - COMPLETE
+*   [x] Implement `AtomicStep` and `Pattern` structs.
+*   [x] Build `SequencerGrid` UI in Leptos.
+*   [x] Implement `AddTrig` / `RemoveTrig` commands.
+*   [x] Engine logic to trigger a simple Sine wave on Step events.
+*   [x] Real-time visual sync with audio engine (Playback Status).
 
-### Phase 3: The P-Lock
-*   Implement `ParameterLocks` array in Rust.
-*   UI logic: Holding a trig in `SequencerGrid` updates `ParamPage` context to "Lock Mode".
-*   Engine logic: Modulating parameters on a per-step basis during audio generation.
+### Phase 3: The P-Lock - COMPLETE
+*   [x] Implement `ParameterLocks` array in Rust.
+*   [x] UI logic: Holding a trig in `SequencerGrid` updates `ParamPage` context to "Lock Mode".
+*   [x] Engine logic: Modulating parameters on a per-step basis during audio generation.
+
+### Phase 3.5: UI Redesign - COMPLETE (February 2026)
+*   [x] **Core Layout**: Widened container (max-w-7xl), tighter spacing (p-6, gap-6), card backgrounds
+*   [x] **Header**: Consolidated transport controls, BPM display, green play button, tactile feedback
+*   [x] **Grid**: 2×8 layout with larger 64px buttons, amber color scheme, scale animations
+*   [x] **Parameters**: 2×4 grid layout, amber labels for locked state, improved slider styling
+*   [x] **Interactive Polish**: Focus rings on all 34 interactive elements, keyboard navigation
+*   [x] **Visual QA**: Comprehensive manual testing, responsive behavior verified
+
+**Design Philosophy**: Ableton-inspired professional interface with clear hierarchy, balanced information density, and comprehensive accessibility. Zero new dependencies (Tailwind CSS only).
+
+**See**: `docs/plans/2026-02-13-ui-redesign-design.md` for complete design system specification.
 
 ### Phase 4: The Machines
 *   Implement the `MachineType` enum logic.
 *   Basic Sampler (Digitakt style).
 *   Basic Synth (Analog Four style).
-*   Tonverk Subtrack routing.
-
 *   Tonverk Subtrack routing.
 
 ### Phase 5: Modulation Architecture
@@ -246,6 +258,98 @@ impl FluxKernel {
 
 ---
 
-**Approved by:** Lead Engineer
-**Date:** 2024-05-20
-```
+## 7. UI Design System (February 2026 Redesign)
+
+### 7.1. Layout Architecture
+
+The UI follows a three-zone layout optimized for music production workflows:
+
+1. **Header** (Fixed: 64px) - Transport controls, BPM, file operations
+2. **Grid Section** (Flexible, Primary) - 2×8 sequencer grid, takes vertical space majority
+3. **Parameters Section** (Fixed: ~200px) - 2×4 parameter grid with lock indicators
+
+**Container**: `max-w-7xl mx-auto` for professional widescreen usage
+**Spacing Scale**: `gap-2` (8px), `gap-4` (16px), `gap-6` (24px) - never gap-8
+
+### 7.2. Color System
+
+**Background Layers**:
+- Main BG: `bg-zinc-950` (nearly black, Ableton-inspired)
+- Card/Panel: `bg-zinc-900/50` (subtle elevation)
+- Header: `bg-zinc-900` (solid boundary)
+- Interactive: `bg-zinc-800` (buttons, inputs)
+
+**Accent Colors**:
+- **Amber** (`amber-500`/`amber-300`) - Musical activity (active notes, playing step, locked parameters)
+- **Blue** (`blue-500`) - UI selection states (selected step, focus rings)
+- **Green** (`green-600`) - Primary actions (play button)
+
+**Text Hierarchy**:
+- Primary: `text-zinc-50`, Secondary: `text-zinc-400`, Tertiary: `text-zinc-600`
+
+### 7.3. Interactive States
+
+All interactive elements provide multi-layered feedback:
+
+**Grid Steps**:
+- Empty: `bg-zinc-800 text-zinc-600 hover:bg-zinc-700`
+- Active: `bg-amber-500 text-black shadow-md`
+- Playing: `bg-amber-300 text-black shadow-lg scale-110` (animated)
+- Selected: `ring-2 ring-blue-500 ring-offset-2 ring-offset-zinc-900`
+- Focus: Blue ring for keyboard navigation
+
+**Buttons** (34 interactive elements total):
+- Hover: `hover:bg-zinc-700` (or appropriate state)
+- Active/Pressed: `active:scale-95` (tactile feedback)
+- Focus: `focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`
+- Transitions: `transition-colors` or `transition-all duration-100`
+
+### 7.4. Accessibility
+
+**WCAG 2.1 AA Compliance**:
+- All interactive elements have visible focus indicators
+- Focus ring offset matches background color (`ring-offset-zinc-950` or `ring-offset-zinc-900`)
+- Keyboard navigation: Tab order follows visual flow
+- Semantic HTML: Proper button/input elements with labels
+
+**Keyboard Shortcuts**:
+- `Tab`/`Shift+Tab` - Navigate between controls
+- `Space`/`Enter` - Activate buttons, toggle steps
+- `Arrow keys` - Adjust sliders
+- `Right-click` - Select step for P-Lock mode
+
+### 7.5. Component Inventory
+
+**UI Components** (`src/ui/components/`):
+- `grid.rs` - 16-step sequencer (2×8 layout, 64px buttons)
+- `inspector.rs` - Parameter controls (2×4 grid, 8 sliders + LFO section)
+- `toolbar.rs` - Transport controls (SAVE, LOAD, BPM, PLAY, STOP)
+- `step_inspector.rs` - Per-step parameter editing modal
+- `lfo_designer.rs` - Custom waveform drawing canvas
+
+**State Management**:
+- `SequencerState` context: Provides `current_step` and `selected_step` signals
+- `Pattern` signal: Shared across components for sequencer data
+- Lock-free sync: `triple_buffer` for Audio→UI state updates
+
+---
+
+## 8. Environment Configuration
+
+### MacOS Setup
+- **Rust**: Installed via Homebrew components (`rustup-init`), ensuring `rustc` and `cargo` availability.
+- **Toolchain**: Managed by `rustup`. Version: `1.93.0` (or stable).
+- **Target**: `wasm32-unknown-unknown` required for `trunk`. Installed via `rustup target add`.
+- **Frontend Build**:
+    - **Trunk**: Installed via `brew install trunk`.
+    - **Tailwind**: Used with `@tailwindcss/cli` version 4.x.
+- **Environment Path**: Requires `rustup`'s cargo in PATH:
+  ```bash
+  export PATH="/opt/homebrew/opt/rustup/bin:$PATH"
+  # Or add to ~/.zshrc: source $HOME/.cargo/env
+  ```
+- **Execution**:
+  ```bash
+  npm run dev  # Development with hot-reload
+  npm run tauri build  # Production build
+  ```
