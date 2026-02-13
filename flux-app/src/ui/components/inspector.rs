@@ -7,6 +7,7 @@ pub fn Inspector() -> impl IntoView {
     let sequencer_state = use_context::<crate::app::SequencerState>().expect("SequencerState context not found");
     let pattern_signal = use_context::<ReadSignal<crate::shared::models::Pattern>>().expect("Pattern context not found");
     let set_pattern_signal = use_context::<WriteSignal<crate::shared::models::Pattern>>().expect("Pattern context not found");
+    let show_lfo = use_context::<ReadSignal<bool>>().expect("show_lfo context not found");
 
     // Hardcode to Track 0, Subtrack 0 for this milestone
     let track_id = 0;
@@ -149,153 +150,161 @@ pub fn Inspector() -> impl IntoView {
 
 
             // LFO Section
-            <div class="mt-4 pt-4 border-t border-zinc-800">
-                <h3 class="text-sm font-bold text-zinc-400 mb-2">LFO 1</h3>
-                <div class="grid grid-cols-2 gap-4">
-                     // LFO Controls
-                     <div class="flex flex-col gap-2">
-                        <label class="text-xs text-zinc-500">Shape</label>
-                        <select
-                            class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
-                            on:change=move |ev| {
-                                let val = event_target_value(&ev);
-                                set_pattern_signal.update(|p| {
-                                   if let Some(track) = p.tracks.get_mut(track_id) {
-                                       if let Some(lfo) = track.lfos.get_mut(0) {
-                                            match val.as_str() {
-                                                "Sine" => lfo.shape = crate::shared::models::LFOShape::Sine,
-                                                "Triangle" => lfo.shape = crate::shared::models::LFOShape::Triangle,
-                                                "Square" => lfo.shape = crate::shared::models::LFOShape::Square,
-                                                "Random" => lfo.shape = crate::shared::models::LFOShape::Random,
-                                                "Designer" => lfo.shape = crate::shared::models::LFOShape::Designer([0.0; 16].to_vec()),
-                                                _ => {}
-                                            }
-                                        }
-                                   } 
-                                });
-                            }
-                        >
-                            <option value="Sine">Sine</option>
-                            <option value="Triangle" selected>Triangle</option>
-                            <option value="Square">Square</option>
-                            <option value="Random">Random</option>
-                            <option value="Designer">Designer</option>
-                        </select>
-                        
-                        <label class="text-xs text-zinc-500 mt-2">Destination</label>
-                         <select
-                            class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
-                            on:change=move |ev| {
-                                let val = event_target_value(&ev).parse::<u8>().unwrap_or(74);
-                                set_pattern_signal.update(|p| {
-                                   if let Some(track) = p.tracks.get_mut(track_id) {
-                                       if let Some(lfo) = track.lfos.get_mut(0) {
-                                           lfo.destination = val;
-                                       }
-                                   }
-                                });
-                            }
-                        >
-                            <option value="74" selected>Filter Cutoff</option>
-                            <option value="71">Resonance</option>
-                            <option value="1">Mod Wheel</option>
-                            <option value="10">Pan</option>
-                        </select>
-                         
-                        <label class="text-xs text-zinc-500 mt-2">Amount</label>
-                        <input type="range" min="-1" max="1" step="0.01"
-                            class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
-                            prop:value=move || {
-                                pattern_signal.with(|p| p.tracks.get(track_id).and_then(|t| t.lfos.get(0)).map(|l| l.amount).unwrap_or(0.0))
-                            }
-                            on:input=move |ev| {
-                                let val = event_target_value(&ev).parse::<f32>().unwrap_or(0.0);
-                                set_pattern_signal.update(|p| {
-                                    if let Some(track) = p.tracks.get_mut(track_id) {
-                                         if let Some(lfo) = track.lfos.get_mut(0) {
-                                             lfo.amount = val;
-                                         }
-                                    }
-                                });
-                            }
-                        />
-                        
-                        <label class="text-xs text-zinc-500 mt-2">Speed</label>
-                        <input type="range" min="0.1" max="4.0" step="0.1"
-                             class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
-                              prop:value=move || {
-                                pattern_signal.with(|p| p.tracks.get(track_id).and_then(|t| t.lfos.get(0)).map(|l| l.speed).unwrap_or(1.0))
-                            }
-                            on:input=move |ev| {
-                                let val = event_target_value(&ev).parse::<f32>().unwrap_or(1.0);
-                                set_pattern_signal.update(|p| {
-                                    if let Some(track) = p.tracks.get_mut(track_id) {
-                                         if let Some(lfo) = track.lfos.get_mut(0) {
-                                             lfo.speed = val;
-                                         }
-                                    }
-                                });
-                            }
-                        />
-                     </div>
-                     
-                     // Designer View
-                     <div class="flex flex-col gap-2">
-                        {move || {
-                             let is_designer = pattern_signal.with(|p| {
-                                 p.tracks.get(track_id)
-                                    .and_then(|t| t.lfos.get(0))
-                                    .map(|l| matches!(l.shape, crate::shared::models::LFOShape::Designer(_)))
-                                    .unwrap_or(false)
-                             });
-                             
-                             if is_designer {
-                                 view! {
-                                     <label class="text-xs text-zinc-500">Waveform Designer</label>
-                                     <label class="text-xs text-zinc-500">Waveform Designer</label>
-                                     <crate::ui::components::lfo_designer::LfoDesigner
-                                        track_id=Signal::derive(move || track_id)
-                                        lfo_index=Signal::derive(move || 0)
-                                        value=Signal::derive(move || {
-                                            pattern_signal.with(|p| {
-                                                p.tracks.get(track_id)
-                                                .and_then(|t| t.lfos.get(0))
-                                                .and_then(|l| {
-                                                    if let crate::shared::models::LFOShape::Designer(v) = &l.shape {
-                                                        Some(v.to_vec())
-                                                    } else {
-                                                        None
-                                                    }
-                                                })
-                                                .unwrap_or_else(|| vec![0.0; 16])
-                                            })
-                                        })
-                                        on_change=Callback::new(move |new_val: Vec<f32>| {
-                                            if new_val.len() == 16 {
-                                                let mut arr = [0.0; 16];
-                                                arr.copy_from_slice(&new_val);
-                                                set_pattern_signal.update(|p| {
-                                                    if let Some(track) = p.tracks.get_mut(track_id) {
-                                                        if let Some(lfo) = track.lfos.get_mut(0) {
-                                                            lfo.shape = crate::shared::models::LFOShape::Designer(arr.to_vec());
+            {move || {
+                if show_lfo.get() {
+                    view! {
+                        <div class="mt-4 pt-4 border-t border-zinc-800 transition-all duration-200">
+                            <h3 class="text-sm font-bold text-zinc-400 mb-2">LFO 1</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                 // LFO Controls
+                                 <div class="flex flex-col gap-2">
+                                    <label class="text-xs text-zinc-500">Shape</label>
+                                    <select
+                                        class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+                                        on:change=move |ev| {
+                                            let val = event_target_value(&ev);
+                                            set_pattern_signal.update(|p| {
+                                               if let Some(track) = p.tracks.get_mut(track_id) {
+                                                   if let Some(lfo) = track.lfos.get_mut(0) {
+                                                        match val.as_str() {
+                                                            "Sine" => lfo.shape = crate::shared::models::LFOShape::Sine,
+                                                            "Triangle" => lfo.shape = crate::shared::models::LFOShape::Triangle,
+                                                            "Square" => lfo.shape = crate::shared::models::LFOShape::Square,
+                                                            "Random" => lfo.shape = crate::shared::models::LFOShape::Random,
+                                                            "Designer" => lfo.shape = crate::shared::models::LFOShape::Designer([0.0; 16].to_vec()),
+                                                            _ => {}
                                                         }
                                                     }
-                                                });
-                                            }
-                                        })
-                                     />
-                                 }.into_any()
-                             } else {
-                                 view! {
-                                     <div class="w-full h-32 flex items-center justify-center text-zinc-600 text-xs border border-zinc-800 rounded bg-zinc-900/50">
-                                         "Select 'Designer' shape to draw"
-                                     </div>
-                                 }.into_any()
-                             }
-                        }}
-                     </div>
-                </div>
-            </div>
+                                               }
+                                            });
+                                        }
+                                    >
+                                        <option value="Sine">Sine</option>
+                                        <option value="Triangle" selected>Triangle</option>
+                                        <option value="Square">Square</option>
+                                        <option value="Random">Random</option>
+                                        <option value="Designer">Designer</option>
+                                    </select>
+
+                                    <label class="text-xs text-zinc-500 mt-2">Destination</label>
+                                     <select
+                                        class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+                                        on:change=move |ev| {
+                                            let val = event_target_value(&ev).parse::<u8>().unwrap_or(74);
+                                            set_pattern_signal.update(|p| {
+                                               if let Some(track) = p.tracks.get_mut(track_id) {
+                                                   if let Some(lfo) = track.lfos.get_mut(0) {
+                                                       lfo.destination = val;
+                                                   }
+                                               }
+                                            });
+                                        }
+                                    >
+                                        <option value="74" selected>Filter Cutoff</option>
+                                        <option value="71">Resonance</option>
+                                        <option value="1">Mod Wheel</option>
+                                        <option value="10">Pan</option>
+                                    </select>
+
+                                    <label class="text-xs text-zinc-500 mt-2">Amount</label>
+                                    <input type="range" min="-1" max="1" step="0.01"
+                                        class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+                                        prop:value=move || {
+                                            pattern_signal.with(|p| p.tracks.get(track_id).and_then(|t| t.lfos.get(0)).map(|l| l.amount).unwrap_or(0.0))
+                                        }
+                                        on:input=move |ev| {
+                                            let val = event_target_value(&ev).parse::<f32>().unwrap_or(0.0);
+                                            set_pattern_signal.update(|p| {
+                                                if let Some(track) = p.tracks.get_mut(track_id) {
+                                                     if let Some(lfo) = track.lfos.get_mut(0) {
+                                                         lfo.amount = val;
+                                                     }
+                                                }
+                                            });
+                                        }
+                                    />
+
+                                    <label class="text-xs text-zinc-500 mt-2">Speed</label>
+                                    <input type="range" min="0.1" max="4.0" step="0.1"
+                                         class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+                                          prop:value=move || {
+                                            pattern_signal.with(|p| p.tracks.get(track_id).and_then(|t| t.lfos.get(0)).map(|l| l.speed).unwrap_or(1.0))
+                                        }
+                                        on:input=move |ev| {
+                                            let val = event_target_value(&ev).parse::<f32>().unwrap_or(1.0);
+                                            set_pattern_signal.update(|p| {
+                                                if let Some(track) = p.tracks.get_mut(track_id) {
+                                                     if let Some(lfo) = track.lfos.get_mut(0) {
+                                                         lfo.speed = val;
+                                                     }
+                                                }
+                                            });
+                                        }
+                                    />
+                                 </div>
+
+                                 // Designer View
+                                 <div class="flex flex-col gap-2">
+                                    {move || {
+                                         let is_designer = pattern_signal.with(|p| {
+                                             p.tracks.get(track_id)
+                                                .and_then(|t| t.lfos.get(0))
+                                                .map(|l| matches!(l.shape, crate::shared::models::LFOShape::Designer(_)))
+                                                .unwrap_or(false)
+                                         });
+
+                                         if is_designer {
+                                             view! {
+                                                 <label class="text-xs text-zinc-500">Waveform Designer</label>
+                                                 <label class="text-xs text-zinc-500">Waveform Designer</label>
+                                                 <crate::ui::components::lfo_designer::LfoDesigner
+                                                    track_id=Signal::derive(move || track_id)
+                                                    lfo_index=Signal::derive(move || 0)
+                                                    value=Signal::derive(move || {
+                                                        pattern_signal.with(|p| {
+                                                            p.tracks.get(track_id)
+                                                            .and_then(|t| t.lfos.get(0))
+                                                            .and_then(|l| {
+                                                                if let crate::shared::models::LFOShape::Designer(v) = &l.shape {
+                                                                    Some(v.to_vec())
+                                                                } else {
+                                                                    None
+                                                                }
+                                                            })
+                                                            .unwrap_or_else(|| vec![0.0; 16])
+                                                        })
+                                                    })
+                                                    on_change=Callback::new(move |new_val: Vec<f32>| {
+                                                        if new_val.len() == 16 {
+                                                            let mut arr = [0.0; 16];
+                                                            arr.copy_from_slice(&new_val);
+                                                            set_pattern_signal.update(|p| {
+                                                                if let Some(track) = p.tracks.get_mut(track_id) {
+                                                                    if let Some(lfo) = track.lfos.get_mut(0) {
+                                                                        lfo.shape = crate::shared::models::LFOShape::Designer(arr.to_vec());
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                    })
+                                                 />
+                                             }.into_any()
+                                         } else {
+                                             view! {
+                                                 <div class="w-full h-32 flex items-center justify-center text-zinc-600 text-xs border border-zinc-800 rounded bg-zinc-900/50">
+                                                     "Select 'Designer' shape to draw"
+                                                 </div>
+                                             }.into_any()
+                                         }
+                                    }}
+                                 </div>
+                            </div>
+                        </div>
+                    }.into_any()
+                } else {
+                    view! { <div></div> }.into_any()
+                }
+            }}
         </div>
     }
 }
