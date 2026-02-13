@@ -38,7 +38,9 @@ pub fn Grid() -> impl IntoView {
 
                                 let is_current_step = sequencer_state.current_step.get() == idx;
                                 let is_active_note = is_active();
-                                let is_selected = sequencer_state.selected_step.get() == Some(idx);
+                                let is_selected = sequencer_state.selected_step.get()
+                                    .map(|(tid, sidx)| tid == track_id && sidx == idx)
+                                    .unwrap_or(false);
 
                                 let state_classes = if is_current_step {
                                     "bg-amber-300 text-black shadow-lg scale-110 transition-transform duration-75"
@@ -57,7 +59,7 @@ pub fn Grid() -> impl IntoView {
                                 format!("{} {} {}", base_classes, state_classes, selection_classes)
                             }
                             on:click=move |_| {
-                                sequencer_state.selected_step.set(Some(idx));
+                                sequencer_state.selected_step.set(Some((track_id, idx)));
                             }
                         >
                             {idx + 1}
