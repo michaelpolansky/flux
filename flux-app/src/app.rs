@@ -58,7 +58,7 @@ pub fn App() -> impl IntoView {
                     </div>
                 </header>
 
-                <section class="bg-zinc-900/50 rounded-lg p-6">
+                <section class="bg-zinc-900/50 rounded-lg p-5">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-sm font-medium text-zinc-400 uppercase tracking-wide">"Sequencer Grid"</h2>
                         <div class="text-xs font-mono text-zinc-600">"TRACK 1 - LEAD SYNTH"</div>
@@ -66,7 +66,7 @@ pub fn App() -> impl IntoView {
                     <Grid />
                 </section>
 
-                <section class="bg-zinc-900/50 rounded-lg p-6">
+                <section class="bg-zinc-900/50 rounded-lg p-5">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-sm font-medium text-zinc-400 uppercase tracking-wide">"Parameters"</h2>
                          <div class="flex items-center gap-2">
