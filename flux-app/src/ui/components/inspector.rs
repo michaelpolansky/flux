@@ -94,12 +94,12 @@ pub fn Inspector() -> impl IntoView {
 
     view! {
         <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow-xl mt-4">
-            <div class="grid grid-cols-4 gap-x-6 gap-y-4">
+            <div class="grid grid-cols-4 gap-x-6 gap-y-3">
                 {params.into_iter().enumerate().map(|(idx, name)| {
                     let handle_input = handle_input.clone();
                     let name_str = name.to_string();
                     view! {
-                        <div class="flex flex-col gap-2">
+                        <div class="flex flex-col gap-1">
                             <label class=move || {
                                 let base = "text-xs font-medium uppercase tracking-wide";
                                 let color = if sequencer_state.selected_step.get().is_some() && is_locked(idx) {
@@ -112,28 +112,36 @@ pub fn Inspector() -> impl IntoView {
                                 {name}
                             </label>
                             <input
-                                type="range"
+                                type="number"
                                 min="0"
                                 max="1"
                                 step="0.01"
-                                prop:value=move || get_value(idx)
+                                prop:value=move || format!("{:.2}", get_value(idx))
                                 on:input=move |ev| {
                                     let val = event_target_value(&ev).parse::<f64>().unwrap_or(0.0);
-                                    handle_input(idx, val, name_str.clone());
+                                    let clamped = val.clamp(0.0, 1.0);
+                                    handle_input(idx, clamped, name_str.clone());
                                 }
-                                class=move || {
-                                    let base = "w-full h-2 bg-zinc-800 rounded-full appearance-none cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900";
-                                    let track_color = if sequencer_state.selected_step.get().is_some() {
-                                        "accent-amber-500"
-                                    } else {
-                                        "accent-amber-500"
-                                    };
-                                    format!("{} {}", base, track_color)
+                                on:keydown=move |ev| {
+                                    let key = ev.key();
+                                    match key.as_str() {
+                                        "ArrowUp" => {
+                                            ev.prevent_default();
+                                            let current = get_value(idx);
+                                            let new_val = (current + 0.01).clamp(0.0, 1.0);
+                                            handle_input(idx, new_val, name_str.clone());
+                                        }
+                                        "ArrowDown" => {
+                                            ev.prevent_default();
+                                            let current = get_value(idx);
+                                            let new_val = (current - 0.01).clamp(0.0, 1.0);
+                                            handle_input(idx, new_val, name_str.clone());
+                                        }
+                                        _ => {}
+                                    }
                                 }
+                                class="w-full text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-909 transition-colors"
                             />
-                             <div class="text-right text-xs font-mono text-zinc-400">
-                                {move || format!("{:.2}", get_value(idx))}
-                             </div>
                         </div>
                     }
                 }).collect::<Vec<_>>()}
