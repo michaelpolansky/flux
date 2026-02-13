@@ -9,6 +9,7 @@ use crate::ui::components::grid::Grid;
 use crate::ui::components::inspector::Inspector;
 use crate::ui::components::toolbar::Toolbar;
 use crate::ui::components::step_inspector::StepInspector;
+use crate::ui::state::PlaybackState;
 
 #[derive(Serialize, Deserialize, Clone, Default, Debug)]
 struct AudioSnapshot {
@@ -27,6 +28,7 @@ pub struct SequencerState {
 pub fn App() -> impl IntoView {
     let (current_step, set_current_step) = signal(0);
     let selected_step = RwSignal::new(None);
+    let (playback_state, set_playback_state) = signal(PlaybackState::default());
 
     // Create Pattern signal
     let (pattern_signal, set_pattern_signal) = signal(crate::shared::models::Pattern::default());
@@ -35,6 +37,8 @@ pub fn App() -> impl IntoView {
     provide_context(SequencerState { current_step, selected_step });
     provide_context(pattern_signal);
     provide_context(set_pattern_signal);
+    provide_context(playback_state);
+    provide_context(set_playback_state);
 
     // ESC key handler to deselect step
     let handle_escape = move |ev: KeyboardEvent| {
