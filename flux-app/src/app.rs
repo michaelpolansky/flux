@@ -24,6 +24,7 @@ pub struct SequencerState {
 pub fn App() -> impl IntoView {
     let (current_step, set_current_step) = signal(0);
     let selected_step = RwSignal::new(None);
+    let (show_lfo, set_show_lfo) = signal(false); // LFO collapsed by default
 
     // Create Pattern signal
     let (pattern_signal, set_pattern_signal) = signal(crate::shared::models::Pattern::default());
@@ -32,6 +33,8 @@ pub fn App() -> impl IntoView {
     provide_context(SequencerState { current_step, selected_step });
     provide_context(pattern_signal);
     provide_context(set_pattern_signal);
+    provide_context(show_lfo);
+    provide_context(set_show_lfo);
 
     // Setup Tauri Event Listener
     Effect::new(move |_| {
@@ -68,7 +71,15 @@ pub fn App() -> impl IntoView {
 
                 <section class="bg-zinc-900/50 rounded-lg p-5">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-sm font-medium text-zinc-400 uppercase tracking-wide">"Parameters"</h2>
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-sm font-medium text-zinc-400 uppercase tracking-wide">"Parameters"</h2>
+                            <button
+                                on:click=move |_| set_show_lfo.update(|v| *v = !*v)
+                                class="text-xs bg-zinc-800 px-3 py-1 rounded hover:bg-zinc-700 cursor-pointer transition-colors active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+                            >
+                                {move || if show_lfo.get() { "LFO ▲" } else { "LFO ▼" }}
+                            </button>
+                        </div>
                          <div class="flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full"
                                 class:bg-blue-500=move || selected_step.get().is_some()
