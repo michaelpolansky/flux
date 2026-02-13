@@ -140,7 +140,7 @@ pub fn Inspector() -> impl IntoView {
                                         _ => {}
                                     }
                                 }
-                                class="w-full text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-909 transition-colors"
+                                class="w-full text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors"
                             />
                         </div>
                     }
