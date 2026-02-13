@@ -1,12 +1,11 @@
 use leptos::task::spawn_local;
 use leptos::prelude::*;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct ActiveStep(pub Option<usize>);
-
 #[component]
 pub fn Grid() -> impl IntoView {
-    let active_step_signal = use_context::<WriteSignal<ActiveStep>>().expect("ActiveStep context not found");
+    // Use Sequencer State
+    let sequencer_state = use_context::<crate::app::SequencerState>().expect("SequencerState context not found");
+    
     // Use Global Pattern State
     let pattern_signal = use_context::<ReadSignal<crate::shared::models::Pattern>>().expect("Pattern context not found");
     let set_pattern_signal = use_context::<WriteSignal<crate::shared::models::Pattern>>().expect("Pattern context not found");
@@ -30,10 +29,9 @@ pub fn Grid() -> impl IntoView {
                          }
                          
                          // Sync with Engine (Fire and Forget)
-                         let val = if step.trig_type == TrigType::Note { 1.0 } else { 0.0 };
                          spawn_local(async move {
-                            use crate::ui::tauri::push_midi_command;
-                            push_midi_command("toggle_step", Some(idx), None, Some(val)).await;
+                            use crate::ui::tauri::toggle_step;
+                            toggle_step(track_id, idx).await;
                         });
                      }
                  }
@@ -43,18 +41,17 @@ pub fn Grid() -> impl IntoView {
 
 
     let handle_mouse_down = move |idx: usize| {
-        active_step_signal.set(ActiveStep(Some(idx)));
+        sequencer_state.selected_step.set(Some(idx));
     };
 
     let handle_mouse_up = move |_| {
-         active_step_signal.set(ActiveStep(None));
+         sequencer_state.selected_step.set(None);
     };
 
     view! {
-        <div class="grid grid-cols-8 gap-2 p-4 bg-zinc-900 rounded-xl border border-zinc-800 shadow-xl">
+        <div class="grid grid-cols-8 gap-3">
             <For
                 each=move || {
-                    // Return range 0..16
                     (0..16).into_iter()
                 }
                 key=|idx| *idx
@@ -69,18 +66,40 @@ pub fn Grid() -> impl IntoView {
                                 .unwrap_or(false)
                         })
                     };
-                    
+
                     view! {
                         <button
                             class=move || {
-                                let base_classes = "h-12 w-12 rounded bg-zinc-800 transition-all duration-100 flex items-center justify-center text-xs font-bold select-none";
-                                let active_classes = if is_active() { "bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.5)]" } else { "text-zinc-500 hover:bg-zinc-700" };
-                                format!("{} {}", base_classes, active_classes)
+                                let base_classes = "w-16 h-16 rounded-lg transition-all duration-100 flex items-center justify-center text-xs font-mono select-none";
+
+                                let is_current_step = sequencer_state.current_step.get() == idx;
+                                let is_active_note = is_active();
+                                let is_selected = sequencer_state.selected_step.get() == Some(idx);
+
+                                let state_classes = if is_current_step {
+                                    "bg-amber-300 text-black shadow-lg scale-110 transition-transform duration-75"
+                                } else if is_active_note {
+                                    "bg-amber-500 text-black shadow-md"
+                                } else {
+                                    "bg-zinc-800 text-zinc-600 hover:bg-zinc-700"
+                                };
+
+                                let selection_classes = if is_selected {
+                                    "ring-2 ring-blue-500 ring-offset-2 ring-offset-zinc-900"
+                                } else {
+                                    ""
+                                };
+
+                                format!("{} {} {}", base_classes, state_classes, selection_classes)
                             }
                             on:mousedown=move |_| handle_mouse_down(idx)
                             on:mouseup=move |e| handle_mouse_up(e)
                             on:mouseleave=move |e| handle_mouse_up(e)
                             on:click=move |_| toggle_step(idx)
+                            on:contextmenu=move |e| {
+                                e.prevent_default();
+                                sequencer_state.selected_step.set(Some(idx));
+                            }
                         >
                             {idx + 1}
                         </button>
