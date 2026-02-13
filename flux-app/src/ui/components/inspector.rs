@@ -53,6 +53,37 @@ pub fn Inspector() -> impl IntoView {
         });
     };
 
+    let toggle_step = move |step_idx: usize| {
+        set_pattern_signal.update(|p| {
+            if let Some(track) = p.tracks.get_mut(track_id) {
+                if let Some(subtrack) = track.subtracks.get_mut(subtrack_id) {
+                    if let Some(step) = subtrack.steps.get_mut(step_idx) {
+                        use crate::shared::models::TrigType;
+                        if step.trig_type == TrigType::None {
+                            step.trig_type = TrigType::Note;
+                        } else {
+                            step.trig_type = TrigType::None;
+                        }
+
+                        spawn_local(async move {
+                            use crate::ui::tauri::toggle_step;
+                            toggle_step(track_id, step_idx).await;
+                        });
+                    }
+                }
+            }
+        });
+    };
+
+    let is_step_active = move |step_idx: usize| {
+        pattern_signal.with(|p| {
+            p.tracks.get(track_id)
+                .and_then(|t| t.subtracks.get(subtrack_id))
+                .and_then(|st| st.steps.get(step_idx))
+                .map(|s| s.trig_type != crate::shared::models::TrigType::None)
+                .unwrap_or(false)
+        })
+    };
 
     let get_value = move |idx: usize| {
         // Use with() to avoid cloning the heavy structure
@@ -106,6 +137,31 @@ pub fn Inspector() -> impl IntoView {
                         }
                     }}
                 </div>
+
+                // Active toggle button (only when step selected)
+                {move || {
+                    if let Some(step_idx) = sequencer_state.selected_step.get() {
+                        view! {
+                            <button
+                                class=move || {
+                                    let base = "px-3 py-1 rounded-lg text-xs font-medium transition-all duration-150 flex items-center gap-2";
+                                    let state = if is_step_active(step_idx) {
+                                        "bg-amber-500 text-black hover:bg-amber-400"
+                                    } else {
+                                        "bg-zinc-700 text-zinc-400 hover:bg-zinc-600"
+                                    };
+                                    format!("{} {}", base, state)
+                                }
+                                on:click=move |_| toggle_step(step_idx)
+                            >
+                                <span class="text-base">{move || if is_step_active(step_idx) { "●" } else { "○" }}</span>
+                                "Active"
+                            </button>
+                        }.into_any()
+                    } else {
+                        view! { <div></div> }.into_any()
+                    }
+                }}
             </div>
 
             // Parameter grid (existing code continues here)
