@@ -15,6 +15,7 @@ use crate::ui::state::PlaybackState;
 struct AudioSnapshot {
     current_step: usize,
     is_playing: bool,
+    triggered_tracks: Option<[bool; 4]>,  // Optional for backward compatibility
 }
 
 // Create a context for the step
@@ -51,13 +52,20 @@ pub fn App() -> impl IntoView {
     window_event_listener(ev::keydown, handle_escape);
 
     // Setup Tauri Event Listener
-    Effect::new(move |_| {
+    on_mount(move || {
         spawn_local(async move {
             use crate::ui::tauri::listen_event;
             // "playback-status" matches the backend event name
             listen_event("playback-status", move |event: AudioSnapshot| {
-                // Update the signal inside the callback
+                // Update current_step (existing)
                 set_current_step.set(event.current_step);
+
+                // Update PlaybackState (new)
+                set_playback_state.update(|state| {
+                    state.is_playing = event.is_playing;
+                    state.current_position = event.current_step;
+                    state.triggered_tracks = event.triggered_tracks.unwrap_or([false; 4]);
+                });
             }).await;
         });
     });
