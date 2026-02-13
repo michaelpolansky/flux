@@ -273,39 +273,6 @@ pub fn Inspector() -> impl IntoView {
                                     />
                                 </InlineParam>
 
-                                // Destination dropdown
-                                <InlineParam>
-                                    <ParamLabel text="Destination" locked=Signal::derive(|| false) />
-                                    <Dropdown
-                                        options=vec![
-                                            ("74", "Filter Cutoff"),
-                                            ("71", "Resonance"),
-                                            ("1", "Mod Wheel"),
-                                            ("10", "Pan"),
-                                        ]
-                                        selected=Signal::derive(move || {
-                                            let track_id = get_track_id();
-                                            pattern_signal.with(|p| {
-                                                p.tracks.get(track_id)
-                                                    .and_then(|t| t.lfos.get(0))
-                                                    .map(|l| l.destination.to_string())
-                                                    .unwrap_or_else(|| "74".to_string())
-                                            })
-                                        })
-                                        on_change=move |val| {
-                                            let parsed_val = val.parse::<u8>().unwrap_or(74);
-                                            let track_id = get_track_id();
-                                            set_pattern_signal.update(|p| {
-                                               if let Some(track) = p.tracks.get_mut(track_id) {
-                                                   if let Some(lfo) = track.lfos.get_mut(0) {
-                                                       lfo.destination = parsed_val;
-                                                   }
-                                               }
-                                            });
-                                        }
-                                    />
-                                </InlineParam>
-
                                 // Amount numeric input
                                 <InlineParam>
                                     <ParamLabel text="Amount" locked=Signal::derive(|| false) />
@@ -351,6 +318,39 @@ pub fn Inspector() -> impl IntoView {
                                                          lfo.speed = clamped;
                                                      }
                                                 }
+                                            });
+                                        }
+                                    />
+                                </InlineParam>
+
+                                // Destination dropdown
+                                <InlineParam>
+                                    <ParamLabel text="Destination" locked=Signal::derive(|| false) />
+                                    <Dropdown
+                                        options=vec![
+                                            ("74", "Filter Cutoff"),
+                                            ("71", "Resonance"),
+                                            ("1", "Mod Wheel"),
+                                            ("10", "Pan"),
+                                        ]
+                                        selected=Signal::derive(move || {
+                                            let track_id = get_track_id();
+                                            pattern_signal.with(|p| {
+                                                p.tracks.get(track_id)
+                                                    .and_then(|t| t.lfos.get(0))
+                                                    .map(|l| l.destination.to_string())
+                                                    .unwrap_or_else(|| "74".to_string())
+                                            })
+                                        })
+                                        on_change=move |val| {
+                                            let parsed_val = val.parse::<u8>().unwrap_or(74);
+                                            let track_id = get_track_id();
+                                            set_pattern_signal.update(|p| {
+                                               if let Some(track) = p.tracks.get_mut(track_id) {
+                                                   if let Some(lfo) = track.lfos.get_mut(0) {
+                                                       lfo.destination = parsed_val;
+                                                   }
+                                               }
                                             });
                                         }
                                     />
