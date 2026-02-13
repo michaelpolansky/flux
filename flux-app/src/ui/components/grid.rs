@@ -12,14 +12,6 @@ pub fn Grid() -> impl IntoView {
     let track_id = 0;
     let subtrack_id = 0;
 
-    let handle_mouse_down = move |idx: usize| {
-        sequencer_state.selected_step.set(Some(idx));
-    };
-
-    let handle_mouse_up = move |_| {
-         sequencer_state.selected_step.set(None);
-    };
-
     view! {
         <div class="grid grid-cols-8 gap-3">
             <For
@@ -64,9 +56,6 @@ pub fn Grid() -> impl IntoView {
 
                                 format!("{} {} {}", base_classes, state_classes, selection_classes)
                             }
-                            on:mousedown=move |_| handle_mouse_down(idx)
-                            on:mouseup=move |e| handle_mouse_up(e)
-                            on:mouseleave=move |e| handle_mouse_up(e)
                             on:click=move |_| {
                                 sequencer_state.selected_step.set(Some(idx));
                             }
