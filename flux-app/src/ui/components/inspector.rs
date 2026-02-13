@@ -197,9 +197,9 @@ pub fn Inspector() -> impl IntoView {
                     let name_str_input = name_str.clone();
                     let name_str_keydown = name_str.clone();
                     view! {
-                        <div class="flex items-center gap-1">
+                        <div class="flex items-center gap-0.5">
                             <label class=move || {
-                                let base = "text-xs font-medium uppercase tracking-wide flex-shrink-0 w-20";
+                                let base = "text-xs font-medium uppercase tracking-wide flex-shrink-0 w-16";
                                 let color = if sequencer_state.selected_step.get().is_some() && is_locked(idx) {
                                     "text-amber-400"
                                 } else {
