@@ -20,7 +20,7 @@ struct AudioSnapshot {
 #[derive(Clone)]
 pub struct SequencerState {
     pub current_step: ReadSignal<usize>,
-    pub selected_step: RwSignal<Option<usize>>,
+    pub selected_step: RwSignal<Option<(usize, usize)>>, // (track_id, step_idx)
 }
 
 #[component]
