@@ -54,6 +54,8 @@ pub fn Inspector() -> impl IntoView {
     };
 
     let toggle_step = move |step_idx: usize| {
+        // Currently toggles between Note (active) and None (inactive)
+        // Other TrigType variants (Lock, SynthTrigger, OneShot) not yet implemented
         set_pattern_signal.update(|p| {
             if let Some(track) = p.tracks.get_mut(track_id) {
                 if let Some(subtrack) = track.subtracks.get_mut(subtrack_id) {
