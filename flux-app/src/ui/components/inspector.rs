@@ -256,8 +256,8 @@ pub fn Inspector() -> impl IntoView {
                             // 4-column inline controls
                             <div class="grid grid-cols-4 gap-4 mb-3">
                                 // Shape dropdown
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-xs text-zinc-500">Shape</label>
+                                <div class="flex items-center gap-0.5">
+                                    <label class="text-xs text-zinc-500 flex-shrink-0 w-20">Shape</label>
                                     <select
                                         class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                                         on:change=move |ev| {
@@ -288,8 +288,8 @@ pub fn Inspector() -> impl IntoView {
                                 </div>
 
                                 // Destination dropdown
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-xs text-zinc-500">Destination</label>
+                                <div class="flex items-center gap-0.5">
+                                    <label class="text-xs text-zinc-500 flex-shrink-0 w-20">Destination</label>
                                     <select
                                         class="bg-zinc-800 text-zinc-300 text-xs rounded p-1 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                                         on:change=move |ev| {
@@ -312,8 +312,8 @@ pub fn Inspector() -> impl IntoView {
                                 </div>
 
                                 // Amount numeric input
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-xs text-zinc-500">Amount</label>
+                                <div class="flex items-center gap-0.5">
+                                    <label class="text-xs text-zinc-500 flex-shrink-0 w-20">Amount</label>
                                     <input
                                         type="number"
                                         min="-1"
@@ -340,8 +340,8 @@ pub fn Inspector() -> impl IntoView {
                                 </div>
 
                                 // Speed numeric input
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-xs text-zinc-500">Speed</label>
+                                <div class="flex items-center gap-0.5">
+                                    <label class="text-xs text-zinc-500 flex-shrink-0 w-20">Speed</label>
                                     <input
                                         type="number"
                                         min="0.1"
