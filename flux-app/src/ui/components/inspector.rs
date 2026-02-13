@@ -7,7 +7,6 @@ pub fn Inspector() -> impl IntoView {
     let sequencer_state = use_context::<crate::app::SequencerState>().expect("SequencerState context not found");
     let pattern_signal = use_context::<ReadSignal<crate::shared::models::Pattern>>().expect("Pattern context not found");
     let set_pattern_signal = use_context::<WriteSignal<crate::shared::models::Pattern>>().expect("Pattern context not found");
-    let show_lfo = use_context::<ReadSignal<bool>>().expect("show_lfo context not found");
 
     // Get track_id from selected step, default to 0 when no selection
     let get_track_id = move || {
