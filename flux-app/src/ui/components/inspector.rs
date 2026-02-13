@@ -99,6 +99,8 @@ pub fn Inspector() -> impl IntoView {
                 {params.into_iter().enumerate().map(|(idx, name)| {
                     let handle_input = handle_input.clone();
                     let name_str = name.to_string();
+                    let name_str_input = name_str.clone();
+                    let name_str_keydown = name_str.clone();
                     view! {
                         <div class="flex flex-col gap-1">
                             <label class=move || {
@@ -121,7 +123,7 @@ pub fn Inspector() -> impl IntoView {
                                 on:input=move |ev| {
                                     let val = event_target_value(&ev).parse::<f64>().unwrap_or(0.0);
                                     let clamped = val.clamp(0.0, 1.0);
-                                    handle_input(idx, clamped, name_str.clone());
+                                    handle_input(idx, clamped, name_str_input.clone());
                                 }
                                 on:keydown=move |ev| {
                                     let key = ev.key();
@@ -130,13 +132,13 @@ pub fn Inspector() -> impl IntoView {
                                             ev.prevent_default();
                                             let current = get_value(idx);
                                             let new_val = (current + 0.01).clamp(0.0, 1.0);
-                                            handle_input(idx, new_val, name_str.clone());
+                                            handle_input(idx, new_val, name_str_keydown.clone());
                                         }
                                         "ArrowDown" => {
                                             ev.prevent_default();
                                             let current = get_value(idx);
                                             let new_val = (current - 0.01).clamp(0.0, 1.0);
-                                            handle_input(idx, new_val, name_str.clone());
+                                            handle_input(idx, new_val, name_str_keydown.clone());
                                         }
                                         _ => {}
                                     }
