@@ -1,5 +1,6 @@
 use leptos::task::spawn_local;
 use leptos::prelude::*;
+use crate::ui::components::form_controls::*;
 
 #[component]
 
@@ -189,58 +190,28 @@ pub fn Inspector() -> impl IntoView {
                 }}
             </div>
 
-            // Parameter grid (existing code continues here)
+            // Parameter grid
             <div class="grid grid-cols-4 gap-x-4 gap-y-1">
                 {params.into_iter().enumerate().map(|(idx, name)| {
                     let handle_input = handle_input.clone();
                     let name_str = name.to_string();
-                    let name_str_input = name_str.clone();
-                    let name_str_keydown = name_str.clone();
                     view! {
-                        <div class="flex items-center gap-0.5">
-                            <label class=move || {
-                                let base = "text-xs font-medium uppercase tracking-wide flex-shrink-0 w-20";
-                                let color = if sequencer_state.selected_step.get().is_some() && is_locked(idx) {
-                                    "text-amber-400"
-                                } else {
-                                    "text-zinc-400"
-                                };
-                                format!("{} {}", base, color)
-                            }>
-                                {name}
-                            </label>
-                            <input
-                                type="number"
+                        <InlineParam>
+                            <ParamLabel
+                                text=name
+                                locked=move || is_locked(idx)
+                            />
+                            <NumberInput
                                 min="0"
                                 max="1"
                                 step="0.01"
-                                prop:value=move || format!("{:.2}", get_value(idx))
-                                on:input=move |ev| {
-                                    let val = event_target_value(&ev).parse::<f64>().unwrap_or(0.0);
+                                value=Signal::derive(move || format!("{:.2}", get_value(idx)))
+                                on_input=move |val| {
                                     let clamped = val.clamp(0.0, 1.0);
-                                    handle_input(idx, clamped, name_str_input.clone());
+                                    handle_input(idx, clamped, name_str.clone());
                                 }
-                                on:keydown=move |ev| {
-                                    let key = ev.key();
-                                    match key.as_str() {
-                                        "ArrowUp" => {
-                                            ev.prevent_default();
-                                            let current = get_value(idx);
-                                            let new_val = (current + 0.01).clamp(0.0, 1.0);
-                                            handle_input(idx, new_val, name_str_keydown.clone());
-                                        }
-                                        "ArrowDown" => {
-                                            ev.prevent_default();
-                                            let current = get_value(idx);
-                                            let new_val = (current - 0.01).clamp(0.0, 1.0);
-                                            handle_input(idx, new_val, name_str_keydown.clone());
-                                        }
-                                        _ => {}
-                                    }
-                                }
-                                class="w-16 text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
-                        </div>
+                        </InlineParam>
                     }
                 }).collect::<Vec<_>>()}
             </div>
@@ -256,8 +227,8 @@ pub fn Inspector() -> impl IntoView {
                             // 4-column inline controls
                             <div class="grid grid-cols-4 gap-4 mb-3">
                                 // Shape dropdown
-                                <div class="flex items-center gap-0.5">
-                                    <label class="text-xs text-zinc-500 flex-shrink-0 w-20">Shape</label>
+                                <InlineParam>
+                                    <ParamLabel text="Shape" locked=false />
                                     <select
                                         class="bg-zinc-800 text-zinc-50 text-xs rounded px-1.5 py-0.5 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                                         on:change=move |ev| {
@@ -285,11 +256,11 @@ pub fn Inspector() -> impl IntoView {
                                         <option value="Random">Random</option>
                                         <option value="Designer">Designer</option>
                                     </select>
-                                </div>
+                                </InlineParam>
 
                                 // Destination dropdown
-                                <div class="flex items-center gap-0.5">
-                                    <label class="text-xs text-zinc-500 flex-shrink-0 w-20">Destination</label>
+                                <InlineParam>
+                                    <ParamLabel text="Destination" locked=false />
                                     <select
                                         class="bg-zinc-800 text-zinc-50 text-xs rounded px-1.5 py-0.5 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                                         on:change=move |ev| {
@@ -309,23 +280,21 @@ pub fn Inspector() -> impl IntoView {
                                         <option value="1">Mod Wheel</option>
                                         <option value="10">Pan</option>
                                     </select>
-                                </div>
+                                </InlineParam>
 
                                 // Amount numeric input
-                                <div class="flex items-center gap-0.5">
-                                    <label class="text-xs text-zinc-500 flex-shrink-0 w-20">Amount</label>
-                                    <input
-                                        type="number"
+                                <InlineParam>
+                                    <ParamLabel text="Amount" locked=false />
+                                    <NumberInput
                                         min="-1"
                                         max="1"
                                         step="0.01"
-                                        prop:value=move || {
+                                        value=Signal::derive(move || {
                                             let track_id = get_track_id();
                                             format!("{:.2}", pattern_signal.with(|p| p.tracks.get(track_id).and_then(|t| t.lfos.get(0)).map(|l| l.amount).unwrap_or(0.0)))
-                                        }
-                                        on:input=move |ev| {
-                                            let val = event_target_value(&ev).parse::<f32>().unwrap_or(0.0);
-                                            let clamped = val.clamp(-1.0, 1.0);
+                                        })
+                                        on_input=move |val| {
+                                            let clamped = val.clamp(-1.0, 1.0) as f32;
                                             let track_id = get_track_id();
                                             set_pattern_signal.update(|p| {
                                                 if let Some(track) = p.tracks.get_mut(track_id) {
@@ -335,25 +304,22 @@ pub fn Inspector() -> impl IntoView {
                                                 }
                                             });
                                         }
-                                        class="w-16 text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     />
-                                </div>
+                                </InlineParam>
 
                                 // Speed numeric input
-                                <div class="flex items-center gap-0.5">
-                                    <label class="text-xs text-zinc-500 flex-shrink-0 w-20">Speed</label>
-                                    <input
-                                        type="number"
+                                <InlineParam>
+                                    <ParamLabel text="Speed" locked=false />
+                                    <NumberInput
                                         min="0.1"
                                         max="4.0"
                                         step="0.1"
-                                        prop:value=move || {
+                                        value=Signal::derive(move || {
                                             let track_id = get_track_id();
                                             format!("{:.1}", pattern_signal.with(|p| p.tracks.get(track_id).and_then(|t| t.lfos.get(0)).map(|l| l.speed).unwrap_or(1.0)))
-                                        }
-                                        on:input=move |ev| {
-                                            let val = event_target_value(&ev).parse::<f32>().unwrap_or(1.0);
-                                            let clamped = val.clamp(0.1, 4.0);
+                                        })
+                                        on_input=move |val| {
+                                            let clamped = val.clamp(0.1, 4.0) as f32;
                                             let track_id = get_track_id();
                                             set_pattern_signal.update(|p| {
                                                 if let Some(track) = p.tracks.get_mut(track_id) {
@@ -363,9 +329,8 @@ pub fn Inspector() -> impl IntoView {
                                                 }
                                             });
                                         }
-                                        class="w-16 text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     />
-                                </div>
+                                </InlineParam>
                             </div>
 
                             // Designer section

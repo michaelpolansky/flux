@@ -6,13 +6,13 @@ pub fn ParamLabel(
     /// The label text to display
     text: &'static str,
     /// Whether this parameter is locked (shows amber color)
-    #[prop(optional)]
-    locked: bool,
+    #[prop(optional, into)]
+    locked: MaybeSignal<bool>,
 ) -> impl IntoView {
     view! {
         <label class=move || {
             let base = "text-xs font-medium uppercase tracking-wide flex-shrink-0 w-20";
-            let color = if locked {
+            let color = if locked.get() {
                 "text-amber-400"
             } else {
                 "text-zinc-400"
