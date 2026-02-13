@@ -238,7 +238,7 @@ pub fn Inspector() -> impl IntoView {
                                         _ => {}
                                     }
                                 }
-                                class="flex-1 text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors"
+                                class="flex-1 text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                         </div>
                     }
