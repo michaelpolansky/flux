@@ -190,16 +190,16 @@ pub fn Inspector() -> impl IntoView {
             </div>
 
             // Parameter grid (existing code continues here)
-            <div class="grid grid-cols-4 gap-x-6 gap-y-2">
+            <div class="grid grid-cols-4 gap-x-3 gap-y-1">
                 {params.into_iter().enumerate().map(|(idx, name)| {
                     let handle_input = handle_input.clone();
                     let name_str = name.to_string();
                     let name_str_input = name_str.clone();
                     let name_str_keydown = name_str.clone();
                     view! {
-                        <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
                             <label class=move || {
-                                let base = "text-xs font-medium uppercase tracking-wide";
+                                let base = "text-xs font-medium uppercase tracking-wide flex-shrink-0 w-20";
                                 let color = if sequencer_state.selected_step.get().is_some() && is_locked(idx) {
                                     "text-amber-400"
                                 } else {
@@ -238,7 +238,7 @@ pub fn Inspector() -> impl IntoView {
                                         _ => {}
                                     }
                                 }
-                                class="w-full text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors"
+                                class="flex-1 text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors"
                             />
                         </div>
                     }
