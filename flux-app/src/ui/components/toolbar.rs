@@ -153,7 +153,7 @@ pub fn Toolbar() -> impl IntoView {
                 }
                 class="h-10 px-4 bg-green-600 hover:bg-green-500 rounded-md text-sm font-medium text-white transition-colors active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-950"
             >
-                ▶
+                "▶"
             </button>
             <button
                 on:click=move |_| {
@@ -163,7 +163,7 @@ pub fn Toolbar() -> impl IntoView {
                 }
                 class="h-10 px-4 bg-zinc-800 hover:bg-zinc-700 rounded-md text-sm font-medium text-zinc-300 transition-colors active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-950"
             >
-                ■
+                "■"
             </button>
         </div>
     }
