@@ -1,14 +1,17 @@
-use leptos::*;
+use leptos::prelude::*;
 use web_sys::{HtmlCanvasElement, MouseEvent};
-use wasm_bindgen::{Closure, JsCast};
+use wasm_bindgen::JsCast;
 
 #[component]
+#[allow(dead_code)]
 pub fn LfoDraw(
-    #[prop(into)] value: Signal<Vec<f32>>,
-    #[prop(into)] set_value: WriteSignal<Vec<f32>>,
+    #[prop(into)]
+    value: Signal<Vec<f32>>,
+    #[prop(into)]
+    set_value: WriteSignal<Vec<f32>>,
 ) -> impl IntoView {
-    let canvas_ref = create_node_ref::<html::Canvas>();
-    let (is_drawing, set_is_drawing) = create_signal(false);
+    let canvas_ref = NodeRef::<leptos::html::Canvas>::new();
+    let (is_drawing, set_is_drawing) = signal::<bool>(false);
 
     let draw = move |canvas: &HtmlCanvasElement, data: &[f32]| {
         let ctx = canvas
@@ -22,11 +25,11 @@ pub fn LfoDraw(
         let h = canvas.height() as f64;
 
         // Clear
-        ctx.set_fill_style(&"rgb(24, 24, 27)".into()); // zinc-900
+        ctx.set_fill_style_str("rgb(24, 24, 27)"); // zinc-900
         ctx.fill_rect(0.0, 0.0, w, h);
 
         // Grid lines
-        ctx.set_stroke_style(&"rgba(63, 63, 70, 0.5)".into()); // zinc-700
+        ctx.set_stroke_style_str("rgba(63, 63, 70, 0.5)"); // zinc-700
         ctx.set_line_width(1.0);
         ctx.begin_path();
         
@@ -47,7 +50,7 @@ pub fn LfoDraw(
         if data.is_empty() { return; }
 
         // Draw Shape
-        ctx.set_stroke_style(&"rgb(234, 179, 8)".into()); // yellow-500
+        ctx.set_stroke_style_str("rgb(234, 179, 8)"); // yellow-500
         ctx.set_line_width(2.0);
         ctx.begin_path();
 
@@ -68,7 +71,7 @@ pub fn LfoDraw(
         ctx.stroke();
 
         // Draw points
-        ctx.set_fill_style(&"rgb(234, 179, 8)".into());
+        ctx.set_fill_style_str("rgb(234, 179, 8)");
         for (i, &val) in data.iter().enumerate() {
             let x = (i as f64 + 0.5) * step_w;
             let y = h / 2.0 - (val as f64 * h / 2.0);
@@ -78,7 +81,7 @@ pub fn LfoDraw(
         }
     };
 
-    create_effect(move |_| {
+    Effect::new(move |_| {
         if let Some(canvas) = canvas_ref.get() {
              let data = value.get();
              draw(&canvas, &data);
@@ -108,13 +111,13 @@ pub fn LfoDraw(
 
     view! {
         <canvas
-            _ref=canvas_ref
+            node_ref=canvas_ref
             width="400"
             height="150"
             class="w-full h-32 rounded bg-zinc-900 cursor-crosshair border border-zinc-700"
-            on:mousedown=move |_| set_is_drawing(true)
-            on:mouseup=move |_| set_is_drawing(false)
-            on:mouseleave=move |_| set_is_drawing(false)
+            on:mousedown=move |_| set_is_drawing.set(true)
+            on:mouseup=move |_| set_is_drawing.set(false)
+            on:mouseleave=move |_| set_is_drawing.set(false)
             on:mousemove=move |ev: MouseEvent| {
                 if is_drawing.get() {
                     if let Some(canvas) = canvas_ref.get() {

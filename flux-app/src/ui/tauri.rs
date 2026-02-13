@@ -28,22 +28,6 @@ pub async fn push_midi_command(command: &str, step: Option<usize>, param: Option
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct SetLFOShapeArgs {
-    pub track_id: usize,
-    pub lfo_index: usize,
-    pub shape: crate::shared::models::LFOShape,
-}
-
-pub async fn set_lfo_shape(track_id: usize, lfo_index: usize, shape: crate::shared::models::LFOShape) {
-    let args = serde_wasm_bindgen::to_value(&SetLFOShapeArgs {
-        track_id,
-        lfo_index,
-        shape,
-    }).unwrap();
-    let _ = invoke("set_lfo_shape", args).await;
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct SetLFODesignerValueArgs {
     pub track_id: usize,
     pub lfo_index: usize,
@@ -59,4 +43,45 @@ pub async fn set_lfo_designer_value(track_id: usize, lfo_index: usize, step: usi
         value,
     }).unwrap();
     let _ = invoke("set_lfo_designer_value", args).await;
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ToggleStepArgs {
+    pub track_id: usize,
+    pub step_idx: usize,
+}
+
+pub async fn toggle_step(track_id: usize, step_idx: usize) {
+    let args = serde_wasm_bindgen::to_value(&ToggleStepArgs {
+        track_id,
+        step_idx,
+    }).unwrap();
+    let _ = invoke("toggle_step", args).await;
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct TauriEvent<T> {
+    #[allow(dead_code)]
+    pub event: String,
+    pub payload: T,
+}
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "event"])]
+    async fn listen(event: &str, handler: &Closure<dyn FnMut(JsValue)>) -> JsValue;
+}
+
+pub async fn listen_event<T>(event_name: &str, callback: impl Fn(T) + 'static) 
+where T: for<'a> Deserialize<'a> + 'static
+{
+    let handler = Closure::wrap(Box::new(move |val: JsValue| {
+        if let Ok(event_struct) = serde_wasm_bindgen::from_value::<TauriEvent<T>>(val) {
+            callback(event_struct.payload);
+        }
+    }) as Box<dyn FnMut(JsValue)>);
+    
+    // We intentionally leak the closure to keep it alive for the lifetime of the app
+    let _ = listen(event_name, &handler).await;
+    handler.forget();
 }
