@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 use wasm_bindgen::prelude::*;
-use crate::ui::components::grid::ActiveStep;
+use gloo_utils::format::JsValueSerdeExt;
 
 #[wasm_bindgen]
 extern "C" {
@@ -19,12 +19,6 @@ extern "C" {
 }
 
 #[derive(serde::Serialize)]
-struct SavePatternArgs {
-    pattern: serde_json::Value, // We'll need to fetch the actual pattern from state
-    path: String,
-}
-
-#[derive(serde::Serialize)]
 struct LoadPatternArgs {
     path: String,
 }
@@ -38,7 +32,8 @@ struct DialogFilter {
 #[derive(serde::Serialize)]
 struct SaveDialogOptions {
     filters: Vec<DialogFilter>,
-    defaultPath: Option<String>,
+    #[serde(rename = "defaultPath")]
+    default_path: Option<String>,
 }
 
 #[derive(serde::Serialize)]
@@ -60,7 +55,7 @@ pub fn Toolbar() -> impl IntoView {
                     name: "Flux Pattern".to_string(),
                     extensions: vec!["flux".to_string()],
                 }],
-                defaultPath: Some("pattern.flux".to_string()),
+                default_path: Some("pattern.flux".to_string()),
             };
             
             let options_js = serde_wasm_bindgen::to_value(&options).unwrap();
@@ -128,18 +123,47 @@ pub fn Toolbar() -> impl IntoView {
     };
 
     view! {
-        <div class="flex gap-2">
+        <div class="flex items-center gap-2">
             <button
                 on:click=save_project
-                class="px-3 py-1 bg-zinc-900 border border-zinc-700 rounded text-xs font-bold hover:bg-zinc-800 text-zinc-300"
+                class="h-10 px-4 bg-zinc-800 hover:bg-zinc-700 rounded-md text-sm font-medium text-zinc-300 transition-colors active:scale-95"
             >
                 SAVE
             </button>
-             <button
+            <button
                 on:click=load_project
-                class="px-3 py-1 bg-zinc-900 border border-zinc-700 rounded text-xs font-bold hover:bg-zinc-800 text-zinc-300"
+                class="h-10 px-4 bg-zinc-800 hover:bg-zinc-700 rounded-md text-sm font-medium text-zinc-300 transition-colors active:scale-95"
             >
                 LOAD
+            </button>
+
+            <div class="w-px h-6 bg-zinc-700 mx-2"></div>
+
+            <div class="text-sm font-mono text-zinc-400 px-3">
+                "120 BPM"
+            </div>
+
+            <div class="w-px h-6 bg-zinc-700"></div>
+
+            <button
+                on:click=move |_| {
+                    leptos::task::spawn_local(async {
+                        crate::services::audio::set_playback_state(true).await;
+                    });
+                }
+                class="h-10 px-4 bg-green-600 hover:bg-green-500 rounded-md text-sm font-medium text-white transition-colors active:scale-95"
+            >
+                ▶
+            </button>
+            <button
+                on:click=move |_| {
+                    leptos::task::spawn_local(async {
+                        crate::services::audio::set_playback_state(false).await;
+                    });
+                }
+                class="h-10 px-4 bg-zinc-800 hover:bg-zinc-700 rounded-md text-sm font-medium text-zinc-300 transition-colors active:scale-95"
+            >
+                ■
             </button>
         </div>
     }

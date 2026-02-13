@@ -48,20 +48,13 @@ pub fn App() -> impl IntoView {
     view! {
         <main class="min-h-screen bg-zinc-950 text-zinc-50 p-6 font-sans selection:bg-red-900 selection:text-white">
             <div class="max-w-7xl mx-auto space-y-6">
-                <header class="flex items-center justify-between bg-zinc-900 border-b border-zinc-800 px-6 py-4 rounded-t-lg h-16">
-                    <div>
-                        <h1 class="text-2xl font-bold tracking-tighter text-zinc-100">FLUX <span class="text-red-600">ENGINE</span></h1>
-                        <p class="text-xs text-zinc-500 font-mono mt-1">"RUST AUDIO KERNEL - V0.1.0"</p>
+                <header class="flex items-center justify-between bg-zinc-900 border-b border-zinc-800 px-6 h-16">
+                    <div class="flex flex-col">
+                        <h1 class="text-xl font-bold tracking-tight text-zinc-50">FLUX</h1>
+                        <p class="text-xs text-zinc-500 font-mono">"Audio Engine"</p>
                     </div>
-                    <div class="flex gap-4 items-center">
-                         <Toolbar />
-                        <div class="w-px h-8 bg-zinc-800 mx-2"></div>
-                        <button class="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded hover:border-zinc-700 text-xs font-bold transition-colors">
-                            "PLAY"
-                        </button>
-                        <button class="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded hover:border-zinc-700 text-xs font-bold transition-colors">
-                            "STOP"
-                        </button>
+                    <div class="flex items-center gap-4">
+                        <Toolbar />
                     </div>
                 </header>
 
