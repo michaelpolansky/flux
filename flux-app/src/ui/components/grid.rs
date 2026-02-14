@@ -3,6 +3,9 @@ use crate::ui::components::grid_step::GridStep;
 use super::step_badge::StepBadge;
 use super::playhead_indicator::PlayheadIndicator;
 use crate::ui::state::GridUIState;
+use super::remove_track_button::RemoveTrackButton;
+use super::track_controls::TrackControls;
+use super::confirm_dialog::ConfirmDialog;
 
 #[component]
 pub fn Grid() -> impl IntoView {
@@ -11,11 +14,41 @@ pub fn Grid() -> impl IntoView {
         .expect("PlaybackState context not found");
     let pattern_signal = use_context::<ReadSignal<crate::shared::models::Pattern>>()
         .expect("Pattern context not found");
+    let set_pattern_signal = use_context::<WriteSignal<crate::shared::models::Pattern>>()
+        .expect("Pattern write signal not found");
 
     // Create GridUIState signal and provide context
     let grid_ui_state = signal(GridUIState::default());
     provide_context(grid_ui_state.0);  // Provide read signal
     provide_context(grid_ui_state.1);  // Provide write signal
+
+    // State for confirmation dialog
+    let (show_confirm_dialog, set_show_confirm_dialog) = signal::<Option<usize>>(None);
+
+    // Confirmation dialog message
+    let confirm_message = Signal::derive(move || {
+        if let Some(track_idx) = show_confirm_dialog.get() {
+            format!("Track {} has active steps. Remove anyway?", track_idx + 1)
+        } else {
+            String::new()
+        }
+    });
+
+    // Confirmation callback
+    let on_confirm_remove = move || {
+        if let Some(track_idx) = show_confirm_dialog.get() {
+            // Call the remove function
+            crate::ui::components::remove_track_button::do_remove_track(
+                track_idx,
+                set_pattern_signal
+            );
+            set_show_confirm_dialog.set(None);
+        }
+    };
+
+    let on_cancel_remove = move || {
+        set_show_confirm_dialog.set(None);
+    };
 
     // Helper for timestamp
     fn current_timestamp() -> f64 {
@@ -79,12 +112,27 @@ pub fn Grid() -> impl IntoView {
 
     view! {
         <div class="sequencer-grid flex">
-                // Track labels on the left
+                // Track labels on the left (dynamic)
                 <div class="flex flex-col gap-[2px] mr-2">
-                    <div class="w-8 h-10 flex items-center justify-center text-xs text-zinc-400">T1</div>
-                    <div class="w-8 h-10 flex items-center justify-center text-xs text-zinc-400">T2</div>
-                    <div class="w-8 h-10 flex items-center justify-center text-xs text-zinc-400">T3</div>
-                    <div class="w-8 h-10 flex items-center justify-center text-xs text-zinc-400">T4</div>
+                    <For
+                        each=move || {
+                            pattern_signal.with(|p| (0..p.tracks.len()).collect::<Vec<_>>())
+                        }
+                        key=|track_idx| *track_idx
+                        children=move |track_idx| {
+                            view! {
+                                <div class="w-8 h-10 flex items-center justify-center gap-1">
+                                    <div class="text-xs text-zinc-400">
+                                        {format!("T{}", track_idx + 1)}
+                                    </div>
+                                    <RemoveTrackButton
+                                        track_idx=track_idx
+                                        show_confirm=set_show_confirm_dialog
+                                    />
+                                </div>
+                            }
+                        }
+                    />
                 </div>
 
             // Grid of 4 tracks × 16 steps
@@ -95,7 +143,7 @@ pub fn Grid() -> impl IntoView {
                 />
                 <For
                     each=move || {
-                        (0..4).into_iter()
+                        pattern_signal.with(|p| (0..p.tracks.len()).collect::<Vec<_>>())
                     }
                     key=|track_idx| *track_idx
                     children=move |track_idx| {
@@ -122,6 +170,18 @@ pub fn Grid() -> impl IntoView {
                 track=selected_track
                 step=selected_step_idx
                 visible=badge_visible
+            />
+
+            // Add track controls below grid
+            <TrackControls />
+
+            // Confirmation dialog (rendered at top level)
+            <ConfirmDialog
+                visible=Signal::derive(move || show_confirm_dialog.get().is_some())
+                on_confirm=on_confirm_remove
+                on_cancel=on_cancel_remove
+                title="Confirm Removal"
+                message=confirm_message
             />
         </div>
     }
