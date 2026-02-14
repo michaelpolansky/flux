@@ -511,7 +511,7 @@ The complete data flow from audio engine to UI updates:
 │        set_playback_state.update(|state| {                       │
 │            state.is_playing = event.is_playing;                  │
 │            state.current_position = event.current_step % 16;     │
-│            state.triggered_tracks = event.triggered_tracks;      │
+│            state.triggered_tracks = event.triggered_tracks.unwrap_or([false; 4]); │
 │        });                                                        │
 │    })                                                             │
 └─────────────────────────────────────────────────────────────────┘
