@@ -15,7 +15,7 @@ pub fn GridStep(
     let subtrack_id = 0;
 
     // Compute derived state - check if this step has an active trigger
-    let is_active = move || {
+    let is_active = Signal::derive(move || {
         pattern_signal.with(|p| {
             p.tracks.get(track_idx)
                 .and_then(|t| t.subtracks.get(subtrack_id))
@@ -23,7 +23,51 @@ pub fn GridStep(
                 .map(|s| s.trig_type != crate::shared::models::TrigType::None)
                 .unwrap_or(false)
         })
-    };
+    });
+
+    // Derive selection state signal
+    let is_step_selected = Signal::derive(move || {
+        sequencer_state.selected_step.get()
+            .map(|(tid, sidx)| tid == track_idx && sidx == step_idx)
+            .unwrap_or(false)
+    });
+
+    // Derive complete class string signal
+    let step_classes = Signal::derive(move || {
+        let base_classes = "w-10 h-10 rounded-lg transition-all duration-100 flex items-center justify-center select-none active:scale-95 hover:scale-105 focus:outline-none border";
+
+        let is_active_note = is_active.get();
+        let is_selected = is_step_selected.get();
+
+        let state_classes = if is_active_note {
+            "bg-blue-500 hover:bg-blue-400 border-blue-400"
+        } else {
+            "bg-zinc-800 border-zinc-700 hover:bg-zinc-700"
+        };
+
+        let selection_classes = if is_selected {
+            "ring ring-amber-400"
+        } else {
+            ""
+        };
+
+        let beat_marker = if step_idx == 3 || step_idx == 7 || step_idx == 11 {
+            "border-r-2 border-zinc-600"
+        } else {
+            ""
+        };
+
+        format!("{} {} {} {}", base_classes, state_classes, selection_classes, beat_marker)
+    });
+
+    // Derive span class signal
+    let span_classes = Signal::derive(move || {
+        if is_active.get() {
+            "text-white text-lg"
+        } else {
+            "text-zinc-600 text-lg"
+        }
+    });
 
     // Click handler - select this step
     let on_click = move |_| {
@@ -32,45 +76,12 @@ pub fn GridStep(
 
     view! {
         <button
-            class=move || {
-                let base_classes = "w-10 h-10 rounded-lg transition-all duration-100 flex items-center justify-center select-none active:scale-95 hover:scale-105 focus:outline-none border";
-
-                let is_active_note = is_active();
-                let is_selected = sequencer_state.selected_step.get()
-                    .map(|(tid, sidx)| tid == track_idx && sidx == step_idx)
-                    .unwrap_or(false);
-
-                let state_classes = if is_active_note {
-                    "bg-blue-500 hover:bg-blue-400 border-blue-400"
-                } else {
-                    "bg-zinc-800 border-zinc-700 hover:bg-zinc-700"
-                };
-
-                let selection_classes = if is_selected {
-                    "ring ring-amber-400"
-                } else {
-                    ""
-                };
-
-                let beat_marker = if step_idx == 3 || step_idx == 7 || step_idx == 11 {
-                    "border-r-2 border-zinc-600"
-                } else {
-                    ""
-                };
-
-                format!("{} {} {} {}", base_classes, state_classes, selection_classes, beat_marker)
-            }
+            class=move || step_classes.get()
             on:click=on_click
         >
             // Visual indicator: filled circle for active, empty for inactive
-            <span class=move || {
-                if is_active() {
-                    "text-white text-lg"
-                } else {
-                    "text-zinc-600 text-lg"
-                }
-            }>
-                {move || if is_active() { "●" } else { "○" }}
+            <span class=move || span_classes.get()>
+                {move || if is_active.get() { "●" } else { "○" }}
             </span>
         </button>
     }
