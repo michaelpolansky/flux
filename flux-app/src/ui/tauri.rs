@@ -43,6 +43,36 @@ where T: for<'a> Deserialize<'a> + 'static
     listen_event(event_name, callback).await
 }
 
+/// Safe dialog save - returns error if Tauri unavailable
+pub async fn safe_dialog_save(options: JsValue) -> Result<Option<String>, TauriError> {
+    if !is_tauri_available() {
+        return Err(TauriError::NotAvailable);
+    }
+
+    dialog_save_with_error(options)
+        .await
+        .map_err(|e| TauriError::InvokeFailed(format!("{:?}", e)))
+        .and_then(|js_val| {
+            js_val.into_serde::<Option<String>>()
+                .map_err(|e| TauriError::InvokeFailed(format!("Failed to deserialize path: {:?}", e)))
+        })
+}
+
+/// Safe dialog open - returns error if Tauri unavailable
+pub async fn safe_dialog_open(options: JsValue) -> Result<Option<String>, TauriError> {
+    if !is_tauri_available() {
+        return Err(TauriError::NotAvailable);
+    }
+
+    dialog_open_with_error(options)
+        .await
+        .map_err(|e| TauriError::InvokeFailed(format!("{:?}", e)))
+        .and_then(|js_val| {
+            js_val.into_serde::<Option<String>>()
+                .map_err(|e| TauriError::InvokeFailed(format!("Failed to deserialize path: {:?}", e)))
+        })
+}
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
@@ -50,6 +80,15 @@ extern "C" {
 
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"], js_name = invoke, catch)]
     async fn invoke_with_error(cmd: &str, args: JsValue) -> Result<JsValue, JsValue>;
+}
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "plugin", "dialog"], js_name = save, catch)]
+    async fn dialog_save_with_error(options: JsValue) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "plugin", "dialog"], js_name = open, catch)]
+    async fn dialog_open_with_error(options: JsValue) -> Result<JsValue, JsValue>;
 }
 
 #[derive(Serialize, Deserialize)]

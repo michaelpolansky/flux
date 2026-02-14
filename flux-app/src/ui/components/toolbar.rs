@@ -1,22 +1,6 @@
 use leptos::prelude::*;
 use wasm_bindgen::prelude::*;
-use gloo_utils::format::JsValueSerdeExt;
-
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
-    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
-}
-
-// WASM bindings for Tauri Dialog Plugin
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "plugin", "dialog"])]
-    async fn save(options: JsValue) -> JsValue;
-    
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "plugin", "dialog"])]
-    async fn open(options: JsValue) -> JsValue;
-}
+use crate::ui::tauri::{safe_invoke, safe_dialog_save, safe_dialog_open, TauriError};
 
 #[derive(serde::Serialize)]
 struct LoadPatternArgs {
@@ -57,18 +41,14 @@ pub fn Toolbar() -> impl IntoView {
                 }],
                 default_path: Some("pattern.flux".to_string()),
             };
-            
+
             let options_js = serde_wasm_bindgen::to_value(&options).unwrap();
-            
-            if let Ok(path) = save(options_js).await.into_serde::<Option<String>>() {
-                if let Some(path) = path {
+
+            match safe_dialog_save(options_js).await {
+                Ok(Some(path)) => {
                     // Send CURRENT pattern state
                     let current_pattern = pattern_signal.get_untracked();
-                    // We use serde_json::to_value because SavePatternArgs expects serde_json::Value or serialized struct
-                    // But wait, SavePatternArgs.pattern is serde_json::Value? 
-                    // Let's just serialize it directly if possible.
-                    // Actually, let's redefine args to take the struct directly:
-                    
+
                     #[derive(serde::Serialize)]
                     struct Args {
                         pattern: crate::shared::models::Pattern,
@@ -76,11 +56,19 @@ pub fn Toolbar() -> impl IntoView {
                     }
 
                     let args = serde_wasm_bindgen::to_value(&Args {
-                        pattern: current_pattern,
-                        path: path.clone(), // Clone path to potential use later if needed, though not here
+                        pattern: current_pattern.clone(),
+                        path: path.clone(),
                     }).unwrap();
-                    
-                    invoke("save_pattern", args).await;
+
+                    match safe_invoke("save_pattern", args).await {
+                        Ok(_) => { /* success */ },
+                        Err(TauriError::NotAvailable) => {
+                            web_sys::console::log_1(&"Tauri not available - save command disabled".into());
+                        },
+                        Err(TauriError::InvokeFailed(msg)) => {
+                            web_sys::console::error_1(&format!("Save command failed: {}", msg).into());
+                        }
+                    }
 
                     // Also save to last_pattern.flux for auto-load
                     if !path.ends_with("last_pattern.flux") {
@@ -88,8 +76,26 @@ pub fn Toolbar() -> impl IntoView {
                             pattern: pattern_signal.get_untracked(),
                             path: "last_pattern.flux".to_string(),
                         }).unwrap();
-                        invoke("save_pattern", auto_args).await;
+
+                        match safe_invoke("save_pattern", auto_args).await {
+                            Ok(_) => { /* success */ },
+                            Err(TauriError::NotAvailable) => {
+                                web_sys::console::log_1(&"Tauri not available - auto-save command disabled".into());
+                            },
+                            Err(TauriError::InvokeFailed(msg)) => {
+                                web_sys::console::error_1(&format!("Auto-save command failed: {}", msg).into());
+                            }
+                        }
                     }
+                },
+                Ok(None) => {
+                    // User cancelled the dialog
+                },
+                Err(TauriError::NotAvailable) => {
+                    web_sys::console::log_1(&"Tauri not available - save dialog disabled".into());
+                },
+                Err(TauriError::InvokeFailed(msg)) => {
+                    web_sys::console::error_1(&format!("Save dialog failed: {}", msg).into());
                 }
             }
         });
@@ -105,18 +111,42 @@ pub fn Toolbar() -> impl IntoView {
                 multiple: false,
                 directory: false,
             };
-            
+
             let options_js = serde_wasm_bindgen::to_value(&options).unwrap();
-            
-             if let Ok(path) = open(options_js).await.into_serde::<Option<String>>() {
-                if let Some(path) = path {
+
+            match safe_dialog_open(options_js).await {
+                Ok(Some(path)) => {
                      let args = serde_wasm_bindgen::to_value(&LoadPatternArgs {
                         path: path.clone(),
                     }).unwrap();
-                    
-                    if let Ok(loaded_pattern) = invoke("load_pattern", args).await.into_serde::<crate::shared::models::Pattern>() {
-                        set_pattern_signal.set(loaded_pattern);
+
+                    match safe_invoke("load_pattern", args).await {
+                        Ok(result) => {
+                            match result.into_serde::<crate::shared::models::Pattern>() {
+                                Ok(loaded_pattern) => {
+                                    set_pattern_signal.set(loaded_pattern);
+                                },
+                                Err(e) => {
+                                    web_sys::console::error_1(&format!("Failed to deserialize pattern: {:?}", e).into());
+                                }
+                            }
+                        },
+                        Err(TauriError::NotAvailable) => {
+                            web_sys::console::log_1(&"Tauri not available - load command disabled".into());
+                        },
+                        Err(TauriError::InvokeFailed(msg)) => {
+                            web_sys::console::error_1(&format!("Load command failed: {}", msg).into());
+                        }
                     }
+                },
+                Ok(None) => {
+                    // User cancelled the dialog
+                },
+                Err(TauriError::NotAvailable) => {
+                    web_sys::console::log_1(&"Tauri not available - open dialog disabled".into());
+                },
+                Err(TauriError::InvokeFailed(msg)) => {
+                    web_sys::console::error_1(&format!("Open dialog failed: {}", msg).into());
                 }
             }
         });
