@@ -111,7 +111,9 @@ pub fn Grid() -> impl IntoView {
     });
 
     view! {
-        <div class="sequencer-grid flex">
+        <div class="sequencer-grid">
+            // Grid portion with horizontal flex layout
+            <div class="flex">
                 // Track labels on the left (dynamic)
                 <div class="flex flex-col gap-[2px] mr-2">
                     <For
@@ -135,55 +137,56 @@ pub fn Grid() -> impl IntoView {
                     />
                 </div>
 
-            // Grid of 4 tracks × 16 steps
-            <div class="flex flex-col gap-[2px] relative">
-                <PlayheadIndicator
-                    position=playback_position
-                    is_playing=is_playing
-                />
-                <For
-                    each=move || {
-                        pattern_signal.with(|p| (0..p.tracks.len()).collect::<Vec<_>>())
-                    }
-                    key=|track_idx| *track_idx
-                    children=move |track_idx| {
-                        view! {
-                            <div class="flex gap-[2px]">
-                                <For
-                                    each=move || {
-                                        (0..16).into_iter()
-                                    }
-                                    key=|step_idx| *step_idx
-                                    children=move |step_idx| {
-                                        view! {
-                                            <GridStep track_idx=track_idx step_idx=step_idx />
-                                        }
-                                    }
-                                />
-                            </div>
+                // Grid of 4 tracks × 16 steps
+                <div class="flex flex-col gap-[2px] relative">
+                    <PlayheadIndicator
+                        position=playback_position
+                        is_playing=is_playing
+                    />
+                    <For
+                        each=move || {
+                            pattern_signal.with(|p| (0..p.tracks.len()).collect::<Vec<_>>())
                         }
-                    }
+                        key=|track_idx| *track_idx
+                        children=move |track_idx| {
+                            view! {
+                                <div class="flex gap-[2px]">
+                                    <For
+                                        each=move || {
+                                            (0..16).into_iter()
+                                        }
+                                        key=|step_idx| *step_idx
+                                        children=move |step_idx| {
+                                            view! {
+                                                <GridStep track_idx=track_idx step_idx=step_idx />
+                                            }
+                                        }
+                                    />
+                                </div>
+                            }
+                        }
+                    />
+                </div>
+
+                <StepBadge
+                    track=selected_track
+                    step=selected_step_idx
+                    visible=badge_visible
                 />
             </div>
 
-            <StepBadge
-                track=selected_track
-                step=selected_step_idx
-                visible=badge_visible
-            />
-
-            // Add track controls below grid
+            // Track controls below grid
             <TrackControls />
-
-            // Confirmation dialog (rendered at top level)
-            <ConfirmDialog
-                visible=Signal::derive(move || show_confirm_dialog.get().is_some())
-                on_confirm=on_confirm_remove
-                on_cancel=on_cancel_remove
-                title="Confirm Removal"
-                message=confirm_message
-            />
         </div>
+
+        // Confirmation dialog (modal overlay outside grid container)
+        <ConfirmDialog
+            visible=Signal::derive(move || show_confirm_dialog.get().is_some())
+            on_confirm=on_confirm_remove
+            on_cancel=on_cancel_remove
+            title="Confirm Removal"
+            message=confirm_message
+        />
     }
 }
 
