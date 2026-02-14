@@ -57,13 +57,16 @@ pub fn App() -> impl IntoView {
             use crate::ui::tauri::listen_event;
             // "playback-status" matches the backend event name
             listen_event("playback-status", move |event: AudioSnapshot| {
+                // Normalize position to 0-15 range for safety
+                let normalized_position = event.current_step % 16;
+
                 // Update current_step (existing)
-                set_current_step.set(event.current_step);
+                set_current_step.set(normalized_position);
 
                 // Update PlaybackState (new)
                 set_playback_state.update(|state| {
                     state.is_playing = event.is_playing;
-                    state.current_position = event.current_step;
+                    state.current_position = normalized_position;
                     state.triggered_tracks = event.triggered_tracks.unwrap_or([false; 4]);
                 });
             }).await;

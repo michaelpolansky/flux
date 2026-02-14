@@ -14,10 +14,11 @@ pub fn PlayheadIndicator(
     #[prop(into)] is_playing: Signal<bool>,
 ) -> impl IntoView {
     // Compute horizontal offset based on position (0-15)
-    // Account for track label offset (w-8 + mr-2 = 40px)
+    // PlayheadIndicator is inside grid container (already after track labels)
+    // so we only need to multiply position by step width, no extra offset
     let transform = Signal::derive(move || {
-        let pos = position.get();
-        let offset = TRACK_LABEL_OFFSET_PX + (pos * STEP_TOTAL_WIDTH);
+        let pos = position.get().min(15); // Clamp to 0-15 range
+        let offset = pos * STEP_TOTAL_WIDTH;
         format!("translateX({}px)", offset)
     });
 
