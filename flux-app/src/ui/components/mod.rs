@@ -1,5 +1,6 @@
 pub mod grid;
 pub mod grid_step;
+pub mod step_badge;
 pub mod inspector;
 pub mod toolbar;
 pub mod lfo_draw;
