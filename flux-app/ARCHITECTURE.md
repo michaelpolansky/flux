@@ -148,33 +148,555 @@ App (app.rs)
 
 ### State Management
 
-FLUX uses Leptos's **reactive signals** for state synchronization:
+FLUX uses **Leptos reactive signals** for fine-grained reactivity and efficient UI updates. This section explains the state architecture for developers who may be new to reactive programming patterns.
+
+#### Leptos Reactive Signals Overview
+
+Leptos uses a **signal-based reactive system** where state changes automatically propagate to dependent UI components. Unlike frameworks that re-render entire component trees, Leptos tracks fine-grained dependencies and only updates the specific DOM nodes that depend on changed signals.
+
+**Core Signal Types**:
 
 ```rust
-// Global State (Provided via Context)
-struct SequencerState {
-    current_step: ReadSignal<usize>,        // Current playback position (0-15)
-    selected_step: RwSignal<Option<(usize, usize)>>, // (track_id, step_idx)
-}
+// Read-only signal: Can read, cannot write
+ReadSignal<T>
 
-// Playback State
-struct PlaybackState {
-    is_playing: bool,                       // Transport state
-    current_position: usize,                // Redundant with current_step
-    triggered_tracks: [bool; 4],            // Per-track trigger indicators
-}
+// Write-only signal: Can write, cannot read
+WriteSignal<T>
 
-// Pattern State (Shared Data Model)
-pattern_signal: ReadSignal<Pattern>         // Full sequencer pattern
-set_pattern_signal: WriteSignal<Pattern>    // Pattern mutation
+// Read-write signal: Combined read + write access
+RwSignal<T>
+
+// Derived signal: Automatically recomputes when dependencies change
+Signal::derive(|| expression)
 ```
 
-**Signal Flow**:
+**How Signals Work**:
 
-1. User clicks a step → `toggle_step()` Tauri command
-2. Audio thread processes command → updates internal pattern
-3. Sync thread emits `playback-status` event
-4. Frontend event listener updates signals → UI reactively re-renders
+1. **Creation**: `let (read_signal, write_signal) = signal(initial_value);`
+2. **Reading**: `read_signal.get()` or `read_signal.with(|value| { ... })`
+3. **Writing**: `write_signal.set(new_value)` or `write_signal.update(|value| { ... })`
+4. **Reactivity**: Any view that reads a signal automatically subscribes to changes
+
+#### FLUX State Architecture
+
+FLUX maintains three primary state structures, all provided via Leptos context for global access:
+
+##### 1. SequencerState (User Interaction State)
+
+Tracks user selection and playback position.
+
+```rust
+// Defined in: src/app.rs
+#[derive(Clone)]
+pub struct SequencerState {
+    pub current_step: ReadSignal<usize>,                    // Playback position (0-15)
+    pub selected_step: RwSignal<Option<(usize, usize)>>,    // Selected (track_id, step_idx)
+}
+```
+
+**Usage Pattern**:
+
+```rust
+// In App.rs - creation and context provision
+let (current_step, set_current_step) = signal(0);
+let selected_step = RwSignal::new(None);
+provide_context(SequencerState { current_step, selected_step });
+
+// In child components - consumption
+let sequencer_state = use_context::<SequencerState>()
+    .expect("SequencerState context not found");
+
+// Reading current step (automatic reactivity)
+let step = sequencer_state.current_step.get();
+
+// Selecting a step (user clicks grid)
+sequencer_state.selected_step.set(Some((track_idx, step_idx)));
+
+// Deselecting (ESC key or click outside grid)
+sequencer_state.selected_step.set(None);
+```
+
+**Key Features**:
+- `current_step` is read-only in UI (only updated by audio engine events)
+- `selected_step` is read-write (user interactions can change selection)
+- Used by Grid, Inspector, and StepInspector components
+
+##### 2. PlaybackState (Audio Engine State)
+
+Reflects real-time audio engine state, updated via backend events.
+
+```rust
+// Defined in: src/ui/state.rs
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+pub struct PlaybackState {
+    pub is_playing: bool,               // Transport running?
+    pub current_position: usize,        // Current step (0-15)
+    pub triggered_tracks: [bool; 4],    // Which tracks fired this step
+}
+```
+
+**Usage Pattern**:
+
+```rust
+// In App.rs - creation
+let (playback_state, set_playback_state) = signal(PlaybackState::default());
+provide_context(playback_state);    // Provide ReadSignal
+provide_context(set_playback_state); // Provide WriteSignal
+
+// Event listener updates (from audio engine)
+safe_listen_event("playback-status", move |event: AudioSnapshot| {
+    set_current_step.set(event.current_step % 16);
+    set_playback_state.update(|state| {
+        state.is_playing = event.is_playing;
+        state.current_position = event.current_step % 16;
+        state.triggered_tracks = event.triggered_tracks.unwrap_or([false; 4]);
+    });
+});
+
+// In components - derive specific properties
+let is_playing = Signal::derive(move || {
+    playback_state.get().is_playing
+});
+
+let is_playing_step = Signal::derive(move || {
+    let playback = playback_state.get();
+    playback.is_playing && playback.current_position == step_idx
+});
+```
+
+**Key Features**:
+- Updated at ~60 FPS by sync thread
+- Drives playhead animation and step highlight
+- `triggered_tracks` array enables per-track visual feedback
+
+##### 3. Pattern Signal (Data Model)
+
+The complete sequencer pattern (tracks, steps, parameters, LFOs).
+
+```rust
+// Pattern type defined in: src/shared/models.rs
+let (pattern_signal, set_pattern_signal) = signal(Pattern::default());
+provide_context(pattern_signal);        // ReadSignal<Pattern>
+provide_context(set_pattern_signal);    // WriteSignal<Pattern>
+```
+
+**Pattern Structure** (simplified):
+
+```rust
+struct Pattern {
+    pub tracks: Vec<Track>,     // 16 tracks (only 4 visible in current UI)
+    pub bpm: f32,               // 120.0 default
+    pub master_length: u32,     // 16 steps
+}
+
+struct Track {
+    pub id: usize,
+    pub machine: MachineType,
+    pub subtracks: Vec<Subtrack>,
+    pub default_params: [f32; 128],  // Track-level parameter defaults
+    pub lfos: Vec<LFO>,              // LFO modulators
+}
+
+struct Subtrack {
+    pub voice_id: usize,
+    pub steps: Vec<AtomicStep>,  // 16 steps per track
+}
+
+struct AtomicStep {
+    pub trig_type: TrigType,         // None, Note, Lock, SynthTrigger, OneShot
+    pub note: u8,                    // MIDI note (0-127)
+    pub velocity: u8,
+    pub p_locks: [Option<f32>; 128], // Per-step parameter overrides
+    // ... (see models.rs for full definition)
+}
+```
+
+**Usage Pattern - Reading**:
+
+```rust
+// Efficient read with .with() - avoids cloning the Pattern
+let is_active = Signal::derive(move || {
+    pattern_signal.with(|p| {
+        p.tracks.get(track_idx)
+            .and_then(|t| t.subtracks.get(0))
+            .and_then(|st| st.steps.get(step_idx))
+            .map(|s| s.trig_type != TrigType::None)
+            .unwrap_or(false)
+    })
+});
+```
+
+**Usage Pattern - Writing**:
+
+```rust
+// Update pattern in place
+set_pattern_signal.update(|p| {
+    if let Some(track) = p.tracks.get_mut(track_id) {
+        if let Some(subtrack) = track.subtracks.get_mut(0) {
+            if let Some(step) = subtrack.steps.get_mut(step_idx) {
+                // Toggle step trigger
+                step.trig_type = if step.trig_type == TrigType::None {
+                    TrigType::Note
+                } else {
+                    TrigType::None
+                };
+            }
+        }
+    }
+});
+
+// Send command to backend to sync audio engine
+spawn_local(async move {
+    use crate::ui::tauri::toggle_step;
+    toggle_step(track_id, step_idx).await;
+});
+```
+
+**Performance Optimization**:
+- Use `.with()` instead of `.get()` to avoid cloning the 16KB+ Pattern struct
+- Only clone when absolutely necessary (e.g., passing to async tasks)
+
+##### 4. GridUIState (Component-Local State)
+
+Manages grid-specific UI state like hover effects and trigger animations.
+
+```rust
+// Defined in: src/ui/state.rs
+#[derive(Clone, Debug, Default)]
+pub struct GridUIState {
+    pub hovered_step: Option<(usize, usize)>,
+    pub recent_triggers: Vec<TriggerEvent>,
+}
+
+struct TriggerEvent {
+    pub track: usize,
+    pub step: usize,
+    pub timestamp: f64,  // Milliseconds since page load
+}
+```
+
+**Usage Pattern**:
+
+```rust
+// Created in Grid component
+let grid_ui_state = signal(GridUIState::default());
+provide_context(grid_ui_state.0);  // ReadSignal
+provide_context(grid_ui_state.1);  // WriteSignal
+
+// Effect: Detect triggers and add to recent_triggers
+Effect::new(move |_| {
+    let playback = playback_state.get();
+    if playback.is_playing {
+        pattern_signal.with(|pattern| {
+            for (track_idx, track) in pattern.tracks.iter().enumerate() {
+                if let Some(step) = track.subtracks[0].steps.get(playback.current_position) {
+                    if step.trig_type != TrigType::None {
+                        grid_ui_state.1.update(|state| {
+                            state.add_trigger(track_idx, playback.current_position, js_sys::Date::now());
+                        });
+                    }
+                }
+            }
+        });
+
+        // Cleanup old triggers (older than 150ms for animation)
+        grid_ui_state.1.update(|state| {
+            state.cleanup_old_triggers(js_sys::Date::now(), 150.0);
+        });
+    }
+});
+
+// In GridStep - check if this step was recently triggered
+let is_recently_triggered = Signal::derive(move || {
+    grid_ui_state.0.with(|state| {
+        state.recent_triggers.iter()
+            .any(|t| t.track == track_idx && t.step == step_idx)
+    })
+});
+```
+
+#### Signal Derivation Patterns
+
+FLUX extensively uses **derived signals** to compute UI state from base signals.
+
+**Example: Track Selection Indicator**
+
+```rust
+// In Grid.rs - extract track from selected_step
+let selected_track = Signal::derive(move || {
+    sequencer_state.selected_step.get()
+        .map(|(track, _)| track)
+        .unwrap_or(0)
+});
+
+// In GridStep.rs - check if this step is selected
+let is_step_selected = Signal::derive(move || {
+    sequencer_state.selected_step.get()
+        .map(|(tid, sidx)| tid == track_idx && sidx == step_idx)
+        .unwrap_or(false)
+});
+```
+
+**Example: Dynamic CSS Classes**
+
+```rust
+// In GridStep.rs - compute CSS classes based on multiple signals
+let step_classes = Signal::derive(move || {
+    let base = "w-10 h-10 rounded-lg transition-all";
+
+    let state = if is_active.get() {
+        "bg-blue-500 hover:bg-blue-400"
+    } else {
+        "bg-zinc-800 hover:bg-zinc-700"
+    };
+
+    let selection = if is_step_selected.get() {
+        "ring ring-amber-400"
+    } else {
+        ""
+    };
+
+    let playing = if is_playing_step.get() {
+        "bg-emerald-500/30"
+    } else {
+        ""
+    };
+
+    format!("{} {} {} {}", base, state, selection, playing)
+});
+
+// In view! macro - automatically updates when any dependency changes
+view! {
+    <button class=move || step_classes.get()>
+        // ...
+    </button>
+}
+```
+
+**Why Derived Signals?**
+- Automatic dependency tracking
+- Efficient updates (only recompute when dependencies change)
+- No manual subscription management
+- Type-safe transformations
+
+#### Audio Engine → UI Update Flow
+
+The complete data flow from audio engine to UI updates:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. Audio Thread (Real-time)                                      │
+│    FluxKernel advances sequencer step                            │
+│    ├─> Updates current_step                                      │
+│    ├─> Detects triggered tracks                                  │
+│    └─> Writes AudioSnapshot to triple buffer                     │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 2. Sync Thread (60 FPS)                                          │
+│    ├─> Reads AudioSnapshot from triple buffer                    │
+│    ├─> Throttles updates (only emit if step changed)             │
+│    └─> Emits "playback-status" event to Tauri                    │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 3. Tauri IPC Layer                                               │
+│    Forwards event to WebView                                     │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 4. Frontend Event Listener (App.rs)                              │
+│    safe_listen_event("playback-status", |event| {                │
+│        set_current_step.set(event.current_step % 16);            │
+│        set_playback_state.update(|state| {                       │
+│            state.is_playing = event.is_playing;                  │
+│            state.current_position = event.current_step % 16;     │
+│            state.triggered_tracks = event.triggered_tracks;      │
+│        });                                                        │
+│    })                                                             │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 5. Leptos Reactive System                                        │
+│    ├─> Detects signal changes (set_current_step, playback_state) │
+│    ├─> Recomputes derived signals                                │
+│    │   ├─> is_playing_step                                       │
+│    │   ├─> is_recently_triggered                                 │
+│    │   └─> step_classes                                          │
+│    └─> Updates dependent DOM nodes                               │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 6. UI Updates (Targeted Re-renders)                              │
+│    ├─> Playhead indicator moves to current_step                  │
+│    ├─> Playing step highlights with emerald glow                 │
+│    ├─> Triggered steps pulse with white ring (150ms animation)   │
+│    └─> Transport button updates Play ▶ / Stop ■                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Key Performance Characteristics**:
+- **Lock-Free**: No mutexes between audio and UI threads
+- **Fine-Grained**: Only affected DOM nodes update (not entire components)
+- **Throttled**: Sync thread only emits when step actually changes
+- **Efficient**: GridStep components derive state without prop drilling
+
+#### Performance Optimizations
+
+##### 1. Avoid Cloning Heavy Structs
+
+```rust
+// ❌ BAD - Clones entire 16KB+ Pattern on every read
+let is_active = move || {
+    let pattern = pattern_signal.get();  // Clones!
+    pattern.tracks[track_idx].subtracks[0].steps[step_idx].trig_type != TrigType::None
+};
+
+// ✅ GOOD - Borrows Pattern, extracts only what's needed
+let is_active = move || {
+    pattern_signal.with(|p| {
+        p.tracks.get(track_idx)
+            .and_then(|t| t.subtracks.get(0))
+            .and_then(|st| st.steps.get(step_idx))
+            .map(|s| s.trig_type != TrigType::None)
+            .unwrap_or(false)
+    })
+};
+```
+
+##### 2. Use Derived Signals for Computed State
+
+```rust
+// ❌ BAD - Recomputes on every render
+view! {
+    <div class=move || {
+        if playback_state.get().is_playing { "playing" } else { "stopped" }
+    }>
+}
+
+// ✅ GOOD - Cached, only recomputes when playback_state changes
+let status_class = Signal::derive(move || {
+    if playback_state.get().is_playing { "playing" } else { "stopped" }
+});
+
+view! {
+    <div class=move || status_class.get()>
+}
+```
+
+##### 3. Batch Updates with `.update()`
+
+```rust
+// ❌ BAD - Triggers two reactive updates
+set_playback_state.set(PlaybackState {
+    is_playing: true,
+    current_position: 0,
+    triggered_tracks: [false; 4],
+});
+set_playback_state.set(PlaybackState {
+    is_playing: true,
+    current_position: 1,
+    triggered_tracks: [true, false, false, false],
+});
+
+// ✅ GOOD - Single update
+set_playback_state.update(|state| {
+    state.is_playing = true;
+    state.current_position = 1;
+    state.triggered_tracks = [true, false, false, false];
+});
+```
+
+##### 4. Component-Level Context
+
+```rust
+// GridUIState is only provided in Grid component, not globally
+// This limits reactivity scope - only Grid children react to GridUIState changes
+let grid_ui_state = signal(GridUIState::default());
+provide_context(grid_ui_state.0);
+provide_context(grid_ui_state.1);
+```
+
+#### Common Patterns for New Developers
+
+##### Pattern 1: Reading Global State
+
+```rust
+#[component]
+pub fn MyComponent() -> impl IntoView {
+    // 1. Get context
+    let pattern_signal = use_context::<ReadSignal<Pattern>>()
+        .expect("Pattern context not found");
+
+    // 2. Derive needed state
+    let track_count = Signal::derive(move || {
+        pattern_signal.with(|p| p.tracks.len())
+    });
+
+    // 3. Use in view (automatically reactive)
+    view! {
+        <div>{move || track_count.get()}</div>
+    }
+}
+```
+
+##### Pattern 2: Updating Global State + Backend Sync
+
+```rust
+let handle_click = move |_| {
+    // 1. Update frontend signal
+    set_pattern_signal.update(|p| {
+        p.bpm = 140.0;
+    });
+
+    // 2. Sync to backend
+    spawn_local(async move {
+        use crate::ui::tauri::safe_invoke;
+        let _ = safe_invoke("set_bpm", &[140.0]).await;
+    });
+};
+```
+
+##### Pattern 3: Conditional Rendering Based on State
+
+```rust
+view! {
+    {move || {
+        let selected = sequencer_state.selected_step.get();
+        if let Some((track_id, step_idx)) = selected {
+            view! {
+                <div>"Editing Track " {track_id + 1} ", Step " {step_idx + 1}</div>
+            }.into_any()
+        } else {
+            view! {
+                <div>"No Step Selected"</div>
+            }.into_any()
+        }
+    }}
+}
+```
+
+##### Pattern 4: Effects for Side Effects
+
+```rust
+// Run side effect when playback state changes
+Effect::new(move |_| {
+    let is_playing = playback_state.get().is_playing;
+    log::info!("Playback state changed: {}", is_playing);
+
+    // Trigger animations, update canvas, etc.
+});
+```
+
+#### Summary: State Management Principles
+
+1. **Signals are the source of truth**: All reactive state flows through signals
+2. **Context for global state**: Use `provide_context()` / `use_context()` for app-wide state
+3. **Derive, don't duplicate**: Use `Signal::derive()` for computed state
+4. **Avoid clones**: Use `.with()` for read-only access to heavy structs
+5. **Batch updates**: Use `.update()` to modify state in place
+6. **Fine-grained reactivity**: Only components that read a signal react to changes
+7. **Backend sync is manual**: Frontend signals don't auto-sync to backend - always call Tauri commands
 
 ### Tauri Detection & Error Handling
 
