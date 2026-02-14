@@ -77,10 +77,22 @@ pub fn MachineSelector(
         set_is_open.update(|open| *open = !*open);
     };
 
-    // Placeholder view - we'll build this in next tasks
     view! {
         <div class="relative">
-            "MachineSelector placeholder"
+            <button
+                on:click=toggle_dropdown
+                class=move || {
+                    let base = "px-1.5 py-0.5 text-[10px] font-mono border rounded \
+                                hover:bg-zinc-600 transition-colors cursor-pointer";
+                    if is_open.get() {
+                        format!("{} bg-zinc-600 border-blue-500 text-zinc-300", base)
+                    } else {
+                        format!("{} bg-zinc-700 border-zinc-600 text-zinc-300", base)
+                    }
+                }
+            >
+                {move || format!("{} ▾", machine_abbreviation(current_machine()))}
+            </button>
         </div>
     }
 }
