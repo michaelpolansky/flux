@@ -2,7 +2,7 @@ use leptos::prelude::*;
 
 // Grid layout constants for positioning
 const STEP_WIDTH_PX: usize = 40;       // w-10 = 2.5rem
-const STEP_GAP_PX: usize = 4;          // gap-1 = 0.25rem
+const STEP_GAP_PX: usize = 2;          // Custom gap-[2px]
 const STEP_TOTAL_WIDTH: usize = STEP_WIDTH_PX + STEP_GAP_PX;
 
 #[component]
