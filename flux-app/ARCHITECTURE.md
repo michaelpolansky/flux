@@ -1291,6 +1291,79 @@ let snapshot = snapshot_consumer.read();  // Always succeeds, no blocking
 
 ---
 
+## Performance Considerations
+
+### Target Metrics
+
+FLUX is designed for real-time audio performance with the following targets:
+
+**Audio Engine**:
+- **Audio latency**: < 10ms (512 samples @ 48kHz, configurable buffer size)
+- **Timing precision**: Sample-accurate sequencer clock (±1 sample jitter)
+- **CPU overhead**: < 5% on single core (M1 MacBook Air baseline)
+- **Zero allocations**: No heap allocations in audio callback
+
+**UI Responsiveness**:
+- **FPS target**: 60 FPS for UI updates and animations
+- **IPC latency**: < 100μs for Tauri command round-trip
+- **Grid rendering**: < 16ms frame time (16 steps × 4 tracks = 64 components)
+
+**Memory Footprint**:
+- **Pattern data**: ~16KB per pattern (16 tracks × 16 steps × 512 bytes p-lock array)
+- **Ring buffer**: 1024 command slots × 64 bytes = 64KB
+- **Binary size**: < 15MB (without WebView framework)
+
+### Optimization Techniques
+
+**1. Lock-Free Communication**
+- `rtrb` ring buffer for UI→Audio commands (wait-free push/pop)
+- `triple_buffer` for Audio→UI state snapshots (wait-free read/write)
+- No mutexes in audio callback (prevents priority inversion)
+
+**2. Zero-Allocation Audio Path**
+- Pre-allocated buffers at startup (pattern, step arrays, voice state)
+- Fixed-size arrays instead of Vec/HashMap in hot paths
+- Stack-only audio processing (no Box, Arc, String allocations)
+
+**3. Fine-Grained Reactivity**
+- Leptos signals only update dependent DOM nodes (not full component trees)
+- Derived signals cache computed values (only recompute when dependencies change)
+- Component-local state limits reactivity scope (GridUIState only in Grid)
+
+**4. IPC Optimization**
+- Event throttling: Sync thread only emits when step changes (not every sample)
+- Batched updates: `.update()` for multiple signal changes in one frame
+- Lazy serialization: Pattern only serialized on save/load (not every command)
+
+**5. Cache-Friendly Data Structures**
+- Contiguous parameter lock arrays (`[Option<f32>; 128]`)
+- Linear step iteration (no HashMap lookups in audio callback)
+- Struct layout optimized for CPU cache line size (64 bytes)
+
+### Profiling and Monitoring
+
+**Development Tools**:
+- `cargo flamegraph` for CPU profiling (identifies hot paths)
+- `perf` on Linux for hardware counter analysis
+- Browser DevTools Performance tab for frontend frame drops
+
+**Audio Metrics** (exported via debug builds):
+- Callback duration histogram (detect xruns)
+- Command queue occupancy (detect UI flooding)
+- Step timing jitter (verify clock accuracy)
+
+**Known Bottlenecks**:
+1. Pattern serialization (10KB JSON) on save/load
+2. 64 GridStep components (SVG rendering on older GPUs)
+3. LFO Designer canvas redraw (16 points × 60 FPS)
+
+**Future Optimizations**:
+- State diffing for incremental IPC updates
+- Canvas layer compositing for LFO Designer
+- SIMD for audio synthesis (portable_simd)
+
+---
+
 ## Future Architectural Considerations
 
 ### Potential Enhancements
