@@ -1,8 +1,27 @@
 use leptos::prelude::*;
 use crate::ui::components::grid_step::GridStep;
+use super::step_badge::StepBadge;
 
 #[component]
 pub fn Grid() -> impl IntoView {
+    let sequencer_state = use_context::<crate::app::SequencerState>().expect("SequencerState context not found");
+
+    let selected_track = Signal::derive(move || {
+        sequencer_state.selected_step.get()
+            .map(|(track, _)| track)
+            .unwrap_or(0)
+    });
+
+    let selected_step_idx = Signal::derive(move || {
+        sequencer_state.selected_step.get()
+            .map(|(_, step)| step)
+            .unwrap_or(0)
+    });
+
+    let badge_visible = Signal::derive(move || {
+        sequencer_state.selected_step.get().is_some()
+    });
+
     view! {
         <div class="sequencer-grid flex">
             // Track labels on the left
@@ -39,6 +58,12 @@ pub fn Grid() -> impl IntoView {
                     }
                 />
             </div>
+
+            <StepBadge
+                track=selected_track
+                step=selected_step_idx
+                visible=badge_visible
+            />
         </div>
     }
 }
