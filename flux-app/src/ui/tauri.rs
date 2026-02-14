@@ -53,7 +53,7 @@ pub async fn safe_dialog_save(options: JsValue) -> Result<Option<String>, TauriE
         .await
         .map_err(|e| TauriError::InvokeFailed(format!("{:?}", e)))
         .and_then(|js_val| {
-            js_val.into_serde::<Option<String>>()
+            serde_wasm_bindgen::from_value::<Option<String>>(js_val)
                 .map_err(|e| TauriError::InvokeFailed(format!("Failed to deserialize path: {:?}", e)))
         })
 }
@@ -68,26 +68,28 @@ pub async fn safe_dialog_open(options: JsValue) -> Result<Option<String>, TauriE
         .await
         .map_err(|e| TauriError::InvokeFailed(format!("{:?}", e)))
         .and_then(|js_val| {
-            js_val.into_serde::<Option<String>>()
+            serde_wasm_bindgen::from_value::<Option<String>>(js_val)
                 .map_err(|e| TauriError::InvokeFailed(format!("Failed to deserialize path: {:?}", e)))
         })
 }
 
 #[wasm_bindgen]
 extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
-    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
+    #[wasm_bindgen(js_namespace = ["window", "__TAURI_SAFE__"], catch)]
+    async fn invoke(cmd: &str, args: JsValue) -> Result<JsValue, JsValue>;
+}
 
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"], js_name = invoke, catch)]
-    async fn invoke_with_error(cmd: &str, args: JsValue) -> Result<JsValue, JsValue>;
+// Alias for compatibility
+async fn invoke_with_error(cmd: &str, args: JsValue) -> Result<JsValue, JsValue> {
+    invoke(cmd, args).await
 }
 
 #[wasm_bindgen]
 extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "plugin", "dialog"], js_name = save, catch)]
+    #[wasm_bindgen(js_namespace = ["window", "__TAURI_SAFE__"], js_name = dialogSave, catch)]
     async fn dialog_save_with_error(options: JsValue) -> Result<JsValue, JsValue>;
 
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "plugin", "dialog"], js_name = open, catch)]
+    #[wasm_bindgen(js_namespace = ["window", "__TAURI_SAFE__"], js_name = dialogOpen, catch)]
     async fn dialog_open_with_error(options: JsValue) -> Result<JsValue, JsValue>;
 }
 
@@ -171,11 +173,11 @@ pub struct TauriEvent<T> {
 
 #[wasm_bindgen]
 extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "event"])]
-    async fn listen(event: &str, handler: &Closure<dyn FnMut(JsValue)>) -> JsValue;
+    #[wasm_bindgen(js_namespace = ["window", "__TAURI_SAFE__"], catch)]
+    async fn listen(event: &str, handler: &Closure<dyn FnMut(JsValue)>) -> Result<JsValue, JsValue>;
 }
 
-pub async fn listen_event<T>(event_name: &str, callback: impl Fn(T) + 'static) 
+pub async fn listen_event<T>(event_name: &str, callback: impl Fn(T) + 'static)
 where T: for<'a> Deserialize<'a> + 'static
 {
     let handler = Closure::wrap(Box::new(move |val: JsValue| {
@@ -183,8 +185,9 @@ where T: for<'a> Deserialize<'a> + 'static
             callback(event_struct.payload);
         }
     }) as Box<dyn FnMut(JsValue)>);
-    
+
     // We intentionally leak the closure to keep it alive for the lifetime of the app
-    let _ = listen(event_name, &handler).await;
-    handler.forget();
+    if let Ok(_) = listen(event_name, &handler).await {
+        handler.forget();
+    }
 }

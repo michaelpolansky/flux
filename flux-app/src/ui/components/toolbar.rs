@@ -57,7 +57,7 @@ pub fn Toolbar() -> impl IntoView {
 
                     let args = serde_wasm_bindgen::to_value(&Args {
                         pattern: current_pattern.clone(),
-                        path,
+                        path: path.clone(),
                     }).unwrap();
 
                     // Note: Errors are logged to console only, no user-facing notifications
@@ -124,7 +124,7 @@ pub fn Toolbar() -> impl IntoView {
                     // Note: Errors are logged to console only, no user-facing notifications
                     match safe_invoke("load_pattern", args).await {
                         Ok(result) => {
-                            match result.into_serde::<crate::shared::models::Pattern>() {
+                            match serde_wasm_bindgen::from_value::<crate::shared::models::Pattern>(result) {
                                 Ok(loaded_pattern) => {
                                     set_pattern_signal.set(loaded_pattern);
                                 },

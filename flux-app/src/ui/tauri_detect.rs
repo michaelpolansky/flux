@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 extern "C" {
-    #[wasm_bindgen(js_namespace = ["window"])]
+    #[wasm_bindgen(js_namespace = ["window"], thread_local_v2)]
     static __TAURI__: JsValue;
 }
 
@@ -26,7 +26,7 @@ impl Default for TauriCapabilities {
 /// Detect if Tauri APIs are available
 pub fn detect_tauri() -> TauriCapabilities {
     // Check if window.__TAURI__ exists and is an object
-    let tauri_exists = !__TAURI__.is_undefined() && !__TAURI__.is_null();
+    let tauri_exists = __TAURI__.with(|t| !t.is_undefined() && !t.is_null());
 
     if tauri_exists {
         TauriCapabilities {
