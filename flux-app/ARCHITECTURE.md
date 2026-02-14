@@ -229,6 +229,8 @@ safe_listen_event("playback-status", move |event: AudioSnapshot| {
 - **midir**: Cross-platform MIDI I/O library
 - **thread-priority**: Set real-time thread scheduling
 
+> **Note**: For a deep dive into the lock-free architecture, see [docs/LOCK_FREE_AUDIO.md](docs/LOCK_FREE_AUDIO.md)
+
 ### Module Structure
 
 ```
