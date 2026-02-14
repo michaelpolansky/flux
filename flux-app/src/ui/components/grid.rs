@@ -51,7 +51,7 @@ pub fn Grid() -> impl IntoView {
                                         view! {
                                             <button
                                                 class=move || {
-                                                    let base_classes = "w-10 h-10 rounded-lg transition-all duration-100 flex items-center justify-center select-none active:scale-95 focus:outline-none border";
+                                                    let base_classes = "w-10 h-10 rounded-lg transition-all duration-100 flex items-center justify-center select-none active:scale-95 hover:scale-105 focus:outline-none border";
 
                                                     let is_active_note = is_active();
                                                     let is_selected = sequencer_state.selected_step.get()
@@ -59,13 +59,13 @@ pub fn Grid() -> impl IntoView {
                                                         .unwrap_or(false);
 
                                                     let state_classes = if is_active_note {
-                                                        "bg-blue-500 border-blue-400"
+                                                        "bg-blue-500 hover:bg-blue-400 border-blue-400"
                                                     } else {
                                                         "bg-zinc-800 border-zinc-700 hover:bg-zinc-700"
                                                     };
 
                                                     let selection_classes = if is_selected {
-                                                        "ring-2 ring-blue-400"
+                                                        "ring-3 ring-amber-400"
                                                     } else {
                                                         ""
                                                     };
