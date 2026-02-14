@@ -100,15 +100,20 @@ pub struct MidiCommandArgs {
 }
 
 pub async fn push_midi_command(command: &str, step: Option<usize>, param: Option<String>, value: Option<f64>) {
+    if !is_tauri_available() {
+        return; // Silent - feature disabled in browser mode
+    }
+
     let args = serde_wasm_bindgen::to_value(&MidiCommandArgs {
         command: command.to_string(),
         step,
         param,
         value,
     }).unwrap();
-    
-    // Fire and forget for now, or log error
-    let _ = invoke("push_midi_command", args).await;
+
+    if let Err(e) = invoke_with_error("push_midi_command", args).await {
+        web_sys::console::error_1(&format!("push_midi_command failed: {:?}", e).into());
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -120,13 +125,20 @@ pub struct SetLFODesignerValueArgs {
 }
 
 pub async fn set_lfo_designer_value(track_id: usize, lfo_index: usize, step: usize, value: f32) {
+    if !is_tauri_available() {
+        return; // Silent - feature disabled in browser mode
+    }
+
     let args = serde_wasm_bindgen::to_value(&SetLFODesignerValueArgs {
         track_id,
         lfo_index,
         step,
         value,
     }).unwrap();
-    let _ = invoke("set_lfo_designer_value", args).await;
+
+    if let Err(e) = invoke_with_error("set_lfo_designer_value", args).await {
+        web_sys::console::error_1(&format!("set_lfo_designer_value failed: {:?}", e).into());
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -136,11 +148,18 @@ pub struct ToggleStepArgs {
 }
 
 pub async fn toggle_step(track_id: usize, step_idx: usize) {
+    if !is_tauri_available() {
+        return; // Silent - feature disabled in browser mode
+    }
+
     let args = serde_wasm_bindgen::to_value(&ToggleStepArgs {
         track_id,
         step_idx,
     }).unwrap();
-    let _ = invoke("toggle_step", args).await;
+
+    if let Err(e) = invoke_with_error("toggle_step", args).await {
+        web_sys::console::error_1(&format!("toggle_step failed: {:?}", e).into());
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
