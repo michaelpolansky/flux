@@ -10,3 +10,4 @@ pub mod step_inspector;
 pub mod form_controls;
 pub mod confirm_dialog;
 pub mod remove_track_button;
+pub mod track_controls;
