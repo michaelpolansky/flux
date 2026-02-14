@@ -56,7 +56,7 @@ pub fn RemoveTrackButton(
 }
 
 // Helper function to remove track and re-index
-fn do_remove_track(track_idx: usize, set_pattern_signal: WriteSignal<Pattern>) {
+pub fn do_remove_track(track_idx: usize, set_pattern_signal: WriteSignal<Pattern>) {
     set_pattern_signal.update(|pattern| {
         if pattern.tracks.len() <= 1 {
             return; // Safety check
