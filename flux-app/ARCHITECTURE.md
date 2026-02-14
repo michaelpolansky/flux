@@ -738,6 +738,63 @@ safe_listen_event("playback-status", move |event: AudioSnapshot| {
 });
 ```
 
+### Responsive Design Strategy
+
+FLUX uses a **fixed-viewport design** optimized for desktop audio production workflows, rather than traditional responsive breakpoints.
+
+**Design Philosophy**:
+
+- **Fixed Layout**: Sequencer grid uses precise pixel positioning (40px per step) for consistent spacing and playhead alignment
+- **Target Viewport**: 1280px width (`max-w-7xl` = 80rem) designed for typical desktop displays
+- **No-Scroll Layout**: All primary controls fit in viewport without scrolling (critical for live performance)
+- **State-Driven Responsiveness**: UI adapts to application state (playing, selected, triggered) rather than viewport size
+
+**Why No Breakpoints?**
+
+Professional audio tools prioritize **spatial consistency** over viewport flexibility:
+
+- Musicians memorize control positions (muscle memory for performance)
+- Grid alignment must be pixel-perfect for playhead visualization
+- Sequencer requires minimum viable space (collapsing to mobile breaks usability)
+- Desktop-first: Audio production happens at workstations, not mobile devices
+
+**State-Based Responsiveness**:
+
+Instead of viewport breakpoints (`sm:`, `md:`, `lg:`), FLUX uses **dynamic class composition** based on application state:
+
+```rust
+// CSS classes change based on signals, not screen size
+let step_classes = Signal::derive(move || {
+    let base = "w-10 h-10 rounded-lg transition-all";
+
+    let state = if is_active.get() {
+        "bg-blue-500 hover:bg-blue-400"
+    } else {
+        "bg-zinc-800 hover:bg-zinc-700"
+    };
+
+    let selection = if is_step_selected.get() {
+        "ring ring-amber-400"
+    } else {
+        ""
+    };
+
+    let playing = if is_playing_step.get() {
+        "bg-emerald-500/30"
+    } else {
+        ""
+    };
+
+    format!("{} {} {} {}", base, state, selection, playing)
+});
+```
+
+**Trade-offs**:
+
+- **Pros**: Consistent UX, predictable layout, optimized for target use case
+- **Cons**: Not mobile-friendly, requires minimum screen width, no tablet support
+- **Future**: Mobile sequencer would be separate UI (touch-optimized grid, different interaction model)
+
 ---
 
 ## Backend Architecture
