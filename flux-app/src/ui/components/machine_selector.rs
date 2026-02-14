@@ -1,8 +1,7 @@
-use leptos::prelude::*;
-use crate::shared::models::{MachineType, Pattern};
+use crate::shared::models::MachineType;
 
 /// Convert MachineType to 2-3 letter abbreviation for compact display
-fn machine_abbreviation(machine: MachineType) -> &'static str {
+pub fn machine_abbreviation(machine: MachineType) -> &'static str {
     match machine {
         MachineType::OneShot => "OS",
         MachineType::Werp => "WP",
@@ -15,7 +14,7 @@ fn machine_abbreviation(machine: MachineType) -> &'static str {
 }
 
 /// Convert MachineType to full name for dropdown options
-fn machine_full_name(machine: MachineType) -> &'static str {
+pub fn machine_full_name(machine: MachineType) -> &'static str {
     match machine {
         MachineType::OneShot => "OneShot",
         MachineType::Werp => "Werp",
@@ -28,7 +27,7 @@ fn machine_full_name(machine: MachineType) -> &'static str {
 }
 
 /// Get all machine types in order for dropdown
-fn all_machine_types() -> [MachineType; 7] {
+pub fn all_machine_types() -> [MachineType; 7] {
     [
         MachineType::OneShot,
         MachineType::Werp,
