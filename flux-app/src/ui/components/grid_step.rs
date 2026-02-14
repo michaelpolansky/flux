@@ -40,6 +40,9 @@ pub fn GridStep(
         playback.is_playing && playback.current_position == step_idx
     });
 
+    // TODO: Task 14 will provide this from GridUIState
+    let is_recently_triggered = Signal::derive(move || false);  // Placeholder
+
     // Derive complete class string signal
     let step_classes = Signal::derive(move || {
         let base_classes = "w-10 h-10 rounded-lg transition-all duration-100 flex items-center justify-center select-none active:scale-95 hover:scale-105 focus:outline-none border";
@@ -71,7 +74,13 @@ pub fn GridStep(
             ""
         };
 
-        format!("{} {} {} {} {}", base_classes, playing_overlay, state_classes, selection_classes, beat_marker)
+        let trigger_animation = if is_recently_triggered.get() {
+            "animate-pulse-once ring-2 ring-white/50"  // Pulse + flash ring
+        } else {
+            ""
+        };
+
+        format!("{} {} {} {} {} {}", base_classes, playing_overlay, state_classes, selection_classes, beat_marker, trigger_animation)
     });
 
     // Derive span class signal
