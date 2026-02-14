@@ -93,6 +93,32 @@ pub fn MachineSelector(
             >
                 {move || format!("{} ▾", machine_abbreviation(current_machine()))}
             </button>
+
+            // Dropdown menu - only render when open
+            <Show when=move || is_open.get()>
+                <div class="absolute top-full left-0 mt-1 bg-zinc-800 border border-zinc-600 rounded shadow-lg z-50 min-w-[120px]">
+                    {move || {
+                        all_machine_types().iter().map(|&machine_type| {
+                            let is_current = current_machine() == machine_type;
+                            view! {
+                                <div
+                                    on:click=move |_| set_machine(machine_type)
+                                    class=move || {
+                                        let base = "px-3 py-1.5 text-sm text-zinc-300 cursor-pointer transition-colors";
+                                        if is_current {
+                                            format!("{} bg-blue-900/30 hover:bg-zinc-700", base)
+                                        } else {
+                                            format!("{} hover:bg-zinc-700", base)
+                                        }
+                                    }
+                                >
+                                    {machine_full_name(machine_type)}
+                                </div>
+                            }
+                        }).collect_view()
+                    }}
+                </div>
+            </Show>
         </div>
     }
 }
