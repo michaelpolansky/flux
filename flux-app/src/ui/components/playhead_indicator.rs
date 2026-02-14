@@ -5,15 +5,20 @@ const STEP_WIDTH_PX: usize = 40;       // w-10 = 2.5rem
 const STEP_GAP_PX: usize = 2;          // Custom gap-[2px]
 const STEP_TOTAL_WIDTH: usize = STEP_WIDTH_PX + STEP_GAP_PX;
 
+// Track label offset (w-8 + mr-2 = 32px + 8px)
+const TRACK_LABEL_OFFSET_PX: usize = 40;
+
 #[component]
 pub fn PlayheadIndicator(
     #[prop(into)] position: Signal<usize>,
     #[prop(into)] is_playing: Signal<bool>,
 ) -> impl IntoView {
     // Compute horizontal offset based on position (0-15)
+    // Account for track label offset (w-8 + mr-2 = 40px)
     let transform = Signal::derive(move || {
         let pos = position.get();
-        format!("translateX({}px)", pos * STEP_TOTAL_WIDTH)
+        let offset = TRACK_LABEL_OFFSET_PX + (pos * STEP_TOTAL_WIDTH);
+        format!("translateX({}px)", offset)
     });
 
     // Visibility based on is_playing
