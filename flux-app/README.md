@@ -12,6 +12,10 @@ FLUX is a high-performance software sequencer and audio engine that unifies the 
 ## Features
 
 - **16-step sequencer grid** with 2×8 layout for optimal visibility
+- **Dynamic Track Management**: Add/remove tracks on the fly (min 1, unlimited max)
+  - `[+ Add Track]` button below grid
+  - `[×]` remove buttons on track labels
+  - Confirmation for tracks with active steps
 - **Parameter locking (P-Lock)** - Elektron-style per-step parameter automation
 - **Real-time audio engine** with lock-free UI↔Audio communication
 - **LFO designer** with custom waveform drawing

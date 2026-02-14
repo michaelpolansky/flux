@@ -176,6 +176,34 @@ There are several ways to deselect a step:
 
 ---
 
+## Track Management
+
+### Adding Tracks
+
+1. Click the **[+ Add Track]** button below the sequencer grid
+2. A new track appears instantly with 16 empty steps
+3. Default machine type: OneShot (Digitakt II style)
+4. Track count shown below grid (e.g., "8 tracks")
+
+### Removing Tracks
+
+1. Click the **[×]** button next to any track label (T1, T2, etc.)
+2. If the track is empty (no active steps):
+   - Track removed immediately (no confirmation)
+3. If the track has data (active steps):
+   - Confirmation dialog appears: "Track N has active steps. Remove anyway?"
+   - Click **Cancel** (or press ESC) to abort
+   - Click **Remove Track** to confirm removal
+4. Track IDs automatically re-index (T4 becomes T3, etc.)
+
+### Limitations
+
+- **Minimum:** 1 track (cannot remove the last track)
+- **Maximum:** Unlimited (performance may degrade at 50+ tracks)
+- Remove button disabled when only 1 track remains
+
+---
+
 ## Advanced Features
 
 ### LFO Designer (Coming Soon)

@@ -698,6 +698,24 @@ Effect::new(move |_| {
 6. **Fine-grained reactivity**: Only components that read a signal react to changes
 7. **Backend sync is manual**: Frontend signals don't auto-sync to backend - always call Tauri commands
 
+### Dynamic Track Management
+
+**Pattern Mutations:**
+- Pattern.tracks is a `Vec<Track>` (dynamic size)
+- Add track: `pattern.tracks.push(new_track)`
+- Remove track: `pattern.tracks.remove(idx)` + re-index IDs
+- UI reactively updates via Leptos `<For>` components
+
+**Track Count Limits:**
+- Minimum: 1 track (enforced in UI)
+- Maximum: Unlimited (practical limit ~50 tracks before performance degrades)
+- Default: 4 tracks
+
+**State Consistency:**
+- Track removal clears selected step if index becomes invalid
+- PlaybackState.triggered_tracks is `Vec<bool>` (matches track count)
+- Backend receives updated pattern on next playback/save operation
+
 ### Tauri Detection & Error Handling
 
 The frontend supports **dual-mode execution**:
