@@ -1,10 +1,4 @@
-use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
-    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
-}
+use crate::ui::tauri::{safe_invoke, TauriError};
 
 #[derive(serde::Serialize)]
 struct PlaybackStateArgs {
@@ -13,5 +7,14 @@ struct PlaybackStateArgs {
 
 pub async fn set_playback_state(playing: bool) {
     let args = serde_wasm_bindgen::to_value(&PlaybackStateArgs { playing }).unwrap();
-    invoke("set_playback_state", args).await;
+
+    match safe_invoke("set_playback_state", args).await {
+        Ok(_) => { /* success */ },
+        Err(TauriError::NotAvailable) => {
+            web_sys::console::log_1(&"Tauri not available - playback command disabled".into());
+        },
+        Err(TauriError::InvokeFailed(msg)) => {
+            web_sys::console::error_1(&format!("Playback command failed: {}", msg).into());
+        }
+    }
 }
