@@ -106,12 +106,18 @@ pub async fn push_midi_command(command: &str, step: Option<usize>, param: Option
         return; // Silent - feature disabled in browser mode
     }
 
-    let args = serde_wasm_bindgen::to_value(&MidiCommandArgs {
+    let args = match serde_wasm_bindgen::to_value(&MidiCommandArgs {
         command: command.to_string(),
         step,
         param,
         value,
-    }).unwrap();
+    }) {
+        Ok(v) => v,
+        Err(e) => {
+            web_sys::console::error_1(&format!("Failed to serialize push_midi_command args: {:?}", e).into());
+            return;
+        }
+    };
 
     if let Err(e) = invoke_with_error("push_midi_command", args).await {
         web_sys::console::error_1(&format!("push_midi_command failed: {:?}", e).into());
@@ -131,12 +137,18 @@ pub async fn set_lfo_designer_value(track_id: usize, lfo_index: usize, step: usi
         return; // Silent - feature disabled in browser mode
     }
 
-    let args = serde_wasm_bindgen::to_value(&SetLFODesignerValueArgs {
+    let args = match serde_wasm_bindgen::to_value(&SetLFODesignerValueArgs {
         track_id,
         lfo_index,
         step,
         value,
-    }).unwrap();
+    }) {
+        Ok(v) => v,
+        Err(e) => {
+            web_sys::console::error_1(&format!("Failed to serialize set_lfo_designer_value args: {:?}", e).into());
+            return;
+        }
+    };
 
     if let Err(e) = invoke_with_error("set_lfo_designer_value", args).await {
         web_sys::console::error_1(&format!("set_lfo_designer_value failed: {:?}", e).into());
@@ -154,10 +166,16 @@ pub async fn toggle_step(track_id: usize, step_idx: usize) {
         return; // Silent - feature disabled in browser mode
     }
 
-    let args = serde_wasm_bindgen::to_value(&ToggleStepArgs {
+    let args = match serde_wasm_bindgen::to_value(&ToggleStepArgs {
         track_id,
         step_idx,
-    }).unwrap();
+    }) {
+        Ok(v) => v,
+        Err(e) => {
+            web_sys::console::error_1(&format!("Failed to serialize toggle_step args: {:?}", e).into());
+            return;
+        }
+    };
 
     if let Err(e) = invoke_with_error("toggle_step", args).await {
         web_sys::console::error_1(&format!("toggle_step failed: {:?}", e).into());
@@ -186,8 +204,13 @@ where T: for<'a> Deserialize<'a> + 'static
         }
     }) as Box<dyn FnMut(JsValue)>);
 
-    // We intentionally leak the closure to keep it alive for the lifetime of the app
-    if let Ok(_) = listen(event_name, &handler).await {
-        handler.forget();
+    match listen(event_name, &handler).await {
+        Ok(_) => {
+            handler.forget(); // Keep alive for app lifetime
+        },
+        Err(_) => {
+            // Closure dropped correctly on failure
+            web_sys::console::warn_1(&format!("Failed to register event listener: {}", event_name).into());
+        }
     }
 }

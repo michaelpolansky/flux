@@ -42,7 +42,13 @@ pub fn Toolbar() -> impl IntoView {
                 default_path: Some("pattern.flux".to_string()),
             };
 
-            let options_js = serde_wasm_bindgen::to_value(&options).unwrap();
+            let options_js = match serde_wasm_bindgen::to_value(&options) {
+                Ok(v) => v,
+                Err(e) => {
+                    web_sys::console::error_1(&format!("Failed to serialize dialog options: {:?}", e).into());
+                    return;
+                }
+            };
 
             match safe_dialog_save(options_js).await {
                 Ok(Some(path)) => {
@@ -55,10 +61,16 @@ pub fn Toolbar() -> impl IntoView {
                         path: String,
                     }
 
-                    let args = serde_wasm_bindgen::to_value(&Args {
+                    let args = match serde_wasm_bindgen::to_value(&Args {
                         pattern: current_pattern.clone(),
                         path: path.clone(),
-                    }).unwrap();
+                    }) {
+                        Ok(v) => v,
+                        Err(e) => {
+                            web_sys::console::error_1(&format!("Failed to serialize save_pattern args: {:?}", e).into());
+                            return;
+                        }
+                    };
 
                     // Note: Errors are logged to console only, no user-facing notifications
                     match safe_invoke("save_pattern", args).await {
@@ -73,10 +85,16 @@ pub fn Toolbar() -> impl IntoView {
 
                     // Also save to last_pattern.flux for auto-load (using same pattern state)
                     if !path.ends_with("last_pattern.flux") {
-                         let auto_args = serde_wasm_bindgen::to_value(&Args {
+                         let auto_args = match serde_wasm_bindgen::to_value(&Args {
                             pattern: current_pattern.clone(),
                             path: "last_pattern.flux".to_string(),
-                        }).unwrap();
+                        }) {
+                            Ok(v) => v,
+                            Err(e) => {
+                                web_sys::console::error_1(&format!("Failed to serialize auto-save args: {:?}", e).into());
+                                return;
+                            }
+                        };
 
                         match safe_invoke("save_pattern", auto_args).await {
                             Ok(_) => {},
@@ -113,13 +131,25 @@ pub fn Toolbar() -> impl IntoView {
                 directory: false,
             };
 
-            let options_js = serde_wasm_bindgen::to_value(&options).unwrap();
+            let options_js = match serde_wasm_bindgen::to_value(&options) {
+                Ok(v) => v,
+                Err(e) => {
+                    web_sys::console::error_1(&format!("Failed to serialize dialog options: {:?}", e).into());
+                    return;
+                }
+            };
 
             match safe_dialog_open(options_js).await {
                 Ok(Some(path)) => {
-                     let args = serde_wasm_bindgen::to_value(&LoadPatternArgs {
+                     let args = match serde_wasm_bindgen::to_value(&LoadPatternArgs {
                         path,
-                    }).unwrap();
+                    }) {
+                        Ok(v) => v,
+                        Err(e) => {
+                            web_sys::console::error_1(&format!("Failed to serialize load_pattern args: {:?}", e).into());
+                            return;
+                        }
+                    };
 
                     // Note: Errors are logged to console only, no user-facing notifications
                     match safe_invoke("load_pattern", args).await {
