@@ -77,8 +77,36 @@ pub fn MachineSelector(
         set_is_open.update(|open| *open = !*open);
     };
 
+    // Close dropdown when clicking outside
+    let dropdown_ref = NodeRef::<leptos::html::Div>::new();
+
+    Effect::new(move |_| {
+        if is_open.get() {
+            let close_on_click = move |event: web_sys::MouseEvent| {
+                if let Some(dropdown_el) = dropdown_ref.get() {
+                    if let Some(target) = event.target() {
+                        let target_el = target.dyn_into::<web_sys::Element>().ok();
+                        if let Some(target_el) = target_el {
+                            // Close if click is outside the dropdown
+                            if !dropdown_el.contains(Some(&target_el)) {
+                                set_is_open.set(false);
+                            }
+                        }
+                    }
+                }
+            };
+
+            let listener = leptos::ev::click;
+            let window = web_sys::window().expect("window not found");
+            let closure = wasm_bindgen::closure::Closure::wrap(Box::new(close_on_click) as Box<dyn FnMut(_)>);
+            window.add_event_listener_with_callback(listener.name(), closure.as_ref().unchecked_ref())
+                .expect("failed to add event listener");
+            closure.forget(); // Keep listener alive
+        }
+    });
+
     view! {
-        <div class="relative">
+        <div class="relative" node_ref=dropdown_ref>
             <button
                 on:click=toggle_dropdown
                 class=move || {
