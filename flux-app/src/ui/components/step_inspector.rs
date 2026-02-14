@@ -1,13 +1,7 @@
 use leptos::task::spawn_local;
 use leptos::prelude::*;
 use crate::app::SequencerState;
-use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
-    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
-}
+use crate::ui::tauri::{safe_invoke, TauriError};
 
 #[component]
 pub fn StepInspector() -> impl IntoView {
@@ -33,7 +27,15 @@ pub fn StepInspector() -> impl IntoView {
                     "value": val
                 })).unwrap();
 
-                let _ = invoke("set_param_lock", args).await;
+                match safe_invoke("set_param_lock", args).await {
+                    Ok(_) => {},
+                    Err(TauriError::NotAvailable) => {
+                        web_sys::console::log_1(&"Tauri not available - set_param_lock command disabled".into());
+                    },
+                    Err(TauriError::InvokeFailed(msg)) => {
+                        web_sys::console::error_1(&format!("Set param lock command failed: {}", msg).into());
+                    }
+                }
             });
         }
     };
