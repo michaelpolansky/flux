@@ -6,6 +6,7 @@ use crate::ui::state::GridUIState;
 use super::remove_track_button::RemoveTrackButton;
 use super::track_controls::TrackControls;
 use super::confirm_dialog::ConfirmDialog;
+use super::machine_selector::MachineSelector;
 
 #[component]
 pub fn Grid() -> impl IntoView {
@@ -124,13 +125,16 @@ pub fn Grid() -> impl IntoView {
                         children=move |track_idx| {
                             view! {
                                 <div class="w-8 h-10 flex items-center justify-center gap-1">
-                                    <div class="text-xs text-zinc-400">
-                                        {format!("T{}", track_idx + 1)}
+                                    <div class="flex items-center gap-1">
+                                        <div class="text-xs text-zinc-400">
+                                            {format!("T{}", track_idx + 1)}
+                                        </div>
+                                        <MachineSelector track_idx=track_idx />
+                                        <RemoveTrackButton
+                                            track_idx=track_idx
+                                            show_confirm=set_show_confirm_dialog
+                                        />
                                     </div>
-                                    <RemoveTrackButton
-                                        track_idx=track_idx
-                                        show_confirm=set_show_confirm_dialog
-                                    />
                                 </div>
                             }
                         }
