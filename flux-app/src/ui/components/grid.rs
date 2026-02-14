@@ -1,10 +1,13 @@
 use leptos::prelude::*;
 use crate::ui::components::grid_step::GridStep;
 use super::step_badge::StepBadge;
+use super::playhead_indicator::PlayheadIndicator;
 
 #[component]
 pub fn Grid() -> impl IntoView {
     let sequencer_state = use_context::<crate::app::SequencerState>().expect("SequencerState context not found");
+    let playback_state = use_context::<ReadSignal<crate::ui::state::PlaybackState>>()
+        .expect("PlaybackState context not found");
 
     let selected_track = Signal::derive(move || {
         sequencer_state.selected_step.get()
@@ -22,6 +25,14 @@ pub fn Grid() -> impl IntoView {
         sequencer_state.selected_step.get().is_some()
     });
 
+    let playback_position = Signal::derive(move || {
+        playback_state.get().current_position
+    });
+
+    let is_playing = Signal::derive(move || {
+        playback_state.get().is_playing
+    });
+
     view! {
         <div class="sequencer-grid flex">
             // Track labels on the left
@@ -33,7 +44,11 @@ pub fn Grid() -> impl IntoView {
             </div>
 
             // Grid of 4 tracks × 16 steps
-            <div class="flex flex-col gap-[2px]">
+            <div class="flex flex-col gap-[2px] relative">
+                <PlayheadIndicator
+                    position=playback_position
+                    is_playing=is_playing
+                />
                 <For
                     each=move || {
                         (0..4).into_iter()
