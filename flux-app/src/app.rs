@@ -101,6 +101,19 @@ pub fn App() -> impl IntoView {
                 }
             }
         >
+            // Preview mode banner
+            {move || {
+                if !tauri_capabilities.available {
+                    Some(view! {
+                        <div class="bg-amber-500/20 border-b border-amber-500/50 px-4 py-2 text-sm text-amber-200 mb-6">
+                            "⚠️ Preview Mode - Audio features require desktop app (npm run dev)"
+                        </div>
+                    })
+                } else {
+                    None
+                }
+            }}
+
             <div class="max-w-7xl mx-auto space-y-5">
                 <header class="flex items-center justify-between bg-zinc-900 border-b border-zinc-800 px-6 h-16">
                     <div class="flex flex-col">
