@@ -18,7 +18,7 @@ pub fn PlayheadIndicator(
         if is_playing.get() {
             "opacity-100"
         } else {
-            "opacity-0 pointer-events-none"
+            "opacity-0"
         }
     });
 
