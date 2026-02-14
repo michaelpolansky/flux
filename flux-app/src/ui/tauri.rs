@@ -1,5 +1,7 @@
 use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};
+use leptos::prelude::*;
+use crate::ui::tauri_detect::TauriCapabilities;
 
 #[derive(Debug, Clone)]
 pub enum TauriError {
@@ -7,10 +9,31 @@ pub enum TauriError {
     InvokeFailed(String),
 }
 
+/// Check if Tauri is available (cached from detection)
+fn is_tauri_available() -> bool {
+    use_context::<TauriCapabilities>()
+        .map(|caps| caps.available)
+        .unwrap_or(false)
+}
+
+/// Safe invoke - returns error if Tauri unavailable
+pub async fn safe_invoke(cmd: &str, args: JsValue) -> Result<JsValue, TauriError> {
+    if !is_tauri_available() {
+        return Err(TauriError::NotAvailable);
+    }
+
+    invoke_with_error(cmd, args)
+        .await
+        .map_err(|e| TauriError::InvokeFailed(format!("{:?}", e)))
+}
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
     async fn invoke(cmd: &str, args: JsValue) -> JsValue;
+
+    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"], js_name = invoke, catch)]
+    async fn invoke_with_error(cmd: &str, args: JsValue) -> Result<JsValue, JsValue>;
 }
 
 #[derive(Serialize, Deserialize)]
