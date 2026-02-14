@@ -31,6 +31,8 @@ impl Default for GridUIState {
 
 impl GridUIState {
     pub fn add_trigger(&mut self, track: usize, step: usize, timestamp: f64) {
+        // Remove any existing trigger for this step first to prevent duplicates
+        self.recent_triggers.retain(|t| !(t.track == track && t.step == step));
         self.recent_triggers.push(TriggerEvent {
             track,
             step,

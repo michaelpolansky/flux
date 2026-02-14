@@ -24,8 +24,10 @@ pub fn Grid() -> impl IntoView {
 
     // Create effect to detect triggers
     Effect::new(move |_| {
-        let pos = playback_state.get().current_position;
-        let is_playing = playback_state.get().is_playing;
+        let playback = playback_state.get();  // Single call to avoid race condition
+        let current_time = current_timestamp();  // Capture timestamp once per effect
+        let pos = playback.current_position;
+        let is_playing = playback.is_playing;
 
         if is_playing {
             // Check each track for active steps at current position
@@ -36,7 +38,7 @@ pub fn Grid() -> impl IntoView {
                             if step.trig_type != crate::shared::models::TrigType::None {
                                 // Step triggered! Add to GridUIState
                                 grid_ui_state.1.update(|state| {
-                                    state.add_trigger(track_idx, pos, current_timestamp());
+                                    state.add_trigger(track_idx, pos, current_time);
                                 });
                             }
                         }
@@ -46,7 +48,7 @@ pub fn Grid() -> impl IntoView {
 
             // Clean up old triggers (older than 150ms)
             grid_ui_state.1.update(|state| {
-                state.cleanup_old_triggers(current_timestamp(), 150.0);
+                state.cleanup_old_triggers(current_time, 150.0);
             });
         }
     });
