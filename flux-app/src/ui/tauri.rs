@@ -27,6 +27,22 @@ pub async fn safe_invoke(cmd: &str, args: JsValue) -> Result<JsValue, TauriError
         .map_err(|e| TauriError::InvokeFailed(format!("{:?}", e)))
 }
 
+/// Safe event listener - no-op if Tauri unavailable
+pub async fn safe_listen_event<T>(event_name: &str, callback: impl Fn(T) + 'static)
+where T: for<'a> Deserialize<'a> + 'static
+{
+    if !is_tauri_available() {
+        // Log once for debugging
+        web_sys::console::log_1(
+            &format!("Tauri not available - event listener '{}' disabled", event_name).into()
+        );
+        return;
+    }
+
+    // Call existing listen_event implementation
+    listen_event(event_name, callback).await
+}
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
