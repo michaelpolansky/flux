@@ -65,7 +65,7 @@ pub fn Grid() -> impl IntoView {
                                                     };
 
                                                     let selection_classes = if is_selected {
-                                                        "ring-3 ring-amber-400"
+                                                        "ring ring-amber-400"
                                                     } else {
                                                         ""
                                                     };
