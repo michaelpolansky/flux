@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use wasm_bindgen::JsCast;
 use crate::shared::models::{MachineType, Pattern};
 
 /// Convert MachineType to 2-3 letter abbreviation for compact display
@@ -105,14 +106,14 @@ pub fn MachineSelector(
                 .expect("failed to add event listener");
 
             // Return cleanup function to remove listener
-            move || {
+            Some(move || {
                 let _ = window.remove_event_listener_with_callback(
                     "click",
                     closure.as_ref().unchecked_ref()
                 );
-            }
+            })
         } else {
-            || {} // No cleanup needed when dropdown is closed
+            None
         }
     });
 
@@ -135,14 +136,14 @@ pub fn MachineSelector(
                 .expect("failed to add event listener");
 
             // Return cleanup function to remove listener
-            move || {
+            Some(move || {
                 let _ = window.remove_event_listener_with_callback(
                     "keydown",
                     closure.as_ref().unchecked_ref()
                 );
-            }
+            })
         } else {
-            || {} // No cleanup needed when dropdown is closed
+            None
         }
     });
 
