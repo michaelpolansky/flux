@@ -9,3 +9,4 @@ pub mod lfo_designer;
 pub mod step_inspector;
 pub mod form_controls;
 pub mod confirm_dialog;
+pub mod remove_track_button;
