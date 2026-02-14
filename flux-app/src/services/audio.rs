@@ -6,7 +6,13 @@ struct PlaybackStateArgs {
 }
 
 pub async fn set_playback_state(playing: bool) {
-    let args = serde_wasm_bindgen::to_value(&PlaybackStateArgs { playing }).unwrap();
+    let args = match serde_wasm_bindgen::to_value(&PlaybackStateArgs { playing }) {
+        Ok(v) => v,
+        Err(e) => {
+            web_sys::console::error_1(&format!("Failed to serialize playback args: {:?}", e).into());
+            return;
+        }
+    };
 
     match safe_invoke("set_playback_state", args).await {
         Ok(_) => { /* success */ },

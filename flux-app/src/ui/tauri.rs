@@ -9,11 +9,11 @@ pub enum TauriError {
     InvokeFailed(String),
 }
 
-/// Check if Tauri is available (cached from detection)
+/// Check if Tauri is available (runtime check, not cached)
 fn is_tauri_available() -> bool {
-    use_context::<TauriCapabilities>()
-        .map(|caps| caps.available)
-        .unwrap_or(false)
+    // Do a fresh runtime check instead of using cached context
+    // This handles cases where Tauri loads after component initialization
+    crate::ui::tauri_detect::detect_tauri().available
 }
 
 /// Safe invoke - returns error if Tauri unavailable
