@@ -1,16 +1,19 @@
 use leptos::prelude::*;
 
+// Grid layout constants for positioning
+const STEP_WIDTH_PX: usize = 40;       // w-10 = 2.5rem
+const STEP_GAP_PX: usize = 4;          // gap-1 = 0.25rem
+const STEP_TOTAL_WIDTH: usize = STEP_WIDTH_PX + STEP_GAP_PX;
+
 #[component]
 pub fn PlayheadIndicator(
     #[prop(into)] position: Signal<usize>,
     #[prop(into)] is_playing: Signal<bool>,
 ) -> impl IntoView {
     // Compute horizontal offset based on position (0-15)
-    // Each step is w-10 (2.5rem = 40px) + gap-1 (0.25rem = 4px)
-    // Total: position * 44px
     let transform = Signal::derive(move || {
         let pos = position.get();
-        format!("translateX({}px)", pos * 44)
+        format!("translateX({}px)", pos * STEP_TOTAL_WIDTH)
     });
 
     // Visibility based on is_playing
