@@ -46,7 +46,7 @@ pub fn Toolbar() -> impl IntoView {
 
             match safe_dialog_save(options_js).await {
                 Ok(Some(path)) => {
-                    // Send CURRENT pattern state
+                    // Capture pattern state once to ensure consistency across both saves
                     let current_pattern = pattern_signal.get_untracked();
 
                     #[derive(serde::Serialize)]
@@ -57,11 +57,12 @@ pub fn Toolbar() -> impl IntoView {
 
                     let args = serde_wasm_bindgen::to_value(&Args {
                         pattern: current_pattern.clone(),
-                        path: path.clone(),
+                        path,
                     }).unwrap();
 
+                    // Note: Errors are logged to console only, no user-facing notifications
                     match safe_invoke("save_pattern", args).await {
-                        Ok(_) => { /* success */ },
+                        Ok(_) => {},
                         Err(TauriError::NotAvailable) => {
                             web_sys::console::log_1(&"Tauri not available - save command disabled".into());
                         },
@@ -70,15 +71,15 @@ pub fn Toolbar() -> impl IntoView {
                         }
                     }
 
-                    // Also save to last_pattern.flux for auto-load
+                    // Also save to last_pattern.flux for auto-load (using same pattern state)
                     if !path.ends_with("last_pattern.flux") {
                          let auto_args = serde_wasm_bindgen::to_value(&Args {
-                            pattern: pattern_signal.get_untracked(),
+                            pattern: current_pattern.clone(),
                             path: "last_pattern.flux".to_string(),
                         }).unwrap();
 
                         match safe_invoke("save_pattern", auto_args).await {
-                            Ok(_) => { /* success */ },
+                            Ok(_) => {},
                             Err(TauriError::NotAvailable) => {
                                 web_sys::console::log_1(&"Tauri not available - auto-save command disabled".into());
                             },
@@ -117,9 +118,10 @@ pub fn Toolbar() -> impl IntoView {
             match safe_dialog_open(options_js).await {
                 Ok(Some(path)) => {
                      let args = serde_wasm_bindgen::to_value(&LoadPatternArgs {
-                        path: path.clone(),
+                        path,
                     }).unwrap();
 
+                    // Note: Errors are logged to console only, no user-facing notifications
                     match safe_invoke("load_pattern", args).await {
                         Ok(result) => {
                             match result.into_serde::<crate::shared::models::Pattern>() {
