@@ -335,6 +335,51 @@ During playback, no green overlay shows which step is currently playing.
 
 ## Browser vs Desktop Mode
 
+### Issue: "Tauri not available - playback command disabled" in Desktop Mode
+
+**Symptom:**
+Running `npm run dev` (desktop app), but clicking Play button shows console error:
+```
+Tauri not available - playback command disabled
+```
+
+**Root Cause:**
+Timing/initialization race condition. Tauri detection runs during Leptos component initialization, before Tauri injects `window.__TAURI__` into the page.
+
+**Solution (already implemented in latest code):**
+
+The fix uses **runtime detection** instead of cached detection:
+
+```rust
+// BEFORE (broken - cached at component mount)
+fn is_tauri_available() -> bool {
+    use_context::<TauriCapabilities>()
+        .map(|caps| caps.available)
+        .unwrap_or(false)
+}
+
+// AFTER (fixed - checks at call time)
+fn is_tauri_available() -> bool {
+    crate::ui::tauri_detect::detect_tauri().available
+}
+```
+
+**Key Points:**
+- `window.__TAURI__` exists in desktop mode but loads **after** WASM initialization
+- Caching the detection result at mount time captures the "not available" state
+- Runtime checks ensure detection happens when features are used, not at startup
+- JavaScript wrappers (`window.__TAURI_SAFE__`) are inlined in HTML to guarantee availability
+
+**Verification:**
+In desktop app console, run:
+```javascript
+typeof window.__TAURI__  // Should return "object"
+```
+
+If it returns "object" but features still don't work, the detection is using stale cached values.
+
+---
+
 ### Issue: "Cannot read properties of undefined (reading 'core')" errors
 
 **Symptom:**

@@ -31,6 +31,7 @@ struct OpenDialogOptions {
 pub fn Toolbar() -> impl IntoView {
     let pattern_signal = use_context::<ReadSignal<crate::shared::models::Pattern>>().expect("Pattern context not found");
     let set_pattern_signal = use_context::<WriteSignal<crate::shared::models::Pattern>>().expect("Pattern context not found");
+    let playback_state = use_context::<ReadSignal<crate::ui::state::PlaybackState>>().expect("PlaybackState context not found");
 
     let save_project = move |_| {
         leptos::task::spawn_local(async move {
@@ -209,13 +210,20 @@ pub fn Toolbar() -> impl IntoView {
 
             <button
                 on:click=move |_| {
-                    leptos::task::spawn_local(async {
-                        crate::services::audio::set_playback_state(true).await;
+                    let is_playing = playback_state.get().is_playing;
+                    leptos::task::spawn_local(async move {
+                        crate::services::audio::set_playback_state(!is_playing).await;
                     });
                 }
-                class="h-10 px-4 bg-green-600 hover:bg-green-500 rounded-md text-sm font-medium text-white transition-colors active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-950"
+                class=move || {
+                    if playback_state.get().is_playing {
+                        "h-10 px-4 bg-amber-600 hover:bg-amber-500 rounded-md text-sm font-medium text-white transition-colors active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-950"
+                    } else {
+                        "h-10 px-4 bg-green-600 hover:bg-green-500 rounded-md text-sm font-medium text-white transition-colors active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-950"
+                    }
+                }
             >
-                "▶"
+                {move || if playback_state.get().is_playing { "⏸" } else { "▶" }}
             </button>
             <button
                 on:click=move |_| {
