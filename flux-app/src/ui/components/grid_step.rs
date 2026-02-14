@@ -10,6 +10,8 @@ pub fn GridStep(
     // Get state from context
     let pattern_signal = use_context::<ReadSignal<Pattern>>().expect("Pattern context not found");
     let sequencer_state = use_context::<SequencerState>().expect("SequencerState context not found");
+    let playback_state = use_context::<ReadSignal<crate::ui::state::PlaybackState>>()
+        .expect("PlaybackState context not found");
 
     // Hardcode to Subtrack 0 for this milestone
     let subtrack_id = 0;
@@ -32,12 +34,24 @@ pub fn GridStep(
             .unwrap_or(false)
     });
 
+    // Derive playing step state signal
+    let is_playing_step = Signal::derive(move || {
+        let playback = playback_state.get();
+        playback.is_playing && playback.current_position == step_idx
+    });
+
     // Derive complete class string signal
     let step_classes = Signal::derive(move || {
         let base_classes = "w-10 h-10 rounded-lg transition-all duration-100 flex items-center justify-center select-none active:scale-95 hover:scale-105 focus:outline-none border";
 
         let is_active_note = is_active.get();
         let is_selected = is_step_selected.get();
+
+        let playing_overlay = if is_playing_step.get() {
+            "bg-emerald-500/30"
+        } else {
+            ""
+        };
 
         let state_classes = if is_active_note {
             "bg-blue-500 hover:bg-blue-400 border-blue-400"
@@ -57,7 +71,7 @@ pub fn GridStep(
             ""
         };
 
-        format!("{} {} {} {}", base_classes, state_classes, selection_classes, beat_marker)
+        format!("{} {} {} {} {}", base_classes, playing_overlay, state_classes, selection_classes, beat_marker)
     });
 
     // Derive span class signal
