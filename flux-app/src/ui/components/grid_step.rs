@@ -1,6 +1,7 @@
 use leptos::prelude::*;
 use crate::shared::models::Pattern;
 use crate::app::SequencerState;
+use crate::ui::state::GridUIState;
 
 #[component]
 pub fn GridStep(
@@ -40,8 +41,17 @@ pub fn GridStep(
         playback.is_playing && playback.current_position == step_idx
     });
 
-    // TODO: Task 14 will provide this from GridUIState
-    let is_recently_triggered = Signal::derive(move || false);  // Placeholder
+    // Get GridUIState context for trigger detection
+    let grid_ui_state = use_context::<ReadSignal<GridUIState>>()
+        .expect("GridUIState context not found");
+
+    let is_recently_triggered = Signal::derive(move || {
+        grid_ui_state.with(|state| {
+            state.recent_triggers.iter().any(|t| {
+                t.track == track_idx && t.step == step_idx
+            })
+        })
+    });
 
     // Derive complete class string signal
     let step_classes = Signal::derive(move || {
