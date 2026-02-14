@@ -6,6 +6,9 @@ An Elektron-inspired hardware sequencer built with Rust, Tauri, and Leptos.
 
 FLUX is a high-performance software sequencer and audio engine that unifies the workflow of classic Elektron hardware (Octatrack, Analog Four, Digitakt) into a single, modern application. Built with real-time audio processing in Rust and a reactive web-based UI.
 
+**New to FLUX?** Start with the [USER_GUIDE.md](USER_GUIDE.md) to learn the workflow.
+**Developing FLUX?** See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for setup and architecture guides.
+
 ## Features
 
 - **16-step sequencer grid** with 2×8 layout for optimal visibility
@@ -59,25 +62,34 @@ npm run tauri build
 
 ```
 flux-app/
-├── src/                    # Leptos frontend (WASM)
-│   ├── app.rs             # Root component, layout
-│   ├── ui/components/     # UI components
-│   │   ├── grid.rs        # 16-step sequencer grid
-│   │   ├── inspector.rs   # Parameter controls
-│   │   ├── toolbar.rs     # Transport controls
-│   │   └── lfo_designer.rs # LFO waveform editor
-│   ├── services/          # Frontend services
-│   └── shared/models.rs   # Shared data structures
-├── src-tauri/             # Rust backend
+├── src/                       # Leptos frontend (WASM)
+│   ├── app.rs                # Root component, layout
+│   ├── ui/components/        # UI components
+│   │   ├── grid.rs           # 16-step sequencer grid
+│   │   ├── inspector.rs      # Parameter controls
+│   │   ├── toolbar.rs        # Transport controls
+│   │   └── lfo_designer.rs   # LFO waveform editor
+│   ├── ui/tauri_detect.rs    # Tauri API detection for graceful degradation
+│   ├── services/             # Frontend services (audio, state)
+│   └── shared/models.rs      # Shared data structures
+├── src-tauri/                # Rust backend
 │   └── src/
-│       ├── engine/        # Audio engine
-│       │   ├── kernel.rs  # Audio callback (cpal)
+│       ├── engine/           # Audio engine
+│       │   ├── kernel.rs     # Real-time audio callback (cpal)
 │       │   ├── midi_engine.rs # MIDI processing
-│       │   └── domain.rs  # Data structures
-│       ├── commands.rs    # Tauri commands
-│       └── lib.rs         # App initialization
-└── docs/plans/            # Design documents
+│       │   └── domain.rs     # Lock-free data structures
+│       ├── commands.rs       # Tauri IPC commands
+│       └── lib.rs            # App initialization
+├── docs/                     # Documentation
+│   ├── LOCK_FREE_AUDIO.md    # Lock-free architecture deep-dive
+│   └── plans/                # Design documents & implementation notes
+├── ARCHITECTURE.md           # System architecture overview
+├── DEVELOPER_GUIDE.md        # Development workflows & best practices
+├── USER_GUIDE.md             # User tutorials & workflows
+└── TROUBLESHOOTING.md        # Common issues & solutions
 ```
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed component descriptions and data flow diagrams.
 
 ## UI Design
 
@@ -137,9 +149,29 @@ All sequencer events are represented as `AtomicStep`:
 - `Right-click` - Select step for parameter locking
 - `Esc` - Close step inspector
 
+See [USER_GUIDE.md](USER_GUIDE.md) for complete workflow tutorials.
+
+## Documentation
+
+### For Users
+- **[USER_GUIDE.md](USER_GUIDE.md)** - Getting started, creating patterns, parameter locking
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues, solutions, known limitations
+
+### For Developers
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System design, component hierarchy, data flow
+- **[LOCK_FREE_AUDIO.md](docs/LOCK_FREE_AUDIO.md)** - Real-time audio threading, lock-free primitives
+- **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)** - Setup, workflows, adding features, best practices
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Build issues, debugging, platform-specific quirks
+
+### Design History
+- **[docs/plans/](docs/plans/)** - Feature design documents and implementation notes
+
 ## Contributing
 
-See `FLUX_ARCHITECTURE_V1.md` for detailed architecture documentation.
+Before contributing, please read:
+1. [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) - Development setup and workflows
+2. [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture and design decisions
+3. [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Common build and runtime issues
 
 ## License
 
