@@ -52,7 +52,7 @@ pub fn App() -> impl IntoView {
     window_event_listener(ev::keydown, handle_escape);
 
     // Setup Tauri Event Listener
-    on_mount(move || {
+    Effect::new(move |_| {
         spawn_local(async move {
             use crate::ui::tauri::listen_event;
             // "playback-status" matches the backend event name
