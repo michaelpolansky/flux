@@ -17,17 +17,19 @@ pub struct GridUIState {
 pub struct TriggerEvent {
     pub track: usize,
     pub step: usize,
-    pub timestamp: f64,  // For animation timing
+    pub timestamp: f64,  // Milliseconds since animation start
+}
+
+impl Default for GridUIState {
+    fn default() -> Self {
+        Self {
+            hovered_step: None,
+            recent_triggers: Vec::with_capacity(64),
+        }
+    }
 }
 
 impl GridUIState {
-    pub fn new() -> Self {
-        Self {
-            hovered_step: None,
-            recent_triggers: Vec::new(),
-        }
-    }
-
     pub fn add_trigger(&mut self, track: usize, step: usize, timestamp: f64) {
         self.recent_triggers.push(TriggerEvent {
             track,
