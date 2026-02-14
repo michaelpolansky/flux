@@ -10,6 +10,7 @@ use crate::ui::components::inspector::Inspector;
 use crate::ui::components::toolbar::Toolbar;
 use crate::ui::components::step_inspector::StepInspector;
 use crate::ui::state::PlaybackState;
+use crate::ui::tauri_detect::{detect_tauri, TauriCapabilities};
 
 #[derive(Serialize, Deserialize, Clone, Default, Debug)]
 struct AudioSnapshot {
@@ -27,6 +28,10 @@ pub struct SequencerState {
 
 #[component]
 pub fn App() -> impl IntoView {
+    // Detect Tauri capabilities
+    let tauri_capabilities = detect_tauri();
+    provide_context(tauri_capabilities);
+
     let (current_step, set_current_step) = signal(0);
     let selected_step = RwSignal::new(None);
     let (playback_state, set_playback_state) = signal(PlaybackState::default());
@@ -51,27 +56,23 @@ pub fn App() -> impl IntoView {
     // Attach to window
     window_event_listener(ev::keydown, handle_escape);
 
-    // Setup Tauri Event Listener
-    Effect::new(move |_| {
-        spawn_local(async move {
-            use crate::ui::tauri::listen_event;
-            // "playback-status" matches the backend event name
-            listen_event("playback-status", move |event: AudioSnapshot| {
-                // Normalize position to 0-15 range for safety
-                let normalized_position = event.current_step % 16;
-
-                // Update current_step (existing)
-                set_current_step.set(normalized_position);
-
-                // Update PlaybackState (new)
-                set_playback_state.update(|state| {
-                    state.is_playing = event.is_playing;
-                    state.current_position = normalized_position;
-                    state.triggered_tracks = event.triggered_tracks.unwrap_or([false; 4]);
-                });
-            }).await;
+    // Setup Tauri Event Listener (only if Tauri available)
+    if tauri_capabilities.events_enabled {
+        Effect::new(move |_| {
+            spawn_local(async move {
+                use crate::ui::tauri::safe_listen_event;
+                safe_listen_event("playback-status", move |event: AudioSnapshot| {
+                    let normalized_position = event.current_step % 16;
+                    set_current_step.set(normalized_position);
+                    set_playback_state.update(|state| {
+                        state.is_playing = event.is_playing;
+                        state.current_position = normalized_position;
+                        state.triggered_tracks = event.triggered_tracks.unwrap_or([false; 4]);
+                    });
+                }).await;
+            });
         });
-    });
+    }
 
     view! {
         <main
