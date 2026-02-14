@@ -70,7 +70,13 @@ pub fn Grid() -> impl IntoView {
                                                         ""
                                                     };
 
-                                                    format!("{} {} {}", base_classes, state_classes, selection_classes)
+                                                    let beat_marker = if step_idx == 3 || step_idx == 7 || step_idx == 11 {
+                                                        "border-r-2 border-zinc-600"
+                                                    } else {
+                                                        ""
+                                                    };
+
+                                                    format!("{} {} {} {}", base_classes, state_classes, selection_classes, beat_marker)
                                                 }
                                                 on:click=move |_| {
                                                     sequencer_state.selected_step.set(Some((track_idx, step_idx)));
