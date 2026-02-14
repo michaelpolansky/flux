@@ -1,9 +1,10 @@
 use serde::Serialize;
 
-#[derive(Clone, Copy, Debug, Default, Serialize)]
+#[derive(Clone, Debug, Default, Serialize)]
 pub struct AudioSnapshot {
     pub current_step: usize,
     pub is_playing: bool,
+    pub triggered_tracks: Vec<bool>,
 }
 
 // Parameter Indices

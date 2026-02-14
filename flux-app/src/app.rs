@@ -16,7 +16,7 @@ use crate::ui::tauri_detect::{detect_tauri, TauriCapabilities};
 struct AudioSnapshot {
     current_step: usize,
     is_playing: bool,
-    triggered_tracks: Option<[bool; 4]>,  // Optional for backward compatibility
+    triggered_tracks: Vec<bool>,
 }
 
 // Create a context for the step
@@ -67,7 +67,7 @@ pub fn App() -> impl IntoView {
                     set_playback_state.update(|state| {
                         state.is_playing = event.is_playing;
                         state.current_position = normalized_position;
-                        state.triggered_tracks = event.triggered_tracks.unwrap_or([false; 4]);
+                        state.triggered_tracks = event.triggered_tracks;
                     });
                 }).await;
             });

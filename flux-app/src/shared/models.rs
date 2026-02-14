@@ -169,8 +169,8 @@ pub struct Pattern {
 
 impl Default for Pattern {
     fn default() -> Self {
-        let mut tracks = Vec::with_capacity(16);
-        for i in 0..16 {
+        let mut tracks = Vec::with_capacity(4);
+        for i in 0..4 {
             let mut t = Track::default();
             t.id = i;
             tracks.push(t);

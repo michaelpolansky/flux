@@ -180,9 +180,25 @@ impl FluxKernel {
         }
 
         // 3. Update Snapshot
+        // Check which tracks are triggered at the current step
+        let mut triggered_tracks = Vec::with_capacity(self.pattern.tracks.len());
+        for track in &self.pattern.tracks {
+            let is_triggered = if let Some(subtrack) = track.subtracks.get(0) {
+                if let Some(step) = subtrack.steps.get(self.current_step) {
+                    step.trig_type != TrigType::None
+                } else {
+                    false
+                }
+            } else {
+                false
+            };
+            triggered_tracks.push(is_triggered);
+        }
+
         self.snapshot_producer.write(AudioSnapshot {
             current_step: self.current_step,
             is_playing: self.is_playing,
+            triggered_tracks,
         });
     }
 }
