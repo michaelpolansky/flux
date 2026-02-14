@@ -1,6 +1,12 @@
 use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};
 
+#[derive(Debug, Clone)]
+pub enum TauriError {
+    NotAvailable,
+    InvokeFailed(String),
+}
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
