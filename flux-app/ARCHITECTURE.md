@@ -185,10 +185,10 @@ The frontend supports **dual-mode execution**:
 
 ```rust
 // Tauri capability detection (runs once on startup)
-struct TauriCapabilities {
-    available: bool,         // Is Tauri API present?
-    events_enabled: bool,    // Can listen to backend events?
-    invoke_enabled: bool,    // Can invoke commands?
+pub struct TauriCapabilities {
+    pub available: bool,      // Is Tauri API present?
+    pub audio_enabled: bool,  // Can use audio features?
+    pub events_enabled: bool, // Can listen to backend events?
 }
 
 // Safe wrappers (no-op in browser mode)
@@ -310,7 +310,7 @@ fn process(&mut self, output_buffer: &mut [f32], channels: usize) {
 
         // Synthesize audio (simple sine wave)
         let t = self.playhead_sample as f32 / self.sample_rate;
-        let sample = (t * self.current_frequency * 2π).sin() * 0.1;
+        let sample = (t * self.current_frequency * 2.0 * PI).sin() * 0.1;
 
         // Write to output buffer (all channels)
         for out in frame.iter_mut() {
@@ -390,7 +390,7 @@ fn calculate_lfo(lfo: &LFO, global_phase: f32) -> f32 {
     let phase = (global_phase * lfo.speed + lfo.phase) % 1.0;
 
     let raw = match &lfo.shape {
-        LFOShape::Sine => (phase * 2π).sin(),
+        LFOShape::Sine => (phase * 2.0 * PI).sin(),
         LFOShape::Triangle => { /* ... */ },
         LFOShape::Square => if phase < 0.5 { 1.0 } else { -1.0 },
         LFOShape::Designer(points) => {
