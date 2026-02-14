@@ -85,8 +85,7 @@ pub fn MachineSelector(
             let close_on_click = move |event: web_sys::MouseEvent| {
                 if let Some(dropdown_el) = dropdown_ref.get() {
                     if let Some(target) = event.target() {
-                        let target_el = target.dyn_into::<web_sys::Element>().ok();
-                        if let Some(target_el) = target_el {
+                        if let Ok(target_el) = target.dyn_into::<web_sys::Element>() {
                             // Close if click is outside the dropdown
                             if !dropdown_el.contains(Some(&target_el)) {
                                 set_is_open.set(false);
@@ -96,12 +95,24 @@ pub fn MachineSelector(
                 }
             };
 
-            let listener = leptos::ev::click;
             let window = web_sys::window().expect("window not found");
-            let closure = wasm_bindgen::closure::Closure::wrap(Box::new(close_on_click) as Box<dyn FnMut(_)>);
-            window.add_event_listener_with_callback(listener.name(), closure.as_ref().unchecked_ref())
+            let closure = wasm_bindgen::closure::Closure::wrap(
+                Box::new(close_on_click) as Box<dyn FnMut(_)>
+            );
+
+            window
+                .add_event_listener_with_callback("click", closure.as_ref().unchecked_ref())
                 .expect("failed to add event listener");
-            closure.forget(); // Keep listener alive
+
+            // Return cleanup function to remove listener
+            move || {
+                let _ = window.remove_event_listener_with_callback(
+                    "click",
+                    closure.as_ref().unchecked_ref()
+                );
+            }
+        } else {
+            || {} // No cleanup needed when dropdown is closed
         }
     });
 
