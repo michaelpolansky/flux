@@ -114,3 +114,120 @@ The grid UI maintains excellent performance during playback:
 **Overall Performance:** EXCELLENT - Far exceeds requirements
 
 Performance testing completed - grid UI exceeds 60fps target, no memory leaks detected
+
+---
+
+# Edge Case Testing - Grid UI
+
+**Test Date:** 2026-02-13 18:04 PST
+**Environment:** Chromium (Playwright) on macOS 15.2 (Darwin 25.2.0)
+**Test Method:** Automated edge case testing via Playwright
+**Tester:** Automated testing with manual verification
+
+---
+
+## Edge Cases Tested
+
+### Test 1: Playhead Wrap (Step 15 → Step 0)
+**Objective:** Verify smooth transition when playhead wraps from last step to first step
+
+**Method:**
+- Started playback with empty pattern
+- Observed full sequence cycle (~8 seconds at 120 BPM)
+- Captured screenshots before and after wrap transition
+
+**Results:**
+- Playback continues smoothly through sequence ✓
+- No visual glitches or jumps observed ✓
+- PlayheadIndicator transform transitions smoothly ✓
+- Status: PASS
+
+### Test 2: Rapid Selection Changes
+**Objective:** Stress test badge update system with rapid user interactions
+
+**Method:**
+- Performed 10 rapid clicks across different steps in 1 second (100ms between clicks)
+- Clicked steps across all tracks: T1-S1, T1-S6, T2-S11, T3-S16, T4-S4, T1-S8, T2-S3, T3-S13, T4-S9, T2-S15
+- Observed badge updates and selection ring behavior
+
+**Results:**
+- StepBadge updated instantly for each click ✓
+- Badge correctly showed final position: "T2・S15" ✓
+- No lag even with 10 clicks per second ✓
+- Selection ring followed clicks without flicker ✓
+- Parameters panel updated correctly to "Editing: Track 2, Step 15" ✓
+- Status: PASS
+
+### Test 3: Empty Pattern Playback
+**Objective:** Verify graceful handling when no steps are active
+
+**Method:**
+- Started playback with completely empty pattern (no active steps)
+- Observed playback for 2 seconds
+- Checked console for errors
+
+**Results:**
+- Playback runs normally (play button shows active state) ✓
+- No trigger pulse animations (as expected with no active steps) ✓
+- GridUIState.recent_triggers remains empty ✓
+- No grid-related errors in console ✓
+- Status: PASS
+
+### Test 4: Badge Positioning at Edge Locations
+**Objective:** Verify badge visibility and positioning at all grid boundary positions
+
+**Method:**
+- Selected steps at four corner positions:
+  - T1-S1 (top-left corner)
+  - T1-S16 (top-right corner)
+  - T4-S1 (bottom-left corner)
+  - T4-S16 (bottom-right corner)
+- Captured screenshot for each position
+- Verified badge visibility and centering
+
+**Results:**
+- Badge visible and properly centered at T1・S1 (top-left) ✓
+- Badge visible and properly centered at T1・S16 (top-right) ✓
+- Badge visible and properly centered at T4・S1 (bottom-left) ✓
+- Badge visible and properly centered at T4・S16 (bottom-right) ✓
+- No clipping or overflow outside grid bounds ✓
+- Badge text correctly formatted for all positions ✓
+- Status: PASS
+
+## Console Error Analysis
+
+**Errors Detected:** 6 TypeErrors (consistent with previous testing)
+
+**Error Types:**
+1. `Cannot read properties of undefined (reading 'event')` - Tauri event listener initialization
+2. `Cannot read properties of undefined (reading 'core')` - Tauri invoke API calls
+
+**Root Cause:** Running in browser environment without Tauri desktop runtime. These errors are related to:
+- `flux_app_ui::ui::tauri::listen` - Event listener setup
+- `flux_app_ui::services::audio::invoke` - Audio engine communication
+
+**Impact on Grid UI:** None - errors are isolated to Tauri integration layer, not grid rendering or interaction logic.
+
+**Note:** These errors do not affect any grid UI functionality or edge case behavior. All visual states, animations, and interactions work correctly despite Tauri API unavailability.
+
+## Test Summary
+
+**Edge Cases Tested:** 4
+**All Tests Passed:** Yes ✓
+**Grid-Related Errors:** 0
+**Visual Glitches:** 0
+**Performance Issues:** 0
+
+## Conclusions
+
+All edge case scenarios handle gracefully:
+- **Playhead wrapping** from step 15 → 0 is smooth and glitch-free
+- **Rapid user interactions** (10+ clicks/second) process instantly without lag
+- **Empty patterns** play correctly with no trigger animations or errors
+- **Badge positioning** works correctly at all grid boundaries
+
+The grid UI demonstrates robust edge case handling with no visual artifacts, performance degradation, or console errors related to grid functionality.
+
+**Overall Edge Case Testing Status:** PASS - All boundary conditions handled correctly
+
+Edge cases tested: playhead wrap, rapid selection, empty pattern, badge positioning
