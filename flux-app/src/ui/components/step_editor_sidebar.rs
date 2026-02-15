@@ -200,14 +200,6 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         value=Signal::derive(move || format!("{}", note_value.get() as u8))
                                         on_input=on_note_change
                                     />
-                                    <div class="grid grid-cols-3 gap-2 text-xs text-zinc-500 font-mono mt-1">
-                                        <span class="text-left">"0"</span>
-                                        <span class="text-center">{move || {
-                                            let note = note_value.get() as u8;
-                                            format!("{}", note)
-                                        }}</span>
-                                        <span class="text-right">"127"</span>
-                                    </div>
                                 </InlineParam>
 
                                 <InlineParam>
@@ -219,11 +211,6 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         value=Signal::derive(move || format!("{}", velocity_value.get() as u8))
                                         on_input=on_velocity_change
                                     />
-                                    <div class="grid grid-cols-3 gap-2 text-xs text-zinc-500 font-mono mt-1">
-                                        <span class="text-left">"0"</span>
-                                        <span class="text-center">{move || format!("{}", velocity_value.get() as u8)}</span>
-                                        <span class="text-right">"127"</span>
-                                    </div>
                                 </InlineParam>
 
                                 <InlineParam>
@@ -235,11 +222,6 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         value=Signal::derive(move || format!("{:.1}", length_value.get()))
                                         on_input=on_length_change
                                     />
-                                    <div class="grid grid-cols-3 gap-2 text-xs text-zinc-500 font-mono mt-1">
-                                        <span class="text-left">"0.1"</span>
-                                        <span class="text-center">{move || format!("{:.1}x", length_value.get())}</span>
-                                        <span class="text-right">"4.0"</span>
-                                    </div>
                                 </InlineParam>
 
                                 <InlineParam>
@@ -251,11 +233,6 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         value=Signal::derive(move || format!("{}", probability_value.get() as u8))
                                         on_input=on_probability_change
                                     />
-                                    <div class="grid grid-cols-3 gap-2 text-xs text-zinc-500 font-mono mt-1">
-                                        <span class="text-left">"0"</span>
-                                        <span class="text-center">{move || format!("{}%", probability_value.get() as u8)}</span>
-                                        <span class="text-right">"100"</span>
-                                    </div>
                                 </InlineParam>
 
                                 <InlineParam>
@@ -267,18 +244,6 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         value=Signal::derive(move || format!("{}", micro_timing_value.get() as i8))
                                         on_input=on_micro_timing_change
                                     />
-                                    <div class="grid grid-cols-3 gap-2 text-xs text-zinc-500 font-mono mt-1">
-                                        <span class="text-left">"-23"</span>
-                                        <span class="text-center">{move || {
-                                            let val = micro_timing_value.get() as i8;
-                                            if val > 0 {
-                                                format!("+{}", val)
-                                            } else {
-                                                format!("{}", val)
-                                            }
-                                        }}</span>
-                                        <span class="text-right">"+23"</span>
-                                    </div>
                                 </InlineParam>
                             </div>
                         </div>
