@@ -655,7 +655,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
                         <div class="flex flex-col h-full animate-in fade-in duration-200">
                             // Header (fixed)
                             <div class="flex-shrink-0 p-2 mb-2">
-                                <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wide">
+                                <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-wide">
                                     "PATTERN OVERVIEW"
                                 </h3>
                             </div>
@@ -664,7 +664,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
                             <div class="flex-1 overflow-y-auto px-2 pb-2">
                                 <table class="w-full text-sm">
                                     <thead>
-                                        <tr class="text-xs text-zinc-500 border-b border-zinc-800">
+                                        <tr class="text-[10px] text-zinc-500 border-b border-zinc-800">
                                             <th class="text-left pb-2 pr-2">"Track"</th>
                                             <th class="text-left pb-2 pr-2">"Machine"</th>
                                             <th class="text-right pb-2 pr-2">"Steps"</th>
@@ -689,20 +689,20 @@ pub fn StepEditorSidebar() -> impl IntoView {
 
                                                         view! {
                                                             <tr class="border-b border-zinc-800/50 hover:bg-zinc-800/30 transition-colors">
-                                                                <td class="py-2 pr-2 text-zinc-100">
+                                                                <td class="py-1 pr-2 text-xs text-zinc-100">
                                                                     {format!("T{}", idx + 1)}
                                                                 </td>
-                                                                <td class="py-2 pr-2 text-zinc-100 truncate">
+                                                                <td class="py-1 pr-2 text-xs text-zinc-100 truncate">
                                                                     {machine_name}
                                                                 </td>
                                                                 <td class={format!(
-                                                                    "py-2 pr-2 text-right {}",
+                                                                    "py-1 pr-2 text-xs text-right {}",
                                                                     if active_steps == 0 { "text-zinc-600" } else { "text-zinc-100" }
                                                                 )}>
                                                                     {active_steps}
                                                                 </td>
                                                                 <td class={format!(
-                                                                    "py-2 text-right {}",
+                                                                    "py-1 text-xs text-right {}",
                                                                     if p_locks == 0 { "text-zinc-600" } else { "text-zinc-100" }
                                                                 )}>
                                                                     {p_locks}
