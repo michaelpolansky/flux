@@ -8,7 +8,6 @@ use wasm_bindgen::JsCast;
 use crate::ui::components::grid::Grid;
 use crate::ui::components::inspector::Inspector;
 use crate::ui::components::toolbar::Toolbar;
-use crate::ui::components::step_inspector::StepInspector;
 use crate::ui::state::PlaybackState;
 use crate::ui::tauri_detect::{detect_tauri, TauriCapabilities};
 
@@ -151,7 +150,6 @@ pub fn App() -> impl IntoView {
                         </div>
                     </div>
                     <Inspector />
-                    <StepInspector />
                 </section>
             </div>
         </main>
