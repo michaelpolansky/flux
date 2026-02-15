@@ -458,7 +458,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
 
                             // Content (scrolls independently)
                             <div class="flex-1 overflow-y-auto px-2 pb-2">
-                                <div class="flex flex-col gap-2">
+                                <div class="flex flex-col gap-1">
                                 <CollapsibleSection
                                     title="STEP PROPERTIES"
                                     default_open=true
