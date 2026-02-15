@@ -11,7 +11,7 @@ pub fn ParamLabel(
 ) -> impl IntoView {
     view! {
         <label class=move || {
-            let base = "text-xs font-medium uppercase tracking-wide flex-shrink-0 w-20";
+            let base = "text-[10px] font-medium uppercase tracking-tight flex-shrink-0 w-24";
             let color = if locked.get() {
                 "text-amber-400"
             } else {
