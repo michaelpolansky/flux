@@ -80,101 +80,81 @@ pub fn VelocityLanes() -> impl IntoView {
                 </h3>
             </div>
 
-            // Velocity grid
-            <div class="flex">
-                // Track labels column (must match step grid width exactly)
-                <div class="flex flex-col gap-[2px] mr-2">
-                    <For
-                        each=move || {
-                            pattern_signal.with(|p| (0..p.tracks.len()).collect::<Vec<_>>())
-                        }
-                        key=|track_idx| *track_idx
-                        children=move |track_idx| {
-                            view! {
-                                <div class="h-10 flex items-center justify-start gap-1 px-1">
-                                    // Invisible spacer matching RemoveTrackButton (w-4)
-                                    <div class="w-4"></div>
-                                    <div class="text-xs text-zinc-400 w-6">
-                                        {format!("T{}", track_idx + 1)}
-                                    </div>
-                                    // Invisible spacer matching MachineSelector button
-                                    // Button has px-1.5 (6px) + text content ~24-32px = ~36-40px
-                                    <button class="px-1.5 py-0.5 text-[10px] font-mono opacity-0 pointer-events-none">
-                                        "OS ▾"
-                                    </button>
+            // Velocity grid - uses same CSS Grid as step grid
+            // Grid columns: [track-labels] [step-1] [step-2] ... [step-16]
+            <div style="display: grid; grid-template-columns: auto repeat(16, 40px); gap: 2px;">
+                <For
+                    each=move || {
+                        pattern_signal.with(|p| (0..p.tracks.len()).collect::<Vec<_>>())
+                    }
+                    key=|track_idx| *track_idx
+                    children=move |track_idx| {
+                        view! {
+                            // Track label cell (column 1)
+                            <div class="h-10 flex items-center justify-start px-1" style="grid-column: 1;">
+                                <div class="text-xs text-zinc-400">
+                                    {format!("T{}", track_idx + 1)}
                                 </div>
-                            }
-                        }
-                    />
-                </div>
+                            </div>
 
-                // Velocity cells grid
-                <div class="flex flex-col gap-[2px]">
-                    <For
-                        each=move || {
-                            pattern_signal.with(|p| (0..p.tracks.len()).collect::<Vec<_>>())
-                        }
-                        key=|track_idx| *track_idx
-                        children=move |track_idx| {
-                            view! {
-                                <div class="flex gap-[2px]">
-                                    <For
-                                        each=move || (0..16)
-                                        key=|step_idx| *step_idx
-                                        children=move |step_idx| {
-                                            let value_signal = Signal::derive(move || {
-                                                pattern_signal.with(|p| {
-                                                    get_velocity_value(p, track_idx, step_idx)
-                                                })
-                                            });
+                            // 16 velocity cells (columns 2-17)
+                            <For
+                                each=move || (0..16)
+                                key=|step_idx| *step_idx
+                                children=move |step_idx| {
+                                    let value_signal = Signal::derive(move || {
+                                        pattern_signal.with(|p| {
+                                            get_velocity_value(p, track_idx, step_idx)
+                                        })
+                                    });
 
-                                            let is_active = Signal::derive(move || {
-                                                pattern_signal.with(|p| {
-                                                    is_step_active(p, track_idx, step_idx)
-                                                })
-                                            });
+                                    let is_active = Signal::derive(move || {
+                                        pattern_signal.with(|p| {
+                                            is_step_active(p, track_idx, step_idx)
+                                        })
+                                    });
 
-                                            view! {
-                                                <div
-                                                    class=move || {
-                                                        let base = "w-10 h-10 bg-zinc-800/30 border border-zinc-700/50 flex items-center justify-center hover:bg-zinc-700/50 transition-colors";
-                                                        let cursor = "cursor-ns-resize";
-                                                        format!("{} {}", base, cursor)
-                                                    }
-                                                    on:mousedown=move |ev| {
-                                                        ev.prevent_default();
-                                                        set_drag_state.set(Some((track_idx, step_idx)));
-                                                        set_drag_start_y.set(Some(ev.client_y() as f64));
-                                                        let current_value = pattern_signal.with(|p| get_velocity_value(p, track_idx, step_idx));
-                                                        set_drag_start_value.set(Some(current_value));
-                                                    }
-                                                >
-                                                    <span class=move || {
-                                                        let base = "text-center";
-                                                        let active_class = if is_active.get() {
-                                                            "text-zinc-100 text-sm"
+                                    view! {
+                                        <div style=format!("grid-column: {};", step_idx + 2)>
+                                            <div
+                                                class=move || {
+                                                    let base = "w-10 h-10 bg-zinc-800/30 border border-zinc-700/50 flex items-center justify-center hover:bg-zinc-700/50 transition-colors";
+                                                    let cursor = "cursor-ns-resize";
+                                                    format!("{} {}", base, cursor)
+                                                }
+                                                on:mousedown=move |ev| {
+                                                    ev.prevent_default();
+                                                    set_drag_state.set(Some((track_idx, step_idx)));
+                                                    set_drag_start_y.set(Some(ev.client_y() as f64));
+                                                    let current_value = pattern_signal.with(|p| get_velocity_value(p, track_idx, step_idx));
+                                                    set_drag_start_value.set(Some(current_value));
+                                                }
+                                            >
+                                                <span class=move || {
+                                                    let base = "text-center";
+                                                    let active_class = if is_active.get() {
+                                                        "text-zinc-100 text-sm"
+                                                    } else {
+                                                        "text-zinc-600 text-xs"
+                                                    };
+                                                    format!("{} {}", base, active_class)
+                                                }>
+                                                    {move || {
+                                                        if is_active.get() {
+                                                            format!("{}", value_signal.get())
                                                         } else {
-                                                            "text-zinc-600 text-xs"
-                                                        };
-                                                        format!("{} {}", base, active_class)
-                                                    }>
-                                                        {move || {
-                                                            if is_active.get() {
-                                                                format!("{}", value_signal.get())
-                                                            } else {
-                                                                "--".to_string()
-                                                            }
-                                                        }}
-                                                    </span>
-                                                </div>
-                                            }
-                                        }
-                                    />
-                                </div>
-                            }
+                                                            "--".to_string()
+                                                        }
+                                                    }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            />
                         }
-                    />
-                </div>
+                    }
+                />
             </div>
         </div>
     }

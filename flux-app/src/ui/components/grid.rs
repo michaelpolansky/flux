@@ -121,59 +121,50 @@ pub fn Grid() -> impl IntoView {
 
                 // Right: Grid portion
                 <div class="flex-1">
-                    <div class="flex">
-                        // Track labels on the left (dynamic)
-                        <div class="flex flex-col gap-[2px] mr-2">
-                            <For
-                                each=move || {
-                                    pattern_signal.with(|p| (0..p.tracks.len()).collect::<Vec<_>>())
-                                }
-                                key=|track_idx| *track_idx
-                                children=move |track_idx| {
-                                    view! {
-                                        <div class="h-10 flex items-center justify-start gap-1 px-1">
-                                            <RemoveTrackButton
-                                                track_idx=track_idx
-                                                show_confirm=set_show_confirm_dialog
-                                            />
-                                            <div class="text-xs text-zinc-400 w-6">
-                                                {format!("T{}", track_idx + 1)}
-                                            </div>
-                                            <MachineSelector track_idx=track_idx />
+                    // CSS Grid container for step grid + velocity lanes alignment
+                    // Grid columns: [track-labels] [step-1] [step-2] ... [step-16]
+                    <div style="display: grid; grid-template-columns: auto repeat(16, 40px); gap: 2px; position: relative;">
+                        // Step Grid Rows
+                        <For
+                            each=move || {
+                                pattern_signal.with(|p| (0..p.tracks.len()).collect::<Vec<_>>())
+                            }
+                            key=|track_idx| *track_idx
+                            children=move |track_idx| {
+                                view! {
+                                    // Track label cell
+                                    <div class="h-10 flex items-center justify-start gap-1 px-1" style="grid-column: 1;">
+                                        <RemoveTrackButton
+                                            track_idx=track_idx
+                                            show_confirm=set_show_confirm_dialog
+                                        />
+                                        <div class="text-xs text-zinc-400 w-6">
+                                            {format!("T{}", track_idx + 1)}
                                         </div>
-                                    }
-                                }
-                            />
-                        </div>
+                                        <MachineSelector track_idx=track_idx />
+                                    </div>
 
-                        // Grid of tracks × 16 steps
-                        <div class="flex flex-col gap-[2px] relative">
+                                    // 16 step cells
+                                    <For
+                                        each=move || (0..16).into_iter()
+                                        key=|step_idx| *step_idx
+                                        children=move |step_idx| {
+                                            view! {
+                                                <div style=format!("grid-column: {};", step_idx + 2)>
+                                                    <GridStep track_idx=track_idx step_idx=step_idx />
+                                                </div>
+                                            }
+                                        }
+                                    />
+                                }
+                            }
+                        />
+
+                        // Playhead indicator
+                        <div style="grid-column: 2 / -1; grid-row: 1 / -1; pointer-events: none;">
                             <PlayheadIndicator
-                                position=playback_position
+                                position=playhead_position
                                 is_playing=is_playing
-                            />
-                            <For
-                                each=move || {
-                                    pattern_signal.with(|p| (0..p.tracks.len()).collect::<Vec<_>>())
-                                }
-                                key=|track_idx| *track_idx
-                                children=move |track_idx| {
-                                    view! {
-                                        <div class="flex gap-[2px]">
-                                            <For
-                                                each=move || {
-                                                    (0..16).into_iter()
-                                                }
-                                                key=|step_idx| *step_idx
-                                                children=move |step_idx| {
-                                                    view! {
-                                                        <GridStep track_idx=track_idx step_idx=step_idx />
-                                                    }
-                                                }
-                                            />
-                                        </div>
-                                    }
-                                }
                             />
                         </div>
 
@@ -184,7 +175,7 @@ pub fn Grid() -> impl IntoView {
                         />
                     </div>
 
-                    // Velocity lanes
+                    // Velocity lanes (uses same grid template)
                     <VelocityLanes />
 
                     // Track controls below grid
