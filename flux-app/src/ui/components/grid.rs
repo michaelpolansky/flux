@@ -163,7 +163,7 @@ pub fn Grid() -> impl IntoView {
                         // Playhead indicator
                         <div style="grid-column: 2 / -1; grid-row: 1 / -1; pointer-events: none;">
                             <PlayheadIndicator
-                                position=playhead_position
+                                position=playback_position
                                 is_playing=is_playing
                             />
                         </div>
