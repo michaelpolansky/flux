@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsCast;
 
 use crate::ui::components::grid::Grid;
-use crate::ui::components::inspector::Inspector;
 use crate::ui::components::toolbar::Toolbar;
 use crate::ui::state::PlaybackState;
 use crate::ui::tauri_detect::{detect_tauri, TauriCapabilities};
@@ -130,26 +129,6 @@ pub fn App() -> impl IntoView {
                         <div class="text-xs font-mono text-zinc-600">"TRACK 1 - LEAD SYNTH"</div>
                     </div>
                     <Grid />
-                </section>
-
-                <section class="bg-zinc-900/50 rounded-lg p-4">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-sm font-medium text-zinc-400 uppercase tracking-wide">"Parameters"</h2>
-                         <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full"
-                                class:bg-blue-500=move || selected_step.get().is_some()
-                                class:bg-zinc-800=move || selected_step.get().is_none()
-                            ></span>
-                            <span class="text-xs font-mono text-zinc-500">
-                                {move || if let Some((track_id, step_idx)) = selected_step.get() {
-                                    format!("TRACK {}, STEP {} LOCKED", track_id + 1, step_idx + 1)
-                                } else {
-                                    "TRACK DEFAULT".to_string()
-                                }}
-                            </span>
-                        </div>
-                    </div>
-                    <Inspector />
                 </section>
             </div>
         </main>

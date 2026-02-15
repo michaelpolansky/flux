@@ -1,0 +1,295 @@
+[     151ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[     196ms] TypeError: Cannot read properties of undefined (reading 'event')
+    at __wbg_listen_7ec0e95d762a13a2 (http://localhost:1420/flux-app-ui-84c6f0e76320ca4e.js:415:42)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::__wbg_listen_7ec0e95d762a13a2::h079d71af2af22c4d externref shim (http://localhost:1420/flux-app-ui-84c6f0e76320ca4e_bg.wasm:wasm-function[9342]:0x1546eb)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::h5d901305d455d81f (http://localhost:1420/flux-app-ui-84c6f0e76320ca4e_bg.wasm:wasm-function[503]:0x615b5)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen_event::{{closure}}::h88363b7225a238d5 (http://localhost:1420/flux-app-ui-84c6f0e76320ca4e_bg.wasm:wasm-function[466]:0x5c80f)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::app::__App::{{closure}}::{{closure}}::h5cd3c3eb44491d65 (http://localhost:1420/flux-app-ui-84c6f0e76320ca4e_bg.wasm:wasm-function[633]:0x7062b)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.<core::pin::Pin<P> as core::future::future::Future>::poll::h0c269f489e63d77b (http://localhost:1420/flux-app-ui-84c6f0e76320ca4e_bg.wasm:wasm-function[4037]:0x10d15d)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Inner::is_ready::hce103fa316491728 (http://localhost:1420/flux-app-ui-84c6f0e76320ca4e_bg.wasm:wasm-function[2789]:0xe9e1c)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h6443472ecc4aadd4 (http://localhost:1420/flux-app-ui-84c6f0e76320ca4e_bg.wasm:wasm-function[6973]:0x13e0a2)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen::convert::closures::_::invoke::hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-84c6f0e76320ca4e_bg.wasm:wasm-function[3088]:0xf370e)
+    at wasm_bindgen__convert__closures_____invoke__hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-84c6f0e76320ca4e.js:667:22)
+[     195ms] [ERROR] Build failed: error from build pipeline
+
+Caused by:
+	0: HTML build pipeline failed (1 errors), showing first
+	1: error from asset pipeline
+	2: running cargo build
+	3: error during cargo build execution
+	4: cargo call to executable 'cargo' with args: '["build", "--target=wasm32-unknown-unknown", "--manifest-path", "/Users/michaelpolansky/Development/flux/flux-app/Cargo.toml"]' returned a bad status: exit status: 101
+ @ http://localhost:1420/:135
+[  704948ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[  705045ms] TypeError: Cannot read properties of undefined (reading 'event')
+    at __wbg_listen_7ec0e95d762a13a2 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:415:42)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::__wbg_listen_7ec0e95d762a13a2::h079d71af2af22c4d externref shim (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[9303]:0x152d4f)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::h5d901305d455d81f (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[499]:0x60a6a)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen_event::{{closure}}::h88363b7225a238d5 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[461]:0x5bab2)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::app::__App::{{closure}}::{{closure}}::h5cd3c3eb44491d65 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[629]:0x6faf0)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.<core::pin::Pin<P> as core::future::future::Future>::poll::h0c269f489e63d77b (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[4013]:0x10bab1)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Inner::is_ready::hce103fa316491728 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[2774]:0xe8b55)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h6443472ecc4aadd4 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[6940]:0x13c7bd)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen::convert::closures::_::invoke::hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[3076]:0xf25f3)
+    at wasm_bindgen__convert__closures_____invoke__hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:667:22)
+[ 1447561ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1452568ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1457572ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1462575ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1467579ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1472587ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1477595ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1482620ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1487645ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1493014ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[ 1493206ms] TypeError: Cannot read properties of undefined (reading 'event')
+    at __wbg_listen_7ec0e95d762a13a2 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:415:42)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::__wbg_listen_7ec0e95d762a13a2::h079d71af2af22c4d externref shim (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[9303]:0x152d4f)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::h5d901305d455d81f (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[499]:0x60a6a)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen_event::{{closure}}::h88363b7225a238d5 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[461]:0x5bab2)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::app::__App::{{closure}}::{{closure}}::h5cd3c3eb44491d65 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[629]:0x6faf0)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.<core::pin::Pin<P> as core::future::future::Future>::poll::h0c269f489e63d77b (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[4013]:0x10bab1)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Inner::is_ready::hce103fa316491728 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[2774]:0xe8b55)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h6443472ecc4aadd4 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[6940]:0x13c7bd)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen::convert::closures::_::invoke::hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[3076]:0xf25f3)
+    at wasm_bindgen__convert__closures_____invoke__hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:667:22)
+[ 1621976ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1626986ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1631993ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1636997ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1642003ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1647006ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1652010ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1657014ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1662020ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1667034ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1672039ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1677050ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1682074ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1687082ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 1692443ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[ 1692539ms] TypeError: Cannot read properties of undefined (reading 'event')
+    at __wbg_listen_7ec0e95d762a13a2 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:415:42)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::__wbg_listen_7ec0e95d762a13a2::h079d71af2af22c4d externref shim (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[9303]:0x152d4f)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::h5d901305d455d81f (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[499]:0x60a6a)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen_event::{{closure}}::h88363b7225a238d5 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[461]:0x5bab2)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::app::__App::{{closure}}::{{closure}}::h5cd3c3eb44491d65 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[629]:0x6faf0)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.<core::pin::Pin<P> as core::future::future::Future>::poll::h0c269f489e63d77b (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[4013]:0x10bab1)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Inner::is_ready::hce103fa316491728 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[2774]:0xe8b55)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h6443472ecc4aadd4 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[6940]:0x13c7bd)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen::convert::closures::_::invoke::hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[3076]:0xf25f3)
+    at wasm_bindgen__convert__closures_____invoke__hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:667:22)
+[ 1843714ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[ 1843770ms] TypeError: Cannot read properties of undefined (reading 'event')
+    at __wbg_listen_7ec0e95d762a13a2 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:415:42)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::__wbg_listen_7ec0e95d762a13a2::h079d71af2af22c4d externref shim (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[9303]:0x152d4f)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::h5d901305d455d81f (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[499]:0x60a6a)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen_event::{{closure}}::h88363b7225a238d5 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[461]:0x5bab2)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::app::__App::{{closure}}::{{closure}}::h5cd3c3eb44491d65 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[629]:0x6faf0)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.<core::pin::Pin<P> as core::future::future::Future>::poll::h0c269f489e63d77b (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[4013]:0x10bab1)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Inner::is_ready::hce103fa316491728 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[2774]:0xe8b55)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h6443472ecc4aadd4 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[6940]:0x13c7bd)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen::convert::closures::_::invoke::hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[3076]:0xf25f3)
+    at wasm_bindgen__convert__closures_____invoke__hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:667:22)
+[ 1844968ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[ 1844995ms] TypeError: Cannot read properties of undefined (reading 'event')
+    at __wbg_listen_7ec0e95d762a13a2 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:415:42)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::__wbg_listen_7ec0e95d762a13a2::h079d71af2af22c4d externref shim (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[9303]:0x152d4f)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::h5d901305d455d81f (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[499]:0x60a6a)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen_event::{{closure}}::h88363b7225a238d5 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[461]:0x5bab2)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::app::__App::{{closure}}::{{closure}}::h5cd3c3eb44491d65 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[629]:0x6faf0)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.<core::pin::Pin<P> as core::future::future::Future>::poll::h0c269f489e63d77b (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[4013]:0x10bab1)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Inner::is_ready::hce103fa316491728 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[2774]:0xe8b55)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h6443472ecc4aadd4 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[6940]:0x13c7bd)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen::convert::closures::_::invoke::hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[3076]:0xf25f3)
+    at wasm_bindgen__convert__closures_____invoke__hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:667:22)
+[ 3078348ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3083351ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3088354ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3093358ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3098362ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3103366ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3108374ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3113397ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3118419ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3123478ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3128530ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3133688ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3139082ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3145153ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3150807ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3157990ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3164362ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3171303ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3178937ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3185898ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3194610ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3199612ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3204615ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3209618ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3214620ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3219623ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3224629ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3229645ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3234667ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3239714ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3244748ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3249784ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3254902ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3260343ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3266285ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3272851ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3281370ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3289626ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3296843ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3306400ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3314431ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3323563ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3330873ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3339439ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3347740ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3357693ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3365549ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3375110ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3382064ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3390657ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3397796ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3405630ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3412999ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3420856ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3429033ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3435911ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3440919ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3445923ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3450925ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3455928ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3460933ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3465937ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3470943ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3475965ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3481003ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3486053ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3491121ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3496292ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3501765ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3507931ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3515287ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3525075ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3531193ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3539896ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3548385ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3555258ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3561755ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3567793ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3577766ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3584284ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3591847ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3598127ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3606769ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3614639ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3622963ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3629788ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3636518ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3645785ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3654791ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3663039ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3669750ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3677352ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3682357ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3687360ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3692365ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3697368ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3702370ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3707379ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3712395ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3717409ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3722433ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3727475ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3732548ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3737841ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3743088ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3748855ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3754539ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3760910ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3768658ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3777350ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3786785ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 3795443ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[ 3795533ms] TypeError: Cannot read properties of undefined (reading 'event')
+    at __wbg_listen_7ec0e95d762a13a2 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:415:42)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::__wbg_listen_7ec0e95d762a13a2::h079d71af2af22c4d externref shim (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[9303]:0x152d4f)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::h5d901305d455d81f (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[499]:0x60a6a)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen_event::{{closure}}::h88363b7225a238d5 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[461]:0x5bab2)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::app::__App::{{closure}}::{{closure}}::h5cd3c3eb44491d65 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[629]:0x6faf0)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.<core::pin::Pin<P> as core::future::future::Future>::poll::h0c269f489e63d77b (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[4013]:0x10bab1)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Inner::is_ready::hce103fa316491728 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[2774]:0xe8b55)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h6443472ecc4aadd4 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[6940]:0x13c7bd)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen::convert::closures::_::invoke::hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[3076]:0xf25f3)
+    at wasm_bindgen__convert__closures_____invoke__hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:667:22)
+[ 4032598ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4037862ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[ 4037941ms] TypeError: Cannot read properties of undefined (reading 'event')
+    at __wbg_listen_7ec0e95d762a13a2 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:415:42)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::__wbg_listen_7ec0e95d762a13a2::h079d71af2af22c4d externref shim (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[9303]:0x152d4f)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::h5d901305d455d81f (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[499]:0x60a6a)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen_event::{{closure}}::h88363b7225a238d5 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[461]:0x5bab2)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::app::__App::{{closure}}::{{closure}}::h5cd3c3eb44491d65 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[629]:0x6faf0)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.<core::pin::Pin<P> as core::future::future::Future>::poll::h0c269f489e63d77b (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[4013]:0x10bab1)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Inner::is_ready::hce103fa316491728 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[2774]:0xe8b55)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h6443472ecc4aadd4 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[6940]:0x13c7bd)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen::convert::closures::_::invoke::hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[3076]:0xf25f3)
+    at wasm_bindgen__convert__closures_____invoke__hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:667:22)
+[ 4078467ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4083475ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4088478ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4093480ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4098483ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4103486ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4108489ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4113494ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4118498ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4123502ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4128505ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4133509ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4138513ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4143518ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4148525ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4153532ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4158535ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4163541ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4168891ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[ 4169001ms] TypeError: Cannot read properties of undefined (reading 'event')
+    at __wbg_listen_7ec0e95d762a13a2 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:415:42)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::__wbg_listen_7ec0e95d762a13a2::h079d71af2af22c4d externref shim (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[9303]:0x152d4f)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen::{{closure}}::h5d901305d455d81f (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[499]:0x60a6a)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::tauri::listen_event::{{closure}}::h88363b7225a238d5 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[461]:0x5bab2)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::app::__App::{{closure}}::{{closure}}::h5cd3c3eb44491d65 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[629]:0x6faf0)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.<core::pin::Pin<P> as core::future::future::Future>::poll::h0c269f489e63d77b (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[4013]:0x10bab1)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Inner::is_ready::hce103fa316491728 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[2774]:0xe8b55)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h6443472ecc4aadd4 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[6940]:0x13c7bd)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen::convert::closures::_::invoke::hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3_bg.wasm:wasm-function[3076]:0xf25f3)
+    at wasm_bindgen__convert__closures_____invoke__hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-b20233bc880f84d3.js:667:22)
+[ 4591309ms] [ERROR] Build failed: error from build pipeline
+
+Caused by:
+	0: hook call to sh returned a bad status
+ @ http://localhost:1420/:135
+[ 4597476ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4602479ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4607485ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4612490ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4617498ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4622505ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4627513ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4632526ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4637562ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4642596ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4647645ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4652736ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4657934ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4663580ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4669341ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4678680ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4685634ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4692904ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4701870ms] [ERROR] WebSocket connection to 'ws://localhost:1420/.well-known/trunk/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:1420/:122
+[ 4710132ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ chrome-error://chromewebdata/:0

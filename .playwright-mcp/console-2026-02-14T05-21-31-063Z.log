@@ -1,0 +1,6 @@
+[     384ms] Unexpected token '<'
+[     384ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://127.0.0.1:1420/:20
+[   51867ms] Unexpected token '<'
+[   51867ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://127.0.0.1:1420/:20
+[   95040ms] Unexpected token '<'
+[   95040ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://127.0.0.1:1420/:20

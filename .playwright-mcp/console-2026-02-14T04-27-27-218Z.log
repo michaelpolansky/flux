@@ -1,0 +1,28 @@
+[      40ms] [ERROR] Failed to find a valid digest in the 'integrity' attribute for resource 'http://localhost:1420/output-763a1a6dde36bad8.css' with computed SHA-384 integrity 'iQuqXqawXrQEW0d5xPjItV+Cn2HPh7hUsg6xNEpb3sW1r/fEEf6XzoxW2GhHgMG9'. The resource has been blocked. @ http://localhost:1420/:5
+[      42ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[   20498ms] [ERROR] Failed to find a valid digest in the 'integrity' attribute for resource 'http://localhost:1420/output-763a1a6dde36bad8.css' with computed SHA-384 integrity 'iQuqXqawXrQEW0d5xPjItV+Cn2HPh7hUsg6xNEpb3sW1r/fEEf6XzoxW2GhHgMG9'. The resource has been blocked. @ http://localhost:1420/:5
+[   20498ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[   27576ms] [ERROR] Failed to find a valid digest in the 'integrity' attribute for resource 'http://localhost:1420/output-763a1a6dde36bad8.css' with computed SHA-384 integrity 'iQuqXqawXrQEW0d5xPjItV+Cn2HPh7hUsg6xNEpb3sW1r/fEEf6XzoxW2GhHgMG9'. The resource has been blocked. @ http://localhost:1420/:5
+[   27576ms] [WARNING] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information @ http://localhost:1420/:19
+[   28584ms] TypeError: Cannot read properties of undefined (reading 'core')
+    at __wbg_invoke_0d6dbea4af0851b6 (http://localhost:1420/flux-app-ui-d3ab978edd316ade.js:417:42)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::services::audio::invoke::{{closure}}::__wbg_invoke_0d6dbea4af0851b6::h4ba6893f51abc864 externref shim (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[11860]:0x1b05ba)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::services::audio::invoke::{{closure}}::h920da0b246c98c89 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[573]:0x719cd)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::services::audio::set_playback_state::{{closure}}::h9f271c159ef7fbc3 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[647]:0x7a9ff)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::components::toolbar::__Toolbar::{{closure}}::{{closure}}::h39731483b7120fc1 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[1274]:0xb4db3)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.<core::pin::Pin<P> as core::future::future::Future>::poll::h0c269f489e63d77b (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[5309]:0x157601)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Inner::is_ready::hce103fa316491728 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[3678]:0x1295e7)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h6443472ecc4aadd4 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[9004]:0x194ff0)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen::convert::closures::_::invoke::hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[4081]:0x1363b3)
+    at wasm_bindgen__convert__closures_____invoke__hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-d3ab978edd316ade.js:728:22)
+[   29242ms] TypeError: Cannot read properties of undefined (reading 'core')
+    at __wbg_invoke_0d6dbea4af0851b6 (http://localhost:1420/flux-app-ui-d3ab978edd316ade.js:417:42)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::services::audio::invoke::{{closure}}::__wbg_invoke_0d6dbea4af0851b6::h4ba6893f51abc864 externref shim (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[11860]:0x1b05ba)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::services::audio::invoke::{{closure}}::h920da0b246c98c89 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[573]:0x719cd)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::services::audio::set_playback_state::{{closure}}::h9f271c159ef7fbc3 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[647]:0x7a9ff)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.flux_app_ui::ui::components::toolbar::__Toolbar::{{closure}}::{{closure}}::h354a75729cd8d8d7 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[1273]:0xb4c81)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.<core::pin::Pin<P> as core::future::future::Future>::poll::h0c269f489e63d77b (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[5309]:0x157601)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Inner::is_ready::hce103fa316491728 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[3678]:0x1295e7)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h6443472ecc4aadd4 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[9004]:0x194ff0)
+    at flux_app_ui-2ba01c18aa3833e1.wasm.wasm_bindgen::convert::closures::_::invoke::hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-d3ab978edd316ade_bg.wasm:wasm-function[4081]:0x1363b3)
+    at wasm_bindgen__convert__closures_____invoke__hd8f372fbd3ed4996 (http://localhost:1420/flux-app-ui-d3ab978edd316ade.js:728:22)

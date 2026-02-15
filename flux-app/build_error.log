@@ -1,0 +1,108 @@
+   Compiling flux-app-ui v0.1.0 (/Users/michaelpolansky/Development/flux/flux-app)
+error: expected one of `!`, `(`, `+`, `::`, `<`, `>`, or `as`, found `class`
+  --> src/ui/components/grid.rs:78:29
+   |
+77 | ...       <button
+   |                  - expected one of 7 possible tokens
+78 | ...           class=move || {
+   |               ^^^^^ unexpected token
+
+error: expected `>`
+  --> src/ui/components/grid.rs:78:29
+   |
+78 | ...                   class=move || {
+   |                       ^^^^^
+
+warning: unused import: `Element`
+ --> src/ui/components/lfo_draw.rs:2:46
+  |
+2 | ..., MouseEvent, Element};
+  |                  ^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `wasm_bindgen::closure::Closure`
+ --> src/ui/components/lfo_draw.rs:3:5
+  |
+3 | use wasm_bindgen::closure::Closure;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unnecessary parentheses around assigned value
+   --> src/ui/components/lfo_designer.rs:110:33
+    |
+110 | ...   let h = (val.abs() * 50.0);
+    |               ^                ^
+    |
+    = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+    |
+110 -                         let h = (val.abs() * 50.0);
+110 +                         let h = val.abs() * 50.0 ;
+    |
+
+warning: use of deprecated function `leptos::prelude::create_node_ref`: This function is being removed to conform to Rust idioms. Please use `NodeRef::new()` instead.
+  --> src/ui/components/lfo_draw.rs:11:22
+   |
+11 | ...vas_ref = create_node_ref::<leptos:...
+   |              ^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated function `leptos::prelude::create_signal`: This function is being renamed to `signal()` to conform to Rust idioms.
+  --> src/ui/components/lfo_draw.rs:12:40
+   |
+12 | ...drawing) = create_signal::<bool>(fa...
+   |               ^^^^^^^^^^^^^
+
+warning: use of deprecated function `leptos::prelude::create_effect`: This function is being removed to conform to Rust idioms. Please use `Effect::new()` instead.
+  --> src/ui/components/lfo_draw.rs:82:5
+   |
+82 |     create_effect(move |_| {
+   |     ^^^^^^^^^^^^^
+
+warning: use of deprecated function `leptos::prelude::create_signal`: This function is being renamed to `signal()` to conform to Rust idioms.
+  --> src/ui/components/lfo_designer.rs:14:40
+   |
+14 | ...drawing) = create_signal::<bool>(fa...
+   |               ^^^^^^^^^^^^^
+
+warning: use of deprecated method `web_sys::CanvasRenderingContext2d::set_fill_style`
+  --> src/ui/components/lfo_draw.rs:26:13
+   |
+26 | ...   ctx.set_fill_style(&"rgb(24, 24,...
+   |           ^^^^^^^^^^^^^^
+
+warning: use of deprecated method `web_sys::CanvasRenderingContext2d::set_stroke_style`
+  --> src/ui/components/lfo_draw.rs:30:13
+   |
+30 | ...   ctx.set_stroke_style(&"rgba(63, ...
+   |           ^^^^^^^^^^^^^^^^
+
+warning: use of deprecated method `web_sys::CanvasRenderingContext2d::set_stroke_style`
+  --> src/ui/components/lfo_draw.rs:51:13
+   |
+51 | ...   ctx.set_stroke_style(&"rgb(234, ...
+   |           ^^^^^^^^^^^^^^^^
+
+warning: use of deprecated method `web_sys::CanvasRenderingContext2d::set_fill_style`
+  --> src/ui/components/lfo_draw.rs:72:13
+   |
+72 | ...   ctx.set_fill_style(&"rgb(234, 17...
+   |           ^^^^^^^^^^^^^^
+
+warning: unused variable: `base`
+   --> src/ui/components/inspector.rs:116:41
+    |
+116 | ...       let base = "w-full h-2 bg-z...
+    |               ^^^^ help: if this is intentional, prefix it with an underscore: `_base`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `height_pct`
+   --> src/ui/components/lfo_designer.rs:104:29
+    |
+104 | ...     let height_pct = (val.abs() *...
+    |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_height_pct`
+
+warning: `flux-app-ui` (bin "flux-app-ui") generated 13 warnings
+error: could not compile `flux-app-ui` (bin "flux-app-ui") due to 2 previous errors; 13 warnings emitted

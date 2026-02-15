@@ -2,7 +2,6 @@ pub mod grid;
 pub mod grid_step;
 pub mod step_badge;
 pub mod playhead_indicator;
-pub mod inspector;
 pub mod toolbar;
 pub mod lfo_draw;
 pub mod lfo_designer;
