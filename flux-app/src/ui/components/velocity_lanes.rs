@@ -47,6 +47,13 @@ pub fn VelocityLanes() -> impl IntoView {
     // Access shared context
     let pattern_signal = use_context::<ReadSignal<Pattern>>()
         .expect("Pattern context not found");
+    let set_pattern_signal = use_context::<WriteSignal<Pattern>>()
+        .expect("Pattern write signal not found");
+
+    // Drag state
+    let (drag_state, set_drag_state) = signal::<Option<(usize, usize)>>(None);
+    let (drag_start_y, set_drag_start_y) = signal::<Option<f64>>(None);
+    let (drag_start_value, set_drag_start_value) = signal::<Option<u8>>(None);
 
     view! {
         <div class="velocity-lanes border-t border-zinc-800 mt-4">
