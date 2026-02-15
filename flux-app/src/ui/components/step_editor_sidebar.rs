@@ -174,7 +174,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
             {move || {
                 if let Some((track_id, step_idx)) = selected_step.get() {
                     view! {
-                        <div>
+                        <div class="animate-in fade-in slide-in-from-top-2 duration-200">
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex flex-col">
                                     <span class="text-xs font-bold text-zinc-400 uppercase tracking-wide">"EDITING STEP"</span>
@@ -183,7 +183,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                     </span>
                                 </div>
                                 <button
-                                    class="text-xs text-zinc-500 hover:text-red-500 transition-colors focus:outline-none"
+                                    class="text-xs text-zinc-500 hover:text-red-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-zinc-900 rounded px-1"
                                     on:click=move |_| selected_step.set(None)
                                 >
                                     "×"
@@ -285,7 +285,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
                     }.into_any()
                 } else {
                     view! {
-                        <div class="flex flex-col items-center justify-center py-8 text-center">
+                        <div class="flex flex-col items-center justify-center py-8 text-center animate-in fade-in duration-300">
                             <p class="text-zinc-500 text-sm italic mb-2">
                                 "Select a step to"
                             </p>
