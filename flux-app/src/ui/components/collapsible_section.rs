@@ -24,11 +24,11 @@ pub fn CollapsibleSection(
             >
                 <div class="flex items-center gap-2">
                     // Expand/collapse indicator
-                    <span class="text-zinc-400 text-xs">
+                    <span class="text-zinc-400 text-[10px]">
                         {move || if is_open.get() { "▼" } else { "▶" }}
                     </span>
                     // Title
-                    <span class="text-xs font-bold text-zinc-400 uppercase tracking-wide">
+                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wide">
                         {title}
                     </span>
                     // Optional badge
@@ -37,7 +37,7 @@ pub fn CollapsibleSection(
                             let count = count_signal.get();
                             if count > 0 {
                                 view! {
-                                    <span class="text-xs text-amber-400 ml-1">
+                                    <span class="text-[10px] text-amber-400 ml-1">
                                         {format!("({})", count)}
                                     </span>
                                 }.into_any()
