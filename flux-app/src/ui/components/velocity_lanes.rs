@@ -56,7 +56,34 @@ pub fn VelocityLanes() -> impl IntoView {
     let (drag_start_value, set_drag_start_value) = signal::<Option<u8>>(None);
 
     view! {
-        <div class="velocity-lanes border-t border-zinc-800 mt-4">
+        <div
+            class="velocity-lanes border-t border-zinc-800 mt-4"
+            on:mousemove=move |ev| {
+                if let Some((t_idx, s_idx)) = drag_state.get() {
+                    if let (Some(start_y), Some(start_val)) = (drag_start_y.get(), drag_start_value.get()) {
+                        let delta = start_y - ev.client_y() as f64;
+                        let new_velocity = ((start_val as i32 + delta as i32).clamp(0, 127)) as u8;
+
+                        // Update pattern
+                        set_pattern_signal.update(|pattern| {
+                            if let Some(step) = pattern
+                                .tracks
+                                .get_mut(t_idx)
+                                .and_then(|t| t.subtracks.get_mut(0))
+                                .and_then(|st| st.steps.get_mut(s_idx))
+                            {
+                                step.velocity = new_velocity;
+                            }
+                        });
+                    }
+                }
+            }
+            on:mouseup=move |_| {
+                set_drag_state.set(None);
+                set_drag_start_y.set(None);
+                set_drag_start_value.set(None);
+            }
+        >
             // Section header
             <div class="py-2 px-2">
                 <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wide">
@@ -118,7 +145,20 @@ pub fn VelocityLanes() -> impl IntoView {
                                             });
 
                                             view! {
-                                                <div class="w-10 h-10 bg-zinc-800/30 border border-zinc-700/50 flex items-center justify-center hover:bg-zinc-700/50 transition-colors">
+                                                <div
+                                                    class=move || {
+                                                        let base = "w-10 h-10 bg-zinc-800/30 border border-zinc-700/50 flex items-center justify-center hover:bg-zinc-700/50 transition-colors";
+                                                        let cursor = "cursor-ns-resize";
+                                                        format!("{} {}", base, cursor)
+                                                    }
+                                                    on:mousedown=move |ev| {
+                                                        ev.prevent_default();
+                                                        set_drag_state.set(Some((track_idx, step_idx)));
+                                                        set_drag_start_y.set(Some(ev.client_y() as f64));
+                                                        let current_value = pattern_signal.with(|p| get_velocity_value(p, track_idx, step_idx));
+                                                        set_drag_start_value.set(Some(current_value));
+                                                    }
+                                                >
                                                     <span class=move || {
                                                         let base = "text-center";
                                                         let active_class = if is_active.get() {
