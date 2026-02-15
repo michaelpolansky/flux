@@ -5,6 +5,24 @@ use crate::ui::components::collapsible_section::CollapsibleSection;
 use crate::ui::components::form_controls::*;
 use crate::ui::components::lfo_designer::LfoDesigner;
 
+/// Calculate track statistics (active steps count, P-Lock count)
+/// Note: Examines only the primary subtrack (index 0) as per current single-subtrack design
+fn calculate_track_stats(track: &crate::shared::models::Track) -> (usize, usize) {
+    let active_steps = track.subtracks.get(0)
+        .map(|st| st.steps.iter()
+            .filter(|s| s.trig_type != crate::shared::models::TrigType::None)
+            .count())
+        .unwrap_or(0);
+
+    let p_lock_count = track.subtracks.get(0)
+        .map(|st| st.steps.iter()
+            .map(|s| s.p_locks.iter().filter(|p| p.is_some()).count())
+            .sum::<usize>())
+        .unwrap_or(0);
+
+    (active_steps, p_lock_count)
+}
+
 // Helper to extract track_id from selected_step
 fn get_track_id_from_selection(selected_step: RwSignal<Option<(usize, usize)>>) -> usize {
     selected_step.get().map(|(track_id, _)| track_id).unwrap_or(0)
