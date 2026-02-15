@@ -124,17 +124,15 @@ pub fn Grid() -> impl IntoView {
                         key=|track_idx| *track_idx
                         children=move |track_idx| {
                             view! {
-                                <div class="w-8 h-10 flex items-center justify-center gap-1">
-                                    <div class="flex items-center gap-1">
-                                        <div class="text-xs text-zinc-400">
-                                            {format!("T{}", track_idx + 1)}
-                                        </div>
-                                        <MachineSelector track_idx=track_idx />
-                                        <RemoveTrackButton
-                                            track_idx=track_idx
-                                            show_confirm=set_show_confirm_dialog
-                                        />
+                                <div class="h-10 flex items-center justify-start gap-1 px-1">
+                                    <div class="text-xs text-zinc-400 w-6">
+                                        {format!("T{}", track_idx + 1)}
                                     </div>
+                                    <MachineSelector track_idx=track_idx />
+                                    <RemoveTrackButton
+                                        track_idx=track_idx
+                                        show_confirm=set_show_confirm_dialog
+                                    />
                                 </div>
                             }
                         }

@@ -45,7 +45,7 @@ pub fn RemoveTrackButton(
 
     view! {
         <button
-            class="w-4 h-4 text-zinc-600 hover:text-red-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            class="w-4 h-4 flex items-center justify-center text-zinc-500 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors rounded text-sm font-bold"
             disabled=is_disabled
             on:click=handle_click
             title=move || if is_disabled() { "Cannot remove last track" } else { "Remove track" }
