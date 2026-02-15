@@ -2,7 +2,6 @@ use crate::app::SequencerState;
 use crate::shared::models::Pattern;
 use crate::ui::components::collapsible_section::CollapsibleSection;
 use crate::ui::components::form_controls::*;
-use crate::ui::components::lfo_designer::LfoDesigner;
 use leptos::prelude::*;
 
 /// Calculate track statistics (active steps count, P-Lock count)
@@ -359,17 +358,6 @@ pub fn StepEditorSidebar() -> impl IntoView {
         })
     });
 
-    let is_designer = Signal::derive(move || {
-        let track_id = get_track_id_from_selection(selected_step);
-        pattern_signal.with(|p| {
-            p.tracks
-                .get(track_id)
-                .and_then(|t| t.lfos.get(0))
-                .map(|l| matches!(l.shape, crate::shared::models::LFOShape::Designer(_)))
-                .unwrap_or(false)
-        })
-    });
-
     // LFO change handlers
     let on_shape_change = move |val: String| {
         let track_id = get_track_id_from_selection(selected_step);
@@ -381,7 +369,6 @@ pub fn StepEditorSidebar() -> impl IntoView {
                         "Triangle" => crate::shared::models::LFOShape::Triangle,
                         "Square" => crate::shared::models::LFOShape::Square,
                         "Random" => crate::shared::models::LFOShape::Random,
-                        "Designer" => crate::shared::models::LFOShape::Designer([0.0; 16].to_vec()),
                         _ => crate::shared::models::LFOShape::Triangle,
                     };
                 }
@@ -557,7 +544,6 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                                 ("Triangle", "△"),
                                                 ("Square", "▭"),
                                                 ("Random", "※"),
-                                                ("Designer", "✎"),
                                             ]
                                             selected=lfo_shape
                                             on_change=on_shape_change
@@ -599,52 +585,6 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                             on_change=on_destination_change
                                         />
                                     </InlineParam>
-
-                                    // Designer waveform editor (conditional)
-                                    {move || {
-                                        if is_designer.get() {
-                                            view! {
-                                                <div class="mt-2">
-                                                    <label class="text-xs text-zinc-500 mb-1 block">"Waveform Designer"</label>
-                                                    <LfoDesigner
-                                                        track_id=Signal::derive(move || get_track_id_from_selection(selected_step))
-                                                        lfo_index=Signal::derive(move || 0)
-                                                        value=Signal::derive(move || {
-                                                            let track_id = get_track_id_from_selection(selected_step);
-                                                            pattern_signal.with(|p| {
-                                                                p.tracks.get(track_id)
-                                                                    .and_then(|t| t.lfos.get(0))
-                                                                    .and_then(|l| {
-                                                                        if let crate::shared::models::LFOShape::Designer(v) = &l.shape {
-                                                                            Some(v.to_vec())
-                                                                        } else {
-                                                                            None
-                                                                        }
-                                                                    })
-                                                                    .unwrap_or_else(|| vec![0.0; 16])
-                                                            })
-                                                        })
-                                                        on_change=Callback::new(move |new_val: Vec<f32>| {
-                                                            if new_val.len() == 16 {
-                                                                let mut arr = [0.0; 16];
-                                                                arr.copy_from_slice(&new_val);
-                                                                let track_id = get_track_id_from_selection(selected_step);
-                                                                set_pattern_signal.update(|p| {
-                                                                    if let Some(track) = p.tracks.get_mut(track_id) {
-                                                                        if let Some(lfo) = track.lfos.get_mut(0) {
-                                                                            lfo.shape = crate::shared::models::LFOShape::Designer(arr.to_vec());
-                                                                        }
-                                                                    }
-                                                                });
-                                                            }
-                                                        })
-                                                    />
-                                                </div>
-                                            }.into_any()
-                                        } else {
-                                            view! { <div></div> }.into_any()
-                                        }
-                                    }}
                                 </CollapsibleSection>
                                 </div>
                             </div>
