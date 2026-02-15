@@ -16,17 +16,6 @@ fn get_velocity_value(
         .unwrap_or(100)
 }
 
-/// Check if velocity is P-locked for a specific step
-fn is_velocity_locked(
-    pattern: &crate::shared::models::Pattern,
-    track_idx: usize,
-    step_idx: usize,
-) -> bool {
-    // Velocity cannot be P-locked in current architecture
-    // It uses the dedicated step.velocity field
-    false
-}
-
 /// Check if step is active (has trigger)
 fn is_step_active(
     pattern: &crate::shared::models::Pattern,
@@ -132,12 +121,6 @@ pub fn VelocityLanes() -> impl IntoView {
                                                 })
                                             });
 
-                                            let is_locked = Signal::derive(move || {
-                                                pattern_signal.with(|p| {
-                                                    is_velocity_locked(p, track_idx, step_idx)
-                                                })
-                                            });
-
                                             let is_active = Signal::derive(move || {
                                                 pattern_signal.with(|p| {
                                                     is_step_active(p, track_idx, step_idx)
@@ -162,11 +145,7 @@ pub fn VelocityLanes() -> impl IntoView {
                                                     <span class=move || {
                                                         let base = "text-center";
                                                         let active_class = if is_active.get() {
-                                                            if is_locked.get() {
-                                                                "text-amber-400 font-medium text-sm"
-                                                            } else {
-                                                                "text-zinc-100 text-sm"
-                                                            }
+                                                            "text-zinc-100 text-sm"
                                                         } else {
                                                             "text-zinc-600 text-xs"
                                                         };
