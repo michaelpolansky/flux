@@ -13,4 +13,5 @@ pub mod remove_track_button;
 pub mod track_controls;
 pub mod machine_selector;
 pub mod step_editor_sidebar;
+pub mod collapsible_section;
 pub use machine_selector::MachineSelector;
