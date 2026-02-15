@@ -107,6 +107,37 @@ pub fn StepEditorSidebar() -> impl IntoView {
         }
     };
 
+    // Get current probability value
+    let probability_value = Signal::derive(move || {
+        if let Some((track_id, step_idx)) = selected_step.get() {
+            pattern_signal.with(|p| {
+                p.tracks.get(track_id)
+                    .and_then(|t| t.subtracks.get(0))
+                    .and_then(|st| st.steps.get(step_idx))
+                    .map(|s| s.condition.prob as f64)
+                    .unwrap_or(100.0)
+            })
+        } else {
+            100.0
+        }
+    });
+
+    // Probability change handler
+    let on_probability_change = move |val: f64| {
+        if let Some((track_id, step_idx)) = selected_step.get() {
+            let clamped = (val.round() as u8).clamp(0, 100);
+            set_pattern_signal.update(|pattern| {
+                if let Some(track) = pattern.tracks.get_mut(track_id) {
+                    if let Some(subtrack) = track.subtracks.get_mut(0) {
+                        if let Some(step) = subtrack.steps.get_mut(step_idx) {
+                            step.condition.prob = clamped;
+                        }
+                    }
+                }
+            });
+        }
+    };
+
     view! {
         <div class="w-60 bg-zinc-900/50 border-r border-zinc-800 rounded-l-lg p-4 flex flex-col">
             {move || {
@@ -177,6 +208,22 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         <span>"0.1 (Short)"</span>
                                         <span>{move || format!("{:.1}x", length_value.get())}</span>
                                         <span>"4.0 (Long)"</span>
+                                    </div>
+                                </InlineParam>
+
+                                <InlineParam>
+                                    <ParamLabel text="Probability" locked=Signal::derive(|| false) />
+                                    <NumberInput
+                                        min="0"
+                                        max="100"
+                                        step="1"
+                                        value=Signal::derive(move || format!("{}", probability_value.get() as u8))
+                                        on_input=on_probability_change
+                                    />
+                                    <div class="flex justify-between text-xs text-zinc-500 font-mono mt-1">
+                                        <span>"0% (Never)"</span>
+                                        <span>{move || format!("{}%", probability_value.get() as u8)}</span>
+                                        <span>"100% (Always)"</span>
                                     </div>
                                 </InlineParam>
                             </div>
