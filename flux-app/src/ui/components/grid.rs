@@ -123,7 +123,8 @@ pub fn Grid() -> impl IntoView {
                 <div class="flex-1">
                     // CSS Grid container for step grid + velocity lanes alignment
                     // Grid columns: [track-labels] [step-1] [step-2] ... [step-16]
-                    <div style="display: grid; grid-template-columns: auto repeat(16, 40px); gap: 2px; position: relative;">
+                    // Track label column: 100px (fits RemoveButton + T1 + MachineSelector)
+                    <div style="display: grid; grid-template-columns: 100px repeat(16, 40px); gap: 2px; position: relative;">
                         // Step Grid Rows
                         <For
                             each=move || {

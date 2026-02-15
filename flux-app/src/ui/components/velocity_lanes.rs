@@ -82,7 +82,8 @@ pub fn VelocityLanes() -> impl IntoView {
 
             // Velocity grid - uses same CSS Grid as step grid
             // Grid columns: [track-labels] [step-1] [step-2] ... [step-16]
-            <div style="display: grid; grid-template-columns: auto repeat(16, 40px); gap: 2px;">
+            // Track label column: 100px (matches step grid for alignment)
+            <div style="display: grid; grid-template-columns: 100px repeat(16, 40px); gap: 2px;">
                 <For
                     each=move || {
                         pattern_signal.with(|p| (0..p.tracks.len()).collect::<Vec<_>>())
