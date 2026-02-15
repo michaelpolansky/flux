@@ -134,7 +134,7 @@ pub fn Grid() -> impl IntoView {
                             children=move |track_idx| {
                                 view! {
                                     // Track label cell
-                                    <div class="h-10 flex items-center justify-start gap-1 px-1" style="grid-column: 1;">
+                                    <div class="h-10 flex items-center justify-start gap-1 px-1" style=format!("grid-column: 1; grid-row: {};", track_idx + 1)>
                                         <RemoveTrackButton
                                             track_idx=track_idx
                                             show_confirm=set_show_confirm_dialog
@@ -151,7 +151,7 @@ pub fn Grid() -> impl IntoView {
                                         key=|step_idx| *step_idx
                                         children=move |step_idx| {
                                             view! {
-                                                <div style=move || format!("grid-column: {}", step_idx + 2)>
+                                                <div style=move || format!("grid-column: {}; grid-row: {};", step_idx + 2, track_idx + 1)>
                                                     <GridStep track_idx=track_idx step_idx=step_idx />
                                                 </div>
                                             }

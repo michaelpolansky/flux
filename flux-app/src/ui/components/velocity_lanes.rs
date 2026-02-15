@@ -92,7 +92,7 @@ pub fn VelocityLanes() -> impl IntoView {
                     children=move |track_idx| {
                         view! {
                             // Track label cell (column 1)
-                            <div class="h-10 flex items-center justify-start px-1" style="grid-column: 1;">
+                            <div class="h-10 flex items-center justify-start px-1" style=format!("grid-column: 1; grid-row: {};", track_idx + 1)>
                                 <div class="text-xs text-zinc-400">
                                     {format!("T{}", track_idx + 1)}
                                 </div>
@@ -116,7 +116,7 @@ pub fn VelocityLanes() -> impl IntoView {
                                     });
 
                                     view! {
-                                        <div style=move || format!("grid-column: {}", step_idx + 2)>
+                                        <div style=move || format!("grid-column: {}; grid-row: {};", step_idx + 2, track_idx + 1)>
                                             <div
                                                 class=move || {
                                                     let base = "w-10 h-10 bg-zinc-800/30 border border-zinc-700/50 flex items-center justify-center hover:bg-zinc-700/50 transition-colors";
