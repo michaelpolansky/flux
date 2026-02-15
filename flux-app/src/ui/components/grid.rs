@@ -150,7 +150,7 @@ pub fn Grid() -> impl IntoView {
                                         key=|step_idx| *step_idx
                                         children=move |step_idx| {
                                             view! {
-                                                <div style=format!("grid-column: {};", step_idx + 2)>
+                                                <div style=move || format!("grid-column: {}", step_idx + 2)>
                                                     <GridStep track_idx=track_idx step_idx=step_idx />
                                                 </div>
                                             }

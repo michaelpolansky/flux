@@ -115,7 +115,7 @@ pub fn VelocityLanes() -> impl IntoView {
                                     });
 
                                     view! {
-                                        <div style=format!("grid-column: {};", step_idx + 2)>
+                                        <div style=move || format!("grid-column: {}", step_idx + 2)>
                                             <div
                                                 class=move || {
                                                     let base = "w-10 h-10 bg-zinc-800/30 border border-zinc-700/50 flex items-center justify-center hover:bg-zinc-700/50 transition-colors";
