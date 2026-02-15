@@ -45,6 +45,37 @@ pub fn StepEditorSidebar() -> impl IntoView {
         }
     };
 
+    // Get current velocity value
+    let velocity_value = Signal::derive(move || {
+        if let Some((track_id, step_idx)) = selected_step.get() {
+            pattern_signal.with(|p| {
+                p.tracks.get(track_id)
+                    .and_then(|t| t.subtracks.get(0))
+                    .and_then(|st| st.steps.get(step_idx))
+                    .map(|s| s.velocity as f64)
+                    .unwrap_or(100.0)
+            })
+        } else {
+            100.0
+        }
+    });
+
+    // Velocity change handler
+    let on_velocity_change = move |val: f64| {
+        if let Some((track_id, step_idx)) = selected_step.get() {
+            let clamped = (val.round() as u8).clamp(0, 127);
+            set_pattern_signal.update(|pattern| {
+                if let Some(track) = pattern.tracks.get_mut(track_id) {
+                    if let Some(subtrack) = track.subtracks.get_mut(0) {
+                        if let Some(step) = subtrack.steps.get_mut(step_idx) {
+                            step.velocity = clamped;
+                        }
+                    }
+                }
+            });
+        }
+    };
+
     view! {
         <div class="w-60 bg-zinc-900/50 border-r border-zinc-800 rounded-l-lg p-4 flex flex-col">
             {move || {
@@ -83,6 +114,22 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                             format!("{}", note)
                                         }}</span>
                                         <span>"127 (G9)"</span>
+                                    </div>
+                                </InlineParam>
+
+                                <InlineParam>
+                                    <ParamLabel text="Velocity" locked=Signal::derive(|| false) />
+                                    <NumberInput
+                                        min="0"
+                                        max="127"
+                                        step="1"
+                                        value=Signal::derive(move || format!("{}", velocity_value.get() as u8))
+                                        on_input=on_velocity_change
+                                    />
+                                    <div class="flex justify-between text-xs text-zinc-500 font-mono mt-1">
+                                        <span>"0 (Silent)"</span>
+                                        <span>{move || format!("{}", velocity_value.get() as u8)}</span>
+                                        <span>"127 (Max)"</span>
                                     </div>
                                 </InlineParam>
                             </div>
