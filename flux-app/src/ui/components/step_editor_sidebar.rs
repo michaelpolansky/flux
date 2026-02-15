@@ -3,6 +3,12 @@ use crate::app::SequencerState;
 use crate::shared::models::Pattern;
 use crate::ui::components::collapsible_section::CollapsibleSection;
 use crate::ui::components::form_controls::*;
+use crate::ui::components::lfo_designer::LfoDesigner;
+
+// Helper to extract track_id from selected_step
+fn get_track_id_from_selection(selected_step: RwSignal<Option<(usize, usize)>>) -> usize {
+    selected_step.get().map(|(track_id, _)| track_id).unwrap_or(0)
+}
 
 #[component]
 pub fn StepEditorSidebar() -> impl IntoView {
@@ -257,6 +263,119 @@ pub fn StepEditorSidebar() -> impl IntoView {
         }
     });
 
+    // LFO value derivations (track-level, not step-specific)
+    let lfo_shape = Signal::derive(move || {
+        let track_id = get_track_id_from_selection(selected_step);
+        pattern_signal.with(|p| {
+            p.tracks.get(track_id)
+                .and_then(|t| t.lfos.get(0))
+                .map(|l| match &l.shape {
+                    crate::shared::models::LFOShape::Sine => "Sine",
+                    crate::shared::models::LFOShape::Triangle => "Triangle",
+                    crate::shared::models::LFOShape::Square => "Square",
+                    crate::shared::models::LFOShape::Random => "Random",
+                    crate::shared::models::LFOShape::Designer(_) => "Designer",
+                })
+                .unwrap_or("Triangle")
+                .to_string()
+        })
+    });
+
+    let lfo_amount = Signal::derive(move || {
+        let track_id = get_track_id_from_selection(selected_step);
+        pattern_signal.with(|p| {
+            p.tracks.get(track_id)
+                .and_then(|t| t.lfos.get(0))
+                .map(|l| l.amount)
+                .unwrap_or(0.0)
+        })
+    });
+
+    let lfo_speed = Signal::derive(move || {
+        let track_id = get_track_id_from_selection(selected_step);
+        pattern_signal.with(|p| {
+            p.tracks.get(track_id)
+                .and_then(|t| t.lfos.get(0))
+                .map(|l| l.speed)
+                .unwrap_or(1.0)
+        })
+    });
+
+    let lfo_destination = Signal::derive(move || {
+        let track_id = get_track_id_from_selection(selected_step);
+        pattern_signal.with(|p| {
+            p.tracks.get(track_id)
+                .and_then(|t| t.lfos.get(0))
+                .map(|l| l.destination.to_string())
+                .unwrap_or_else(|| "74".to_string())
+        })
+    });
+
+    let is_designer = Signal::derive(move || {
+        let track_id = get_track_id_from_selection(selected_step);
+        pattern_signal.with(|p| {
+            p.tracks.get(track_id)
+                .and_then(|t| t.lfos.get(0))
+                .map(|l| matches!(l.shape, crate::shared::models::LFOShape::Designer(_)))
+                .unwrap_or(false)
+        })
+    });
+
+    // LFO change handlers
+    let on_shape_change = move |val: String| {
+        let track_id = get_track_id_from_selection(selected_step);
+        set_pattern_signal.update(|p| {
+            if let Some(track) = p.tracks.get_mut(track_id) {
+                if let Some(lfo) = track.lfos.get_mut(0) {
+                    lfo.shape = match val.as_str() {
+                        "Sine" => crate::shared::models::LFOShape::Sine,
+                        "Triangle" => crate::shared::models::LFOShape::Triangle,
+                        "Square" => crate::shared::models::LFOShape::Square,
+                        "Random" => crate::shared::models::LFOShape::Random,
+                        "Designer" => crate::shared::models::LFOShape::Designer([0.0; 16].to_vec()),
+                        _ => crate::shared::models::LFOShape::Triangle,
+                    };
+                }
+            }
+        });
+    };
+
+    let on_amount_change = move |val: f64| {
+        let clamped = val.clamp(-1.0, 1.0) as f32;
+        let track_id = get_track_id_from_selection(selected_step);
+        set_pattern_signal.update(|p| {
+            if let Some(track) = p.tracks.get_mut(track_id) {
+                if let Some(lfo) = track.lfos.get_mut(0) {
+                    lfo.amount = clamped;
+                }
+            }
+        });
+    };
+
+    let on_speed_change = move |val: f64| {
+        let clamped = val.clamp(0.1, 4.0) as f32;
+        let track_id = get_track_id_from_selection(selected_step);
+        set_pattern_signal.update(|p| {
+            if let Some(track) = p.tracks.get_mut(track_id) {
+                if let Some(lfo) = track.lfos.get_mut(0) {
+                    lfo.speed = clamped;
+                }
+            }
+        });
+    };
+
+    let on_destination_change = move |val: String| {
+        let parsed_val = val.parse::<u8>().unwrap_or(74);
+        let track_id = get_track_id_from_selection(selected_step);
+        set_pattern_signal.update(|p| {
+            if let Some(track) = p.tracks.get_mut(track_id) {
+                if let Some(lfo) = track.lfos.get_mut(0) {
+                    lfo.destination = parsed_val;
+                }
+            }
+        });
+    };
+
     view! {
         <div class="w-80 bg-zinc-900/50 border-r border-zinc-800 rounded-l-lg p-4 flex flex-col overflow-y-auto">
             {move || {
@@ -362,6 +481,108 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         </InlineParam>
                                     }
                                 }).collect::<Vec<_>>()}
+                            </CollapsibleSection>
+
+                            <CollapsibleSection
+                                title="LFO"
+                                default_open=false
+                            >
+                                <InlineParam>
+                                    <ParamLabel text="Shape" locked=Signal::derive(|| false) />
+                                    <Dropdown
+                                        options=vec![
+                                            ("Sine", "∿"),
+                                            ("Triangle", "△"),
+                                            ("Square", "▭"),
+                                            ("Random", "※"),
+                                            ("Designer", "✎"),
+                                        ]
+                                        selected=lfo_shape
+                                        on_change=on_shape_change
+                                    />
+                                </InlineParam>
+
+                                <InlineParam>
+                                    <ParamLabel text="Amount" locked=Signal::derive(|| false) />
+                                    <NumberInput
+                                        min="-1"
+                                        max="1"
+                                        step="0.01"
+                                        value=Signal::derive(move || format!("{:.2}", lfo_amount.get()))
+                                        on_input=on_amount_change
+                                    />
+                                </InlineParam>
+
+                                <InlineParam>
+                                    <ParamLabel text="Speed" locked=Signal::derive(|| false) />
+                                    <NumberInput
+                                        min="0.1"
+                                        max="4.0"
+                                        step="0.1"
+                                        value=Signal::derive(move || format!("{:.1}", lfo_speed.get()))
+                                        on_input=on_speed_change
+                                    />
+                                </InlineParam>
+
+                                <InlineParam>
+                                    <ParamLabel text="Destination" locked=Signal::derive(|| false) />
+                                    <Dropdown
+                                        options=vec![
+                                            ("74", "Filter Cutoff"),
+                                            ("71", "Resonance"),
+                                            ("1", "Mod Wheel"),
+                                            ("10", "Pan"),
+                                        ]
+                                        selected=lfo_destination
+                                        on_change=on_destination_change
+                                    />
+                                </InlineParam>
+
+                                // Designer waveform editor (conditional)
+                                {move || {
+                                    if is_designer.get() {
+                                        view! {
+                                            <div class="mt-2">
+                                                <label class="text-xs text-zinc-500 mb-1 block">"Waveform Designer"</label>
+                                                <LfoDesigner
+                                                    track_id=Signal::derive(move || get_track_id_from_selection(selected_step))
+                                                    lfo_index=Signal::derive(move || 0)
+                                                    value=Signal::derive(move || {
+                                                        let track_id = get_track_id_from_selection(selected_step);
+                                                        pattern_signal.with(|p| {
+                                                            p.tracks.get(track_id)
+                                                                .and_then(|t| t.lfos.get(0))
+                                                                .and_then(|l| {
+                                                                    if let crate::shared::models::LFOShape::Designer(v) = &l.shape {
+                                                                        Some(v.to_vec())
+                                                                    } else {
+                                                                        None
+                                                                    }
+                                                                })
+                                                                .unwrap_or_else(|| vec![0.0; 16])
+                                                        })
+                                                    })
+                                                    on_change=Callback::new(move |new_val: Vec<f32>| {
+                                                        if new_val.len() == 16 {
+                                                            let mut arr = [0.0; 16];
+                                                            arr.copy_from_slice(&new_val);
+                                                            let track_id = get_track_id_from_selection(selected_step);
+                                                            set_pattern_signal.update(|p| {
+                                                                if let Some(track) = p.tracks.get_mut(track_id) {
+                                                                    if let Some(lfo) = track.lfos.get_mut(0) {
+                                                                        lfo.shape = crate::shared::models::LFOShape::Designer(arr.to_vec());
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                    })
+                                                />
+                                            </div>
+                                        }.into_any()
+                                    } else {
+                                        view! { <div></div> }.into_any()
+                                    }
+                                }}
                             </CollapsibleSection>
                         </div>
                     }.into_any()
