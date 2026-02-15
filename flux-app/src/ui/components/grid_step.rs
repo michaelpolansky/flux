@@ -1,16 +1,16 @@
-use leptos::prelude::*;
-use crate::shared::models::Pattern;
 use crate::app::SequencerState;
+use crate::shared::models::Pattern;
 use crate::ui::state::GridUIState;
+use leptos::prelude::*;
 
 #[component]
-pub fn GridStep(
-    track_idx: usize,
-    step_idx: usize,
-) -> impl IntoView {
+pub fn GridStep(track_idx: usize, step_idx: usize) -> impl IntoView {
     // Get state from context
     let pattern_signal = use_context::<ReadSignal<Pattern>>().expect("Pattern context not found");
-    let sequencer_state = use_context::<SequencerState>().expect("SequencerState context not found");
+    let set_pattern_signal = use_context::<WriteSignal<Pattern>>()
+        .expect("Pattern write signal not found");
+    let sequencer_state =
+        use_context::<SequencerState>().expect("SequencerState context not found");
     let playback_state = use_context::<ReadSignal<crate::ui::state::PlaybackState>>()
         .expect("PlaybackState context not found");
 
@@ -20,7 +20,8 @@ pub fn GridStep(
     // Compute derived state - check if this step has an active trigger
     let is_active = Signal::derive(move || {
         pattern_signal.with(|p| {
-            p.tracks.get(track_idx)
+            p.tracks
+                .get(track_idx)
                 .and_then(|t| t.subtracks.get(subtrack_id))
                 .and_then(|st| st.steps.get(step_idx))
                 .map(|s| s.trig_type != crate::shared::models::TrigType::None)
@@ -30,7 +31,9 @@ pub fn GridStep(
 
     // Derive selection state signal
     let is_step_selected = Signal::derive(move || {
-        sequencer_state.selected_step.get()
+        sequencer_state
+            .selected_step
+            .get()
             .map(|(tid, sidx)| tid == track_idx && sidx == step_idx)
             .unwrap_or(false)
     });
@@ -42,14 +45,15 @@ pub fn GridStep(
     });
 
     // Get GridUIState context for trigger detection
-    let grid_ui_state = use_context::<ReadSignal<GridUIState>>()
-        .expect("GridUIState context not found");
+    let grid_ui_state =
+        use_context::<ReadSignal<GridUIState>>().expect("GridUIState context not found");
 
     let is_recently_triggered = Signal::derive(move || {
         grid_ui_state.with(|state| {
-            state.recent_triggers.iter().any(|t| {
-                t.track == track_idx && t.step == step_idx
-            })
+            state
+                .recent_triggers
+                .iter()
+                .any(|t| t.track == track_idx && t.step == step_idx)
         })
     });
 
@@ -85,12 +89,20 @@ pub fn GridStep(
         };
 
         let trigger_animation = if is_recently_triggered.get() {
-            "animate-pulse-once ring-2 ring-white/50"  // Pulse + flash ring
+            "animate-pulse-once ring-2 ring-white/50" // Pulse + flash ring
         } else {
             ""
         };
 
-        format!("{} {} {} {} {} {}", base_classes, playing_overlay, state_classes, selection_classes, beat_marker, trigger_animation)
+        format!(
+            "{} {} {} {} {} {}",
+            base_classes,
+            playing_overlay,
+            state_classes,
+            selection_classes,
+            beat_marker,
+            trigger_animation
+        )
     });
 
     // Derive span class signal
@@ -104,13 +116,35 @@ pub fn GridStep(
 
     // Click handler - select this step
     let on_click = move |_| {
-        sequencer_state.selected_step.set(Some((track_idx, step_idx)));
+        sequencer_state
+            .selected_step
+            .set(Some((track_idx, step_idx)));
+    };
+
+    // Double-click handler - toggle step on/off
+    let on_dblclick = move |_| {
+        set_pattern_signal.update(|pattern| {
+            if let Some(step) = pattern
+                .tracks
+                .get_mut(track_idx)
+                .and_then(|t| t.subtracks.get_mut(subtrack_id))
+                .and_then(|st| st.steps.get_mut(step_idx))
+            {
+                // Toggle between None (inactive) and Note (active)
+                step.trig_type = if step.trig_type == crate::shared::models::TrigType::None {
+                    crate::shared::models::TrigType::Note
+                } else {
+                    crate::shared::models::TrigType::None
+                };
+            }
+        });
     };
 
     view! {
         <button
             class=move || step_classes.get()
             on:click=on_click
+            on:dblclick=on_dblclick
         >
             // Visual indicator: filled circle for active, empty for inactive
             <span class=move || span_classes.get()>
