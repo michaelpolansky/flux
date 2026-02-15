@@ -58,11 +58,14 @@ The heart of FLUX - a 4-track, 16-step grid:
 - **Gray squares** are inactive/muted steps
 - **Orange playhead** shows the current playback position
 
-#### 3. Parameters Section (Bottom)
-Control panel for adjusting sound parameters:
-- 8 parameter sliders (Tuning, Filter, Resonance, Drive, etc.)
-- Changes affect either the whole track or a single step (see P-Locks below)
-- Status indicator shows whether you're editing a track or a specific step
+#### 3. Step Editor Sidebar (Right Side, appears when step selected)
+Unified control panel for all step-level editing:
+- **Step Properties**: Note (Pitch), Velocity, Length, Probability, Micro-timing
+- **Sound Parameters**: 8 synthesis parameters with automatic P-Lock creation
+  - Tuning, Filter Freq, Resonance, Drive, Decay, Sustain, Reverb, Delay
+  - Badge shows number of active P-Locks for current step
+  - P-Locked parameters display in amber color
+- **LFO**: Track-level modulation (Shape, Amount, Speed, Destination, Designer)
 
 ---
 
@@ -125,17 +128,19 @@ Imagine you have a hi-hat pattern on Track 2. Normally, all steps would play at 
 ### How to Set P-Locks
 
 #### Step 1: Select a Step
-**Right-click** on any active step in the grid
-- The step gets a blue outline showing it's selected
-- The Parameters section at the bottom changes to show:
-  - "TRACK X, STEP Y LOCKED" in the status indicator
-  - A blue dot appears next to the status text
+**Click or right-click** on any step in the grid
+- The step gets selected (visible in sidebar header)
+- The Step Editor Sidebar appears on the right showing:
+  - "EDITING STEP" with track and step number
+  - Three collapsible sections (Step Properties, Sound Parameters, LFO)
+  - A close button (×) to deselect
 
 #### Step 2: Adjust Parameters
-With a step selected, move any parameter slider:
-- That parameter value is now "locked" to that specific step
-- Only that step will use this special value
-- Other steps continue using the track defaults
+With a step selected, expand the "Sound Parameters" section if needed and adjust any parameter:
+- P-Locks are created **automatically** when the value differs from the track default
+- P-Locks are removed **automatically** when you set the value back to the track default
+- The parameter label turns **amber** when P-Locked
+- The badge in the section header shows the **total count** of active P-Locks
 
 **Example:**
 1. Activate steps 1, 5, 9, 13 on Track 1
@@ -149,9 +154,10 @@ With a step selected, move any parameter slider:
 ### Viewing Locked Parameters
 
 **How to tell if a step has P-Locks:**
-- When you right-click a step with existing locks, the sliders will show the locked values
-- The status bar at the top of the Parameters section will say "TRACK X, STEP Y LOCKED"
-- The blue dot indicator lights up
+- The badge in the "Sound Parameters" section header shows the count (e.g., "SOUND PARAMETERS (3)")
+- P-Locked parameter labels appear in **amber color** instead of gray
+- When you select the step, locked parameters show their step-specific values
+- Non-locked parameters show the track default values
 
 **Track Default Mode:**
 - When no step is selected, you're in "Track Default" mode
@@ -259,7 +265,8 @@ Master these shortcuts to speed up your workflow:
 - **Click and drag** - Adjust slider with mouse
 
 ### Quick Actions
-- **ESC** - Close step inspector / deselect step
+- **ESC** - Close step editor sidebar / deselect step
+- **Click × button** - Close sidebar and deselect step
 - **Click outside grid** - Deselect current step
 
 ---

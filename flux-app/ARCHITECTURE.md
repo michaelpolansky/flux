@@ -28,7 +28,7 @@ FLUX is a high-performance audio sequencer built with a split architecture: a re
 │  │  │              Leptos UI (Rust → WASM)                   │  │  │
 │  │  │                                                          │  │  │
 │  │  │  • App.rs - Root Component & State Management          │  │  │
-│  │  │  • Components (Grid, Inspector, Toolbar, LFO Designer) │  │  │
+│  │  │  • Components (Grid, StepEditorSidebar, Toolbar)       │  │  │
 │  │  │  • Reactive Signals (Current Step, Pattern, Playback)  │  │  │
 │  │  │  • Event Handlers (Click, Keyboard, Parameter Changes) │  │  │
 │  │  └────────────────────────────────────────────────────────┘  │  │
@@ -132,19 +132,81 @@ App (app.rs)
 │       ├── Play/Stop Button
 │       ├── Save/Load Buttons
 │       └── BPM Control
-├── Sequencer Grid Section
-│   └── Grid
-│       └── GridStep (×16)
-│           ├── StepBadge (Active Indicator)
-│           └── PlayheadIndicator
-├── Parameters Section
-│   ├── Inspector (Track Parameters)
-│   │   ├── FormControl (Sliders, Selects)
-│   │   └── LFO Controls
-│   │       └── LFODesigner (Waveform Canvas)
-│   └── StepInspector (Per-Step P-Locks)
-│       └── ParameterInput (×128 potential slots)
+└── Sequencer Grid Section
+    ├── StepEditorSidebar (320px, unified step editing)
+    │   ├── Header ("EDITING STEP" + close button)
+    │   ├── CollapsibleSection: "Step Properties"
+    │   │   ├── Note (Pitch)
+    │   │   ├── Velocity
+    │   │   ├── Length
+    │   │   ├── Probability
+    │   │   └── Micro-timing
+    │   ├── CollapsibleSection: "Sound Parameters (N)"
+    │   │   └── 8 P-Lockable synthesis params
+    │   │       ├── Tuning, Filter Freq, Resonance, Drive
+    │   │       └── Decay, Sustain, Reverb, Delay
+    │   └── CollapsibleSection: "LFO"
+    │       ├── Shape, Amount, Speed, Destination
+    │       └── LFODesigner (conditional, when Shape = Designer)
+    └── Grid
+        └── GridStep (×16)
+            ├── StepBadge (Active Indicator)
+            └── PlayheadIndicator
 ```
+
+### Unified Step Editor Sidebar
+
+**Design Philosophy:** Consolidate all step-level editing into a single unified sidebar, eliminating the previous split between step properties and P-Lock parameters.
+
+**Architecture** (Implemented 2026-02-14):
+
+The StepEditorSidebar replaces the previous Inspector/StepInspector split with three collapsible sections:
+
+1. **Step Properties** (Direct `AtomicStep` fields):
+   - Note, Velocity, Length, Probability, Micro-timing
+   - These parameters are always per-step (not P-Lockable)
+
+2. **Sound Parameters** (P-Lockable synthesis parameters):
+   - 8 parameters: Tuning, Filter Freq, Resonance, Drive, Decay, Sustain, Reverb, Delay
+   - Automatic P-Lock creation when value differs from track default (>0.001 threshold)
+   - Automatic P-Lock removal when value matches track default
+   - Badge shows count of active P-Locks for current step
+   - P-Locked parameters display in amber color
+
+3. **LFO** (Track-level modulation):
+   - Shape (Sine, Triangle, Square, Random, Designer)
+   - Amount (-1.0 to 1.0), Speed (0.1 to 4.0), Destination (MIDI CC)
+   - Designer waveform editor appears conditionally when Shape = "Designer"
+   - Changes apply to entire track (not step-specific)
+
+**Key Features:**
+- **320px width** (expanded from 240px for additional parameters)
+- **Collapsible sections** with independent expand/collapse state
+- **Smooth animations** (200ms transitions, `transition-all` class)
+- **Visual separators** between sections (`border-b border-zinc-800/50`)
+- **Scrollable** when content exceeds viewport height
+- **Empty state** when no step selected: "Select a step to edit parameters"
+
+**P-Lock Logic:**
+```rust
+const P_LOCK_THRESHOLD: f32 = 0.001;
+
+// Automatic P-Lock creation/removal
+if (new_value - track_default).abs() > P_LOCK_THRESHOLD {
+    step.p_locks[param_idx] = Some(new_value);  // Create P-Lock
+} else {
+    step.p_locks[param_idx] = None;  // Remove P-Lock
+}
+```
+
+**Removed Components:**
+- `Inspector` - Track defaults and LFO controls merged into sidebar
+- `StepInspector` - P-Lock parameters merged into Sound Parameters section
+- Bottom "Parameters" section - Grid now expands to fill vertical space
+
+**Implementation Files:**
+- `src/ui/components/step_editor_sidebar.rs` (~610 lines)
+- `src/ui/components/collapsible_section.rs` (~68 lines, reusable component)
 
 ### State Management
 
@@ -219,7 +281,7 @@ sequencer_state.selected_step.set(None);
 **Key Features**:
 - `current_step` is read-only in UI (only updated by audio engine events)
 - `selected_step` is read-write (user interactions can change selection)
-- Used by Grid, Inspector, and StepInspector components
+- Used by Grid and StepEditorSidebar components
 
 ##### 2. PlaybackState (Audio Engine State)
 
