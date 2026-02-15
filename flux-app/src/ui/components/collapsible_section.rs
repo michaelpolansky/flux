@@ -55,7 +55,7 @@ pub fn CollapsibleSection(
             <div
                 class=move || {
                     if is_open.get() {
-                        "flex flex-col gap-3 mt-2 transition-all duration-200 animate-in slide-in-from-top-2 fade-in"
+                        "flex flex-col gap-1.5 mt-2 transition-all duration-200 animate-in slide-in-from-top-2 fade-in"
                     } else {
                         "hidden"
                     }

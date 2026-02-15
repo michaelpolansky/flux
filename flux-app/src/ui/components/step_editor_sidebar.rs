@@ -1,23 +1,33 @@
-use leptos::prelude::*;
 use crate::app::SequencerState;
 use crate::shared::models::Pattern;
 use crate::ui::components::collapsible_section::CollapsibleSection;
 use crate::ui::components::form_controls::*;
 use crate::ui::components::lfo_designer::LfoDesigner;
+use leptos::prelude::*;
 
 /// Calculate track statistics (active steps count, P-Lock count)
 /// Note: Examines only the primary subtrack (index 0) as per current single-subtrack design
 fn calculate_track_stats(track: &crate::shared::models::Track) -> (usize, usize) {
-    let active_steps = track.subtracks.get(0)
-        .map(|st| st.steps.iter()
-            .filter(|s| s.trig_type != crate::shared::models::TrigType::None)
-            .count())
+    let active_steps = track
+        .subtracks
+        .get(0)
+        .map(|st| {
+            st.steps
+                .iter()
+                .filter(|s| s.trig_type != crate::shared::models::TrigType::None)
+                .count()
+        })
         .unwrap_or(0);
 
-    let p_lock_count = track.subtracks.get(0)
-        .map(|st| st.steps.iter()
-            .map(|s| s.p_locks.iter().filter(|p| p.is_some()).count())
-            .sum::<usize>())
+    let p_lock_count = track
+        .subtracks
+        .get(0)
+        .map(|st| {
+            st.steps
+                .iter()
+                .map(|s| s.p_locks.iter().filter(|p| p.is_some()).count())
+                .sum::<usize>()
+        })
         .unwrap_or(0);
 
     (active_steps, p_lock_count)
@@ -25,26 +35,29 @@ fn calculate_track_stats(track: &crate::shared::models::Track) -> (usize, usize)
 
 // Helper to extract track_id from selected_step
 fn get_track_id_from_selection(selected_step: RwSignal<Option<(usize, usize)>>) -> usize {
-    selected_step.get().map(|(track_id, _)| track_id).unwrap_or(0)
+    selected_step
+        .get()
+        .map(|(track_id, _)| track_id)
+        .unwrap_or(0)
 }
 
 #[component]
 pub fn StepEditorSidebar() -> impl IntoView {
-    let sequencer_state = use_context::<SequencerState>()
-        .expect("SequencerState context not found");
+    let sequencer_state =
+        use_context::<SequencerState>().expect("SequencerState context not found");
     const P_LOCK_THRESHOLD: f32 = 0.001;
     let selected_step = sequencer_state.selected_step;
 
-    let pattern_signal = use_context::<ReadSignal<Pattern>>()
-        .expect("Pattern context not found");
-    let set_pattern_signal = use_context::<WriteSignal<Pattern>>()
-        .expect("Pattern write signal not found");
+    let pattern_signal = use_context::<ReadSignal<Pattern>>().expect("Pattern context not found");
+    let set_pattern_signal =
+        use_context::<WriteSignal<Pattern>>().expect("Pattern write signal not found");
 
     // Get current note value
     let note_value = Signal::derive(move || {
         if let Some((track_id, step_idx)) = selected_step.get() {
             pattern_signal.with(|p| {
-                p.tracks.get(track_id)
+                p.tracks
+                    .get(track_id)
                     .and_then(|t| t.subtracks.get(0))
                     .and_then(|st| st.steps.get(step_idx))
                     .map(|s| s.note as f64)
@@ -75,7 +88,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
     let velocity_value = Signal::derive(move || {
         if let Some((track_id, step_idx)) = selected_step.get() {
             pattern_signal.with(|p| {
-                p.tracks.get(track_id)
+                p.tracks
+                    .get(track_id)
                     .and_then(|t| t.subtracks.get(0))
                     .and_then(|st| st.steps.get(step_idx))
                     .map(|s| s.velocity as f64)
@@ -106,7 +120,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
     let length_value = Signal::derive(move || {
         if let Some((track_id, step_idx)) = selected_step.get() {
             pattern_signal.with(|p| {
-                p.tracks.get(track_id)
+                p.tracks
+                    .get(track_id)
                     .and_then(|t| t.subtracks.get(0))
                     .and_then(|st| st.steps.get(step_idx))
                     .map(|s| s.length as f64)
@@ -137,7 +152,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
     let probability_value = Signal::derive(move || {
         if let Some((track_id, step_idx)) = selected_step.get() {
             pattern_signal.with(|p| {
-                p.tracks.get(track_id)
+                p.tracks
+                    .get(track_id)
                     .and_then(|t| t.subtracks.get(0))
                     .and_then(|st| st.steps.get(step_idx))
                     .map(|s| s.condition.prob as f64)
@@ -168,7 +184,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
     let micro_timing_value = Signal::derive(move || {
         if let Some((track_id, step_idx)) = selected_step.get() {
             pattern_signal.with(|p| {
-                p.tracks.get(track_id)
+                p.tracks
+                    .get(track_id)
                     .and_then(|t| t.subtracks.get(0))
                     .and_then(|st| st.steps.get(step_idx))
                     .map(|s| s.micro_timing as f64)
@@ -197,8 +214,14 @@ pub fn StepEditorSidebar() -> impl IntoView {
 
     // Sound parameter definitions (8 parameters from Inspector)
     let sound_params = [
-        "Tuning", "Filter Freq", "Resonance", "Drive",
-        "Decay", "Sustain", "Reverb", "Delay"
+        "Tuning",
+        "Filter Freq",
+        "Resonance",
+        "Drive",
+        "Decay",
+        "Sustain",
+        "Reverb",
+        "Delay",
     ];
 
     // Get sound parameter value (P-Lock or track default)
@@ -209,9 +232,9 @@ pub fn StepEditorSidebar() -> impl IntoView {
                     if let Some(subtrack) = track.subtracks.get(0) {
                         if let Some(step) = subtrack.steps.get(step_idx) {
                             // Check P-Lock first, fallback to track default
-                            return step.p_locks.get(param_idx)
-                                .and_then(|p| *p)
-                                .unwrap_or_else(|| track.default_params.get(param_idx).cloned().unwrap_or(0.0));
+                            return step.p_locks.get(param_idx).and_then(|p| *p).unwrap_or_else(
+                                || track.default_params.get(param_idx).cloned().unwrap_or(0.0),
+                            );
                         }
                     }
                 }
@@ -226,7 +249,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
     let is_param_locked = move |param_idx: usize| {
         if let Some((track_id, step_idx)) = selected_step.get() {
             pattern_signal.with(|p| {
-                p.tracks.get(track_id)
+                p.tracks
+                    .get(track_id)
                     .and_then(|t| t.subtracks.get(0))
                     .and_then(|st| st.steps.get(step_idx))
                     .and_then(|s| s.p_locks.get(param_idx))
@@ -247,7 +271,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
                     if let Some(subtrack) = track.subtracks.get_mut(0) {
                         if let Some(step) = subtrack.steps.get_mut(step_idx) {
                             // Check if value differs from track default
-                            let track_default = track.default_params.get(param_idx).cloned().unwrap_or(0.0);
+                            let track_default =
+                                track.default_params.get(param_idx).cloned().unwrap_or(0.0);
                             if (clamped - track_default).abs() > P_LOCK_THRESHOLD {
                                 // Different from default → create P-Lock
                                 if param_idx < 128 {
@@ -270,7 +295,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
     let p_lock_count = Signal::derive(move || {
         if let Some((track_id, step_idx)) = selected_step.get() {
             pattern_signal.with(|p| {
-                p.tracks.get(track_id)
+                p.tracks
+                    .get(track_id)
                     .and_then(|t| t.subtracks.get(0))
                     .and_then(|st| st.steps.get(step_idx))
                     .map(|s| s.p_locks.iter().filter(|p| p.is_some()).count())
@@ -285,7 +311,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
     let lfo_shape = Signal::derive(move || {
         let track_id = get_track_id_from_selection(selected_step);
         pattern_signal.with(|p| {
-            p.tracks.get(track_id)
+            p.tracks
+                .get(track_id)
                 .and_then(|t| t.lfos.get(0))
                 .map(|l| match &l.shape {
                     crate::shared::models::LFOShape::Sine => "Sine",
@@ -302,7 +329,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
     let lfo_amount = Signal::derive(move || {
         let track_id = get_track_id_from_selection(selected_step);
         pattern_signal.with(|p| {
-            p.tracks.get(track_id)
+            p.tracks
+                .get(track_id)
                 .and_then(|t| t.lfos.get(0))
                 .map(|l| l.amount)
                 .unwrap_or(0.0)
@@ -312,7 +340,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
     let lfo_speed = Signal::derive(move || {
         let track_id = get_track_id_from_selection(selected_step);
         pattern_signal.with(|p| {
-            p.tracks.get(track_id)
+            p.tracks
+                .get(track_id)
                 .and_then(|t| t.lfos.get(0))
                 .map(|l| l.speed)
                 .unwrap_or(1.0)
@@ -322,7 +351,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
     let lfo_destination = Signal::derive(move || {
         let track_id = get_track_id_from_selection(selected_step);
         pattern_signal.with(|p| {
-            p.tracks.get(track_id)
+            p.tracks
+                .get(track_id)
                 .and_then(|t| t.lfos.get(0))
                 .map(|l| l.destination.to_string())
                 .unwrap_or_else(|| "74".to_string())
@@ -332,7 +362,8 @@ pub fn StepEditorSidebar() -> impl IntoView {
     let is_designer = Signal::derive(move || {
         let track_id = get_track_id_from_selection(selected_step);
         pattern_signal.with(|p| {
-            p.tracks.get(track_id)
+            p.tracks
+                .get(track_id)
                 .and_then(|t| t.lfos.get(0))
                 .map(|l| matches!(l.shape, crate::shared::models::LFOShape::Designer(_)))
                 .unwrap_or(false)
@@ -415,7 +446,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                 </button>
                             </div>
 
-                            <div class="flex flex-col gap-4">
+                            <div class="flex flex-col gap-2">
                                 <CollapsibleSection
                                     title="STEP PROPERTIES"
                                     default_open=true
