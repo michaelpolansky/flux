@@ -426,12 +426,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                             "EDITING STEP"
                                         </div>
                                         <div class="text-xs font-bold text-zinc-100">
-                                            {move || {
-                                                let track_name = pattern_signal.with(|p| {
-                                                    p.tracks.get(track_id).map(|t| t.name.clone()).unwrap_or_default()
-                                                });
-                                                format!("{} - Step {}", track_name, step_idx + 1)
-                                            }}
+                                            {move || format!("Track {} - Step {}", track_id + 1, step_idx + 1)}
                                         </div>
                                     </div>
                                     <button
