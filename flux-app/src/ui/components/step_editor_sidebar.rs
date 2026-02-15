@@ -1,6 +1,7 @@
 use leptos::prelude::*;
 use crate::app::SequencerState;
 use crate::shared::models::Pattern;
+use crate::ui::components::collapsible_section::CollapsibleSection;
 use crate::ui::components::form_controls::*;
 
 #[component]
@@ -170,7 +171,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
     };
 
     view! {
-        <div class="w-60 bg-zinc-900/50 border-r border-zinc-800 rounded-l-lg p-4 flex flex-col">
+        <div class="w-80 bg-zinc-900/50 border-r border-zinc-800 rounded-l-lg p-4 flex flex-col overflow-y-auto">
             {move || {
                 if let Some((track_id, step_idx)) = selected_step.get() {
                     view! {
@@ -190,7 +191,10 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                 </button>
                             </div>
 
-                            <div class="flex flex-col gap-3">
+                            <CollapsibleSection
+                                title="STEP PROPERTIES"
+                                default_open=true
+                            >
                                 <InlineParam>
                                     <ParamLabel text="Note (Pitch)" locked=Signal::derive(|| false) />
                                     <NumberInput
@@ -245,7 +249,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         on_input=on_micro_timing_change
                                     />
                                 </InlineParam>
-                            </div>
+                            </CollapsibleSection>
                         </div>
                     }.into_any()
                 } else {
