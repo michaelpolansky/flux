@@ -201,12 +201,12 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         on_input=on_note_change
                                     />
                                     <div class="flex justify-between text-xs text-zinc-500 font-mono mt-1">
-                                        <span>"0 (C-1)"</span>
+                                        <span>"0"</span>
                                         <span>{move || {
                                             let note = note_value.get() as u8;
                                             format!("{}", note)
                                         }}</span>
-                                        <span>"127 (G9)"</span>
+                                        <span>"127"</span>
                                     </div>
                                 </InlineParam>
 
@@ -220,9 +220,9 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         on_input=on_velocity_change
                                     />
                                     <div class="flex justify-between text-xs text-zinc-500 font-mono mt-1">
-                                        <span>"0 (Silent)"</span>
+                                        <span>"0"</span>
                                         <span>{move || format!("{}", velocity_value.get() as u8)}</span>
-                                        <span>"127 (Max)"</span>
+                                        <span>"127"</span>
                                     </div>
                                 </InlineParam>
 
@@ -236,9 +236,9 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         on_input=on_length_change
                                     />
                                     <div class="flex justify-between text-xs text-zinc-500 font-mono mt-1">
-                                        <span>"0.1 (Short)"</span>
+                                        <span>"0.1"</span>
                                         <span>{move || format!("{:.1}x", length_value.get())}</span>
-                                        <span>"4.0 (Long)"</span>
+                                        <span>"4.0"</span>
                                     </div>
                                 </InlineParam>
 
@@ -252,9 +252,9 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         on_input=on_probability_change
                                     />
                                     <div class="flex justify-between text-xs text-zinc-500 font-mono mt-1">
-                                        <span>"0% (Never)"</span>
+                                        <span>"0"</span>
                                         <span>{move || format!("{}%", probability_value.get() as u8)}</span>
-                                        <span>"100% (Always)"</span>
+                                        <span>"100"</span>
                                     </div>
                                 </InlineParam>
 
@@ -268,7 +268,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         on_input=on_micro_timing_change
                                     />
                                     <div class="flex justify-between text-xs text-zinc-500 font-mono mt-1">
-                                        <span>"-23 (Early)"</span>
+                                        <span>"-23"</span>
                                         <span>{move || {
                                             let val = micro_timing_value.get() as i8;
                                             if val > 0 {
@@ -277,7 +277,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                                 format!("{}", val)
                                             }
                                         }}</span>
-                                        <span>"+23 (Late)"</span>
+                                        <span>"+23"</span>
                                     </div>
                                 </InlineParam>
                             </div>
