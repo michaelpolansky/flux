@@ -529,3 +529,42 @@ pub struct Track {
 **Next steps:** Create implementation plan via writing-plans skill
 
 ---
+
+## Implementation Notes (Completed)
+
+**Date Completed:** 2026-02-14
+
+**Changes Made:**
+1. Created CollapsibleSection component (80 lines)
+2. Expanded StepEditorSidebar from 240px to 320px width
+3. Added three collapsible sections:
+   - Step Properties (5 parameters)
+   - Sound Parameters (8 parameters with P-Lock logic)
+   - LFO (4 controls + designer)
+4. Removed Inspector component entirely
+5. Added visual polish and animations
+
+**Files Modified:**
+- Created: `src/ui/components/collapsible_section.rs`
+- Modified: `src/ui/components/step_editor_sidebar.rs` (~450 lines)
+- Modified: `src/ui/components/mod.rs`
+- Modified: `src/app.rs`
+- Deleted: `src/ui/components/inspector.rs`
+
+**Commits:** 7 total (one per task)
+
+**Verification:**
+- All three sections collapsible and functional
+- P-Lock creation/removal automatic
+- P-Lock count badge accurate
+- LFO controls work identically to previous Inspector
+- No regressions in step editing
+- Sidebar scrollable when content exceeds viewport
+
+**Known Issues:** None
+
+**Future Enhancements:**
+- Add keyboard navigation (Tab between parameters, Arrow keys for sections)
+- Add right-click context menu for "Clear P-Lock"
+- Add "Track Defaults" modal if users need direct access
+- Persist collapse state across sessions (localStorage)
