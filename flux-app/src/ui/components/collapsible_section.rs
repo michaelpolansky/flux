@@ -16,7 +16,7 @@ pub fn CollapsibleSection(
     let is_open = RwSignal::new(default_open);
 
     view! {
-        <div class="flex flex-col">
+        <div class="flex flex-col pb-3 border-b border-zinc-800/50 last:border-b-0">
             // Header (clickable)
             <div
                 class="flex items-center justify-between px-2 py-1.5 cursor-pointer hover:bg-zinc-800/50 rounded transition-colors duration-150"
@@ -55,7 +55,7 @@ pub fn CollapsibleSection(
             <div
                 class=move || {
                     if is_open.get() {
-                        "flex flex-col gap-3 mt-2 animate-in slide-in-from-top-2 fade-in duration-200"
+                        "flex flex-col gap-3 mt-2 transition-all duration-200 animate-in slide-in-from-top-2 fade-in"
                     } else {
                         "hidden"
                     }

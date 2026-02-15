@@ -397,193 +397,195 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                 </button>
                             </div>
 
-                            <CollapsibleSection
-                                title="STEP PROPERTIES"
-                                default_open=true
-                            >
-                                <InlineParam>
-                                    <ParamLabel text="Note (Pitch)" locked=Signal::derive(|| false) />
-                                    <NumberInput
-                                        min="0"
-                                        max="127"
-                                        step="1"
-                                        value=Signal::derive(move || format!("{}", note_value.get() as u8))
-                                        on_input=on_note_change
-                                    />
-                                </InlineParam>
+                            <div class="flex flex-col gap-4">
+                                <CollapsibleSection
+                                    title="STEP PROPERTIES"
+                                    default_open=true
+                                >
+                                    <InlineParam>
+                                        <ParamLabel text="Note (Pitch)" locked=Signal::derive(|| false) />
+                                        <NumberInput
+                                            min="0"
+                                            max="127"
+                                            step="1"
+                                            value=Signal::derive(move || format!("{}", note_value.get() as u8))
+                                            on_input=on_note_change
+                                        />
+                                    </InlineParam>
 
-                                <InlineParam>
-                                    <ParamLabel text="Velocity" locked=Signal::derive(|| false) />
-                                    <NumberInput
-                                        min="0"
-                                        max="127"
-                                        step="1"
-                                        value=Signal::derive(move || format!("{}", velocity_value.get() as u8))
-                                        on_input=on_velocity_change
-                                    />
-                                </InlineParam>
+                                    <InlineParam>
+                                        <ParamLabel text="Velocity" locked=Signal::derive(|| false) />
+                                        <NumberInput
+                                            min="0"
+                                            max="127"
+                                            step="1"
+                                            value=Signal::derive(move || format!("{}", velocity_value.get() as u8))
+                                            on_input=on_velocity_change
+                                        />
+                                    </InlineParam>
 
-                                <InlineParam>
-                                    <ParamLabel text="Length" locked=Signal::derive(|| false) />
-                                    <NumberInput
-                                        min="0.1"
-                                        max="4.0"
-                                        step="0.1"
-                                        value=Signal::derive(move || format!("{:.1}", length_value.get()))
-                                        on_input=on_length_change
-                                    />
-                                </InlineParam>
+                                    <InlineParam>
+                                        <ParamLabel text="Length" locked=Signal::derive(|| false) />
+                                        <NumberInput
+                                            min="0.1"
+                                            max="4.0"
+                                            step="0.1"
+                                            value=Signal::derive(move || format!("{:.1}", length_value.get()))
+                                            on_input=on_length_change
+                                        />
+                                    </InlineParam>
 
-                                <InlineParam>
-                                    <ParamLabel text="Probability" locked=Signal::derive(|| false) />
-                                    <NumberInput
-                                        min="0"
-                                        max="100"
-                                        step="1"
-                                        value=Signal::derive(move || format!("{}", probability_value.get() as u8))
-                                        on_input=on_probability_change
-                                    />
-                                </InlineParam>
+                                    <InlineParam>
+                                        <ParamLabel text="Probability" locked=Signal::derive(|| false) />
+                                        <NumberInput
+                                            min="0"
+                                            max="100"
+                                            step="1"
+                                            value=Signal::derive(move || format!("{}", probability_value.get() as u8))
+                                            on_input=on_probability_change
+                                        />
+                                    </InlineParam>
 
-                                <InlineParam>
-                                    <ParamLabel text="Micro-timing" locked=Signal::derive(|| false) />
-                                    <NumberInput
-                                        min="-23"
-                                        max="23"
-                                        step="1"
-                                        value=Signal::derive(move || format!("{}", micro_timing_value.get() as i8))
-                                        on_input=on_micro_timing_change
-                                    />
-                                </InlineParam>
-                            </CollapsibleSection>
+                                    <InlineParam>
+                                        <ParamLabel text="Micro-timing" locked=Signal::derive(|| false) />
+                                        <NumberInput
+                                            min="-23"
+                                            max="23"
+                                            step="1"
+                                            value=Signal::derive(move || format!("{}", micro_timing_value.get() as i8))
+                                            on_input=on_micro_timing_change
+                                        />
+                                    </InlineParam>
+                                </CollapsibleSection>
 
-                            <CollapsibleSection
-                                title="SOUND PARAMETERS"
-                                default_open=true
-                                badge_count=p_lock_count
-                            >
-                                {sound_params.iter().enumerate().map(|(idx, &name)| {
-                                    view! {
-                                        <InlineParam>
-                                            <ParamLabel
-                                                text=name
-                                                locked=Signal::derive(move || is_param_locked(idx))
-                                            />
-                                            <NumberInput
-                                                min="0"
-                                                max="1"
-                                                step="0.01"
-                                                value=Signal::derive(move || format!("{:.2}", get_param_value(idx)))
-                                                on_input=move |val| {
-                                                    handle_param_input(idx, val);
-                                                }
-                                            />
-                                        </InlineParam>
-                                    }
-                                }).collect::<Vec<_>>()}
-                            </CollapsibleSection>
-
-                            <CollapsibleSection
-                                title="LFO"
-                                default_open=false
-                            >
-                                <InlineParam>
-                                    <ParamLabel text="Shape" locked=Signal::derive(|| false) />
-                                    <Dropdown
-                                        options=vec![
-                                            ("Sine", "∿"),
-                                            ("Triangle", "△"),
-                                            ("Square", "▭"),
-                                            ("Random", "※"),
-                                            ("Designer", "✎"),
-                                        ]
-                                        selected=lfo_shape
-                                        on_change=on_shape_change
-                                    />
-                                </InlineParam>
-
-                                <InlineParam>
-                                    <ParamLabel text="Amount" locked=Signal::derive(|| false) />
-                                    <NumberInput
-                                        min="-1"
-                                        max="1"
-                                        step="0.01"
-                                        value=Signal::derive(move || format!("{:.2}", lfo_amount.get()))
-                                        on_input=on_amount_change
-                                    />
-                                </InlineParam>
-
-                                <InlineParam>
-                                    <ParamLabel text="Speed" locked=Signal::derive(|| false) />
-                                    <NumberInput
-                                        min="0.1"
-                                        max="4.0"
-                                        step="0.1"
-                                        value=Signal::derive(move || format!("{:.1}", lfo_speed.get()))
-                                        on_input=on_speed_change
-                                    />
-                                </InlineParam>
-
-                                <InlineParam>
-                                    <ParamLabel text="Destination" locked=Signal::derive(|| false) />
-                                    <Dropdown
-                                        options=vec![
-                                            ("74", "Filter Cutoff"),
-                                            ("71", "Resonance"),
-                                            ("1", "Mod Wheel"),
-                                            ("10", "Pan"),
-                                        ]
-                                        selected=lfo_destination
-                                        on_change=on_destination_change
-                                    />
-                                </InlineParam>
-
-                                // Designer waveform editor (conditional)
-                                {move || {
-                                    if is_designer.get() {
+                                <CollapsibleSection
+                                    title="SOUND PARAMETERS"
+                                    default_open=true
+                                    badge_count=p_lock_count
+                                >
+                                    {sound_params.iter().enumerate().map(|(idx, &name)| {
                                         view! {
-                                            <div class="mt-2">
-                                                <label class="text-xs text-zinc-500 mb-1 block">"Waveform Designer"</label>
-                                                <LfoDesigner
-                                                    track_id=Signal::derive(move || get_track_id_from_selection(selected_step))
-                                                    lfo_index=Signal::derive(move || 0)
-                                                    value=Signal::derive(move || {
-                                                        let track_id = get_track_id_from_selection(selected_step);
-                                                        pattern_signal.with(|p| {
-                                                            p.tracks.get(track_id)
-                                                                .and_then(|t| t.lfos.get(0))
-                                                                .and_then(|l| {
-                                                                    if let crate::shared::models::LFOShape::Designer(v) = &l.shape {
-                                                                        Some(v.to_vec())
-                                                                    } else {
-                                                                        None
-                                                                    }
-                                                                })
-                                                                .unwrap_or_else(|| vec![0.0; 16])
-                                                        })
-                                                    })
-                                                    on_change=Callback::new(move |new_val: Vec<f32>| {
-                                                        if new_val.len() == 16 {
-                                                            let mut arr = [0.0; 16];
-                                                            arr.copy_from_slice(&new_val);
-                                                            let track_id = get_track_id_from_selection(selected_step);
-                                                            set_pattern_signal.update(|p| {
-                                                                if let Some(track) = p.tracks.get_mut(track_id) {
-                                                                    if let Some(lfo) = track.lfos.get_mut(0) {
-                                                                        lfo.shape = crate::shared::models::LFOShape::Designer(arr.to_vec());
-                                                                    }
-                                                                }
-                                                            });
-                                                        }
-                                                    })
+                                            <InlineParam>
+                                                <ParamLabel
+                                                    text=name
+                                                    locked=Signal::derive(move || is_param_locked(idx))
                                                 />
-                                            </div>
-                                        }.into_any()
-                                    } else {
-                                        view! { <div></div> }.into_any()
-                                    }
-                                }}
-                            </CollapsibleSection>
+                                                <NumberInput
+                                                    min="0"
+                                                    max="1"
+                                                    step="0.01"
+                                                    value=Signal::derive(move || format!("{:.2}", get_param_value(idx)))
+                                                    on_input=move |val| {
+                                                        handle_param_input(idx, val);
+                                                    }
+                                                />
+                                            </InlineParam>
+                                        }
+                                    }).collect::<Vec<_>>()}
+                                </CollapsibleSection>
+
+                                <CollapsibleSection
+                                    title="LFO"
+                                    default_open=false
+                                >
+                                    <InlineParam>
+                                        <ParamLabel text="Shape" locked=Signal::derive(|| false) />
+                                        <Dropdown
+                                            options=vec![
+                                                ("Sine", "∿"),
+                                                ("Triangle", "△"),
+                                                ("Square", "▭"),
+                                                ("Random", "※"),
+                                                ("Designer", "✎"),
+                                            ]
+                                            selected=lfo_shape
+                                            on_change=on_shape_change
+                                        />
+                                    </InlineParam>
+
+                                    <InlineParam>
+                                        <ParamLabel text="Amount" locked=Signal::derive(|| false) />
+                                        <NumberInput
+                                            min="-1"
+                                            max="1"
+                                            step="0.01"
+                                            value=Signal::derive(move || format!("{:.2}", lfo_amount.get()))
+                                            on_input=on_amount_change
+                                        />
+                                    </InlineParam>
+
+                                    <InlineParam>
+                                        <ParamLabel text="Speed" locked=Signal::derive(|| false) />
+                                        <NumberInput
+                                            min="0.1"
+                                            max="4.0"
+                                            step="0.1"
+                                            value=Signal::derive(move || format!("{:.1}", lfo_speed.get()))
+                                            on_input=on_speed_change
+                                        />
+                                    </InlineParam>
+
+                                    <InlineParam>
+                                        <ParamLabel text="Destination" locked=Signal::derive(|| false) />
+                                        <Dropdown
+                                            options=vec![
+                                                ("74", "Filter Cutoff"),
+                                                ("71", "Resonance"),
+                                                ("1", "Mod Wheel"),
+                                                ("10", "Pan"),
+                                            ]
+                                            selected=lfo_destination
+                                            on_change=on_destination_change
+                                        />
+                                    </InlineParam>
+
+                                    // Designer waveform editor (conditional)
+                                    {move || {
+                                        if is_designer.get() {
+                                            view! {
+                                                <div class="mt-2">
+                                                    <label class="text-xs text-zinc-500 mb-1 block">"Waveform Designer"</label>
+                                                    <LfoDesigner
+                                                        track_id=Signal::derive(move || get_track_id_from_selection(selected_step))
+                                                        lfo_index=Signal::derive(move || 0)
+                                                        value=Signal::derive(move || {
+                                                            let track_id = get_track_id_from_selection(selected_step);
+                                                            pattern_signal.with(|p| {
+                                                                p.tracks.get(track_id)
+                                                                    .and_then(|t| t.lfos.get(0))
+                                                                    .and_then(|l| {
+                                                                        if let crate::shared::models::LFOShape::Designer(v) = &l.shape {
+                                                                            Some(v.to_vec())
+                                                                        } else {
+                                                                            None
+                                                                        }
+                                                                    })
+                                                                    .unwrap_or_else(|| vec![0.0; 16])
+                                                            })
+                                                        })
+                                                        on_change=Callback::new(move |new_val: Vec<f32>| {
+                                                            if new_val.len() == 16 {
+                                                                let mut arr = [0.0; 16];
+                                                                arr.copy_from_slice(&new_val);
+                                                                let track_id = get_track_id_from_selection(selected_step);
+                                                                set_pattern_signal.update(|p| {
+                                                                    if let Some(track) = p.tracks.get_mut(track_id) {
+                                                                        if let Some(lfo) = track.lfos.get_mut(0) {
+                                                                            lfo.shape = crate::shared::models::LFOShape::Designer(arr.to_vec());
+                                                                        }
+                                                                    }
+                                                                });
+                                                            }
+                                                        })
+                                                    />
+                                                </div>
+                                            }.into_any()
+                                        } else {
+                                            view! { <div></div> }.into_any()
+                                        }
+                                    }}
+                                </CollapsibleSection>
+                            </div>
                         </div>
                     }.into_any()
                 } else {
