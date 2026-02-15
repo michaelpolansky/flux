@@ -1,17 +1,19 @@
-use leptos::prelude::*;
-use crate::ui::components::grid_step::GridStep;
-use super::step_badge::StepBadge;
-use super::playhead_indicator::PlayheadIndicator;
-use crate::ui::state::GridUIState;
-use super::remove_track_button::RemoveTrackButton;
-use super::track_controls::TrackControls;
 use super::confirm_dialog::ConfirmDialog;
 use super::machine_selector::MachineSelector;
+use super::playhead_indicator::PlayheadIndicator;
+use super::remove_track_button::RemoveTrackButton;
+use super::step_badge::StepBadge;
 use super::step_editor_sidebar::StepEditorSidebar;
+use super::track_controls::TrackControls;
+use super::velocity_lanes::VelocityLanes;
+use crate::ui::components::grid_step::GridStep;
+use crate::ui::state::GridUIState;
+use leptos::prelude::*;
 
 #[component]
 pub fn Grid() -> impl IntoView {
-    let sequencer_state = use_context::<crate::app::SequencerState>().expect("SequencerState context not found");
+    let sequencer_state =
+        use_context::<crate::app::SequencerState>().expect("SequencerState context not found");
     let playback_state = use_context::<ReadSignal<crate::ui::state::PlaybackState>>()
         .expect("PlaybackState context not found");
     let pattern_signal = use_context::<ReadSignal<crate::shared::models::Pattern>>()
@@ -21,8 +23,8 @@ pub fn Grid() -> impl IntoView {
 
     // Create GridUIState signal and provide context
     let grid_ui_state = signal(GridUIState::default());
-    provide_context(grid_ui_state.0);  // Provide read signal
-    provide_context(grid_ui_state.1);  // Provide write signal
+    provide_context(grid_ui_state.0); // Provide read signal
+    provide_context(grid_ui_state.1); // Provide write signal
 
     // State for confirmation dialog
     let (show_confirm_dialog, set_show_confirm_dialog) = signal::<Option<usize>>(None);
@@ -42,7 +44,7 @@ pub fn Grid() -> impl IntoView {
             // Call the remove function
             crate::ui::components::remove_track_button::do_remove_track(
                 track_idx,
-                set_pattern_signal
+                set_pattern_signal,
             );
             set_show_confirm_dialog.set(None);
         }
@@ -59,8 +61,8 @@ pub fn Grid() -> impl IntoView {
 
     // Create effect to detect triggers
     Effect::new(move |_| {
-        let playback = playback_state.get();  // Single call to avoid race condition
-        let current_time = current_timestamp();  // Capture timestamp once per effect
+        let playback = playback_state.get(); // Single call to avoid race condition
+        let current_time = current_timestamp(); // Capture timestamp once per effect
         let pos = playback.current_position;
         let is_playing = playback.is_playing;
 
@@ -89,28 +91,26 @@ pub fn Grid() -> impl IntoView {
     });
 
     let selected_track = Signal::derive(move || {
-        sequencer_state.selected_step.get()
+        sequencer_state
+            .selected_step
+            .get()
             .map(|(track, _)| track)
             .unwrap_or(0)
     });
 
     let selected_step_idx = Signal::derive(move || {
-        sequencer_state.selected_step.get()
+        sequencer_state
+            .selected_step
+            .get()
             .map(|(_, step)| step)
             .unwrap_or(0)
     });
 
-    let badge_visible = Signal::derive(move || {
-        sequencer_state.selected_step.get().is_some()
-    });
+    let badge_visible = Signal::derive(move || sequencer_state.selected_step.get().is_some());
 
-    let playback_position = Signal::derive(move || {
-        playback_state.get().current_position
-    });
+    let playback_position = Signal::derive(move || playback_state.get().current_position);
 
-    let is_playing = Signal::derive(move || {
-        playback_state.get().is_playing
-    });
+    let is_playing = Signal::derive(move || playback_state.get().is_playing);
 
     view! {
         <div class="sequencer-grid">
@@ -184,6 +184,9 @@ pub fn Grid() -> impl IntoView {
                         />
                     </div>
 
+                    // Velocity lanes
+                    <VelocityLanes />
+
                     // Track controls below grid
                     <TrackControls />
                 </div>
@@ -200,4 +203,3 @@ pub fn Grid() -> impl IntoView {
         />
     }
 }
-
