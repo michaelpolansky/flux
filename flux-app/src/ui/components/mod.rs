@@ -12,4 +12,5 @@ pub mod confirm_dialog;
 pub mod remove_track_button;
 pub mod track_controls;
 pub mod machine_selector;
+pub mod step_editor_sidebar;
 pub use machine_selector::MachineSelector;
