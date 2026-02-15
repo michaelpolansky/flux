@@ -361,3 +361,34 @@ let on_pitch_change = move |new_value: u8| {
 
 **Approved by:** User
 **Next steps:** Create implementation plan via writing-plans skill
+
+---
+
+## Implementation Notes (Final)
+
+**Completed:** 2026-02-14
+
+**Implementation Summary:**
+- Created `StepEditorSidebar` component with 5 parameter controls
+- Modified `Grid` layout to 2-column (sidebar + grid)
+- Removed old `StepInspector` from App
+- All parameters use direct field access on `AtomicStep`
+- Smooth transitions and animations added
+- Manual testing checklist created
+
+**Code Statistics:**
+- New files: 1 (`step_editor_sidebar.rs`)
+- Modified files: 3 (`grid.rs`, `app.rs`, `mod.rs`)
+- Lines of code: ~300 (sidebar component)
+- Parameters implemented: 5/5 (Note, Velocity, Length, Probability, Micro-timing)
+
+**Known Limitations:**
+- No Tauri backend sync for step updates (future enhancement)
+- Single-step selection only (multi-step designed but not implemented)
+- Manual testing only (no automated UI tests)
+
+**Next Steps:**
+- Add Tauri backend sync if needed
+- Consider keyboard navigation (arrow keys between steps)
+- Implement multi-step editing when needed
+- Add conditional triggers UI (PRE, NEI, FILL)
