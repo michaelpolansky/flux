@@ -608,16 +608,70 @@ pub fn StepEditorSidebar() -> impl IntoView {
                     }.into_any()
                 } else {
                     view! {
-                        <div class="flex flex-col items-center justify-center py-8 text-center animate-in fade-in duration-300">
-                            <p class="text-zinc-500 text-sm italic mb-2">
-                                "Select a step to"
-                            </p>
-                            <p class="text-zinc-500 text-sm italic mb-4">
-                                "edit parameters"
-                            </p>
-                            <p class="text-zinc-600 text-xs">
-                                "Tip: Click or right-click a step"
-                            </p>
+                        <div class="flex flex-col h-full animate-in fade-in duration-200">
+                            // Header
+                            <div class="mb-4">
+                                <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wide">
+                                    "PATTERN OVERVIEW"
+                                </h3>
+                            </div>
+
+                            // Track summary table
+                            <div class="flex-1 overflow-y-auto">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="text-xs text-zinc-500 border-b border-zinc-800">
+                                            <th class="text-left pb-2 pr-2">"Track"</th>
+                                            <th class="text-left pb-2 pr-2">"Machine"</th>
+                                            <th class="text-right pb-2 pr-2">"Steps"</th>
+                                            <th class="text-right pb-2">"P-Locks"</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {move || {
+                                            pattern_signal.with(|pattern| {
+                                                if pattern.tracks.is_empty() {
+                                                    view! {
+                                                        <tr>
+                                                            <td colspan="4" class="text-center py-8 text-zinc-500 text-sm italic">
+                                                                "No tracks in pattern"
+                                                            </td>
+                                                        </tr>
+                                                    }.into_any()
+                                                } else {
+                                                    pattern.tracks.iter().enumerate().map(|(idx, track)| {
+                                                        let (active_steps, p_locks) = calculate_track_stats(track);
+                                                        let machine_name = format!("{:?}", track.machine);
+
+                                                        view! {
+                                                            <tr class="border-b border-zinc-800/50 hover:bg-zinc-800/30 transition-colors">
+                                                                <td class="py-2 pr-2 text-zinc-100">
+                                                                    {format!("T{}", idx + 1)}
+                                                                </td>
+                                                                <td class="py-2 pr-2 text-zinc-100 truncate">
+                                                                    {machine_name}
+                                                                </td>
+                                                                <td class={format!(
+                                                                    "py-2 pr-2 text-right {}",
+                                                                    if active_steps == 0 { "text-zinc-600" } else { "text-zinc-100" }
+                                                                )}>
+                                                                    {active_steps}
+                                                                </td>
+                                                                <td class={format!(
+                                                                    "py-2 text-right {}",
+                                                                    if p_locks == 0 { "text-zinc-600" } else { "text-zinc-100" }
+                                                                )}>
+                                                                    {p_locks}
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }).collect::<Vec<_>>().into_any()
+                                                }
+                                            })
+                                        }}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     }.into_any()
                 }
