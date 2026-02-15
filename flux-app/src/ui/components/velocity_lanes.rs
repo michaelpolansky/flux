@@ -82,7 +82,7 @@ pub fn VelocityLanes() -> impl IntoView {
 
             // Velocity grid
             <div class="flex">
-                // Track labels column
+                // Track labels column (must match step grid width exactly)
                 <div class="flex flex-col gap-[2px] mr-2">
                     <For
                         each=move || {
@@ -91,10 +91,17 @@ pub fn VelocityLanes() -> impl IntoView {
                         key=|track_idx| *track_idx
                         children=move |track_idx| {
                             view! {
-                                <div class="h-10 flex items-center justify-start px-1">
+                                <div class="h-10 flex items-center justify-start gap-1 px-1">
+                                    // Invisible spacer matching RemoveTrackButton (w-4)
+                                    <div class="w-4"></div>
                                     <div class="text-xs text-zinc-400 w-6">
                                         {format!("T{}", track_idx + 1)}
                                     </div>
+                                    // Invisible spacer matching MachineSelector button
+                                    // Button has px-1.5 (6px) + text content ~24-32px = ~36-40px
+                                    <button class="px-1.5 py-0.5 text-[10px] font-mono opacity-0 pointer-events-none">
+                                        "OS ▾"
+                                    </button>
                                 </div>
                             }
                         }
