@@ -11,7 +11,7 @@ pub fn ParamLabel(
 ) -> impl IntoView {
     view! {
         <label class=move || {
-            let base = "text-[10px] font-medium uppercase tracking-tight flex-shrink-0 w-24";
+            let base = "text-[10px] font-medium uppercase tracking-tight flex-shrink-0 w-20";
             let color = if locked.get() {
                 "text-amber-400"
             } else {
@@ -50,7 +50,7 @@ pub fn NumberInput(
                 let val = event_target_value(&ev).parse::<f64>().unwrap_or(0.0);
                 on_input(val);
             }
-            class="w-16 text-xs text-center bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            class="w-14 text-[10px] text-center bg-zinc-800 border border-zinc-700 rounded px-1 py-0.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
     }
 }
@@ -72,7 +72,7 @@ pub fn Dropdown(
             on:change=move |ev| {
                 on_change(event_target_value(&ev));
             }
-            class="bg-zinc-800 text-zinc-50 text-xs rounded px-1.5 py-0.5 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+            class="bg-zinc-800 text-zinc-50 text-[10px] rounded px-1 py-0.5 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
         >
             {options.into_iter().map(|(value, text)| {
                 view! {
