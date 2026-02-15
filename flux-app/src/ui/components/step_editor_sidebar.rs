@@ -426,27 +426,39 @@ pub fn StepEditorSidebar() -> impl IntoView {
     };
 
     view! {
-        <div class="w-80 bg-zinc-900/50 border-r border-zinc-800 rounded-l-lg p-4 flex flex-col overflow-y-auto">
+        <div class="w-80 h-screen flex flex-col bg-zinc-900/50 border-r border-zinc-800 rounded-l-lg">
             {move || {
                 if let Some((track_id, step_idx)) = selected_step.get() {
                     view! {
-                        <div class="animate-in fade-in slide-in-from-top-2 duration-200">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex flex-col">
-                                    <span class="text-xs font-bold text-zinc-400 uppercase tracking-wide">"EDITING STEP"</span>
-                                    <span class="text-sm text-zinc-100">
-                                        {format!("Track {}, Step {}", track_id + 1, step_idx + 1)}
-                                    </span>
+                        <div class="flex flex-col h-full animate-in fade-in slide-in-from-top-2 duration-200">
+                            // Header (fixed, no scroll)
+                            <div class="flex-shrink-0 p-2">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div>
+                                        <div class="text-[10px] text-zinc-400 uppercase tracking-wide mb-1">
+                                            "EDITING STEP"
+                                        </div>
+                                        <div class="text-xs font-bold text-zinc-100">
+                                            {move || {
+                                                let track_name = pattern_signal.with(|p| {
+                                                    p.tracks.get(track_id).map(|t| t.name.clone()).unwrap_or_default()
+                                                });
+                                                format!("{} - Step {}", track_name, step_idx + 1)
+                                            }}
+                                        </div>
+                                    </div>
+                                    <button
+                                        on:click=move |_| sequencer_state.selected_step.set(None)
+                                        class="text-zinc-400 hover:text-zinc-100 text-xl transition-colors"
+                                    >
+                                        "×"
+                                    </button>
                                 </div>
-                                <button
-                                    class="text-xs text-zinc-500 hover:text-red-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-zinc-900 rounded px-1"
-                                    on:click=move |_| selected_step.set(None)
-                                >
-                                    "×"
-                                </button>
                             </div>
 
-                            <div class="flex flex-col gap-2">
+                            // Content (scrolls independently)
+                            <div class="flex-1 overflow-y-auto px-2 pb-2">
+                                <div class="flex flex-col gap-2">
                                 <CollapsibleSection
                                     title="STEP PROPERTIES"
                                     default_open=true
@@ -634,21 +646,22 @@ pub fn StepEditorSidebar() -> impl IntoView {
                                         }
                                     }}
                                 </CollapsibleSection>
+                                </div>
                             </div>
                         </div>
                     }.into_any()
                 } else {
                     view! {
                         <div class="flex flex-col h-full animate-in fade-in duration-200">
-                            // Header
-                            <div class="mb-4">
+                            // Header (fixed)
+                            <div class="flex-shrink-0 p-2 mb-2">
                                 <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wide">
                                     "PATTERN OVERVIEW"
                                 </h3>
                             </div>
 
-                            // Track summary table
-                            <div class="flex-1 overflow-y-auto">
+                            // Table (scrolls)
+                            <div class="flex-1 overflow-y-auto px-2 pb-2">
                                 <table class="w-full text-sm">
                                     <thead>
                                         <tr class="text-xs text-zinc-500 border-b border-zinc-800">
