@@ -413,7 +413,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
     };
 
     view! {
-        <div class="w-80 h-screen overflow-hidden flex flex-col bg-zinc-900/50 border-r border-zinc-800 rounded-l-lg">
+        <div class="w-80 h-screen flex flex-col bg-zinc-900/50 border-r border-zinc-800 rounded-l-lg">
             {move || {
                 if let Some((track_id, step_idx)) = selected_step.get() {
                     view! {
@@ -439,7 +439,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
                             </div>
 
                             // Content (scrolls independently)
-                            <div class="flex-1 overflow-y-auto px-2 pb-2">
+                            <div class="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
                                 <div class="flex flex-col gap-1">
                                 <CollapsibleSection
                                     title="STEP PROPERTIES"
@@ -596,7 +596,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
                             </div>
 
                             // Table (scrolls)
-                            <div class="flex-1 overflow-y-auto px-2 pb-2">
+                            <div class="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
                                 <table class="w-full text-sm">
                                     <thead>
                                         <tr class="text-[10px] text-zinc-500 border-b border-zinc-800">
