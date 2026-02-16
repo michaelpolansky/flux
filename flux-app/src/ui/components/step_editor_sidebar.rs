@@ -413,7 +413,7 @@ pub fn StepEditorSidebar() -> impl IntoView {
     };
 
     view! {
-        <div class="w-80 h-screen flex flex-col bg-zinc-900/50 border-r border-zinc-800 rounded-l-lg">
+        <div class="w-80 h-screen overflow-hidden flex flex-col bg-zinc-900/50 border-r border-zinc-800 rounded-l-lg">
             {move || {
                 if let Some((track_id, step_idx)) = selected_step.get() {
                     view! {
