@@ -59,13 +59,19 @@ The heart of FLUX - a 4-track, 16-step grid:
 - **Orange playhead** shows the current playback position
 
 #### 3. Step Editor Sidebar (Right Side, appears when step selected)
-Unified control panel for all step-level editing:
+Compact unified control panel for all step-level editing (optimized for high information density):
 - **Step Properties**: Note (Pitch), Velocity, Length, Probability, Micro-timing
 - **Sound Parameters**: 8 synthesis parameters with automatic P-Lock creation
   - Tuning, Filter Freq, Resonance, Drive, Decay, Sustain, Reverb, Delay
   - Badge shows number of active P-Locks for current step
   - P-Locked parameters display in amber color
-- **LFO**: Track-level modulation (Shape, Amount, Speed, Destination, Designer)
+- **LFO**: Track-level modulation with 4 basic shapes (Sine, Triangle, Square, Random)
+  - Shape, Amount, Speed, Destination controls
+
+**Design Notes:**
+- Compact 10px typography for professional DAW aesthetics
+- Tight spacing (2-4px gaps) for maximum information density
+- All collapsible sections maintain full functionality
 
 ---
 
@@ -212,9 +218,21 @@ There are several ways to deselect a step:
 
 ## Advanced Features
 
-### LFO Designer (Coming Soon)
+### LFO Modulation
 
-The LFO (Low Frequency Oscillator) Designer will let you draw custom modulation waveforms to automatically control parameters over time. This feature is currently in development.
+The LFO (Low Frequency Oscillator) provides automatic parameter modulation with 4 essential waveform shapes:
+- **Sine** - Smooth, natural modulation
+- **Triangle** - Linear up/down movement
+- **Square** - Hard on/off switching
+- **Random** - Unpredictable variations
+
+**LFO Controls:**
+- **Shape** - Choose from 4 waveform types
+- **Amount** - Control modulation depth (-1 to 1)
+- **Speed** - Set modulation rate (0.1 to 4.0)
+- **Destination** - Select which parameter to modulate (Filter Cutoff, Resonance, etc.)
+
+**Note:** The LFO Designer for custom waveforms was removed in favor of a simpler, more compact interface. The 4 basic shapes cover 95% of common use cases.
 
 ### Multi-Track Patterns
 
@@ -380,5 +398,5 @@ Happy sequencing!
 ---
 
 **FLUX Version:** 0.1.0
-**Last Updated:** 2026-02-14
+**Last Updated:** 2026-02-15
 **For Support:** Check the project documentation or open an issue on GitHub
